@@ -1,0 +1,42 @@
+---
+title: "Vorlesungsbegleitende Case-Study"
+output: 
+  html_document:
+    theme: cosmo
+    code_download: true
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include = FALSE, cache = FALSE}
+knitr::opts_chunk$set(error = TRUE, comment = NA, warnings = FALSE, errors = FALSE, messages = FALSE, tidy = FALSE, echo = FALSE)
+```
+
+# Ziele der Case Study
+
+Diese Case-Study besteht aus mehreren Teilen und wird Sie durch die komplette Vorlesung als konkretes Anschauungsobjekt begleiten. Hierbei dient die Case-Study hauptsächlich dazu, ihnen an einem konkreten und umfangreichen Beispiel die Kenntnisse für eine erfolgreiche Projektarbeit zu vermitteln und diese Kenntnisse zu vertiefen. Natürlich können Sie die Case-Study auch als Referenz heranziehen, wenn Sie ihre eigene Projektarbeit anfertigen. 
+
+---
+
+## Ersten Teil der Case Study
+
+Im ersten Teil der Case Study werden Sie ihre Kenntnisse aus der Vorlesungseinheit zum Datenhändling, d.h. alles bzgl. Daten einlesen, bearbeiten und in eine geeignete Form bringen, direkt auf Daten zur Arbeitslosenstatistik, dem BIP und der Verschuldung einzelner Landkreise bzw. Gemeinden anwenden. Ziele des ersten Teils der Case Study:
+
+- Zuverlässig Datenquellen für eine Fragestellung ausfinding machen und diese automatisiert herunterladen 
+- Das technische Verständnis wie Daten in R eingelesen und bearbeitet werden können. Hierbei lesen Sie relativ feingranulare Informationen zum Arbeitsmarkt und zur gesamtwirtschaftlichen Lage in Deutschland ein und bearbeiten diese in R
+- Wissen, wie verschiedene Datensätze miteinander verknüpft werden können
+
+Ergänzend zu den unterschiedlichen Regionen innerhalb Deutschlands werden Sie im 2. RTutor Problem Set Kennzahlen zu verschiedenen Ländern der europäischen Union untersuchen und die regionalen Unterschiede innerhalb der europäischen Union erleben. Sowohl in der Case-Study als auch in den RTutor Problem Sets treffen Sie auf konkrete Probleme, die Sie mit ihren Kenntnissen aus der Vorlesung lösen sollen.
+
+---
+
+## Zweiter Teil der Case Study
+
+Im zweiten Teil der Case Study werden Sie die eingelesenen und aufgearbeiteten Daten aus Teil 1 deskriptiv untersuchen. Hierbei erhalten Sie einen Eindruck von den Daten und können mögliche Zusammenhänge entdecken indem Sie unterschiedliche Informationen visualisieren und auch in Tabellenform auswerten. Ziele des zweiten Teils der Case Study:
+
+- Daten visualisieren und Zusämmenhänge grafisch veranschaulichen 
+- Deskriptive Analysen mittels Korrelationstabellen und deskriptiven Tabellen anfertigen
+- Das Verständnis wie Sie ihre Informationen zu bestimmten Fragestellungen möglichst effektiv aufbereiten
+- Interaktive Grafiken erstellen
+
+Sie erhalten durch deskriptive Analysen einen sehr guten Eindruck von den regionalen Unterschieden innerhalb Deutschlands. Das begleitende 3. RTutor Problem Set gibt ihnen einen sehr guten Eindruck davon, wie die Unterschiede zwischen den einzelnen Ländern auf europäischer Ebene aussehen. 

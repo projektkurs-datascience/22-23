@@ -1,0 +1,24 @@
+---
+title: "Projektkurs Data Science und Business Analytics"
+output:
+  html_document
+---
+
+Diese Seite beinhaltet alle Vorlesungsmaterialien für die Veranstaltung "Projektkurs Data Science und Business Analytics" der Universität Ulm zum Wintersemester 2022/2023 und zum Sommersemester 2023.
+
+Dieser Kurs ist eine Einführung in Data Science für Wirtschaftswissenschaftler:innen. Der Projektkurs Data Science & Business Analytics gliedert sich in zwei Teile. Im ersten Teil des Kurses, d.h. im Wintersemester, erlernen Sie Datensätze zu bearbeiten, zu analysieren und zu visualisieren. Darauf aufbauend werden Sie im zweiten Teil, d.h. im Sommersemester, lernen Regressionstabellen zu verstehen und zu interpretieren. Ein weiterer großer Themenblock des zweiten Teils ist die Kausalität, welche Sie auf Basis von Experimenten und Beobachtungsdaten zu interpretieren lernen. Sie werden in diesem Kurs mit realen Datensätzen aus allen Bereichen der Wirtschaftswissenschaften arbeiten.
+
+Der Kurs selbst untergliedert sich jedes Semester in zwei Abschnitte. Im ersten Abschnitt erlernen Sie theoretische Inhalte, welche Sie im zweiten Abschnitt der Veranstaltung selbst praktisch in drei Projekten anwenden. Alle Vorlesungsinhalte werden ihnen mittels Lehrvideos und Live-Veranstaltungen vermittelt. Es wird eine Case-Study geben, bei welcher Sie direkt in der Vorlesung sehen, was auf Sie in den Projekten zukommt. Weiterhin werden wir Übungen zu einem Experiment und Instrumentalvariablenschätzern durchführen, um Sie auf die Projekte des zweiten Teils des Projektkurses vorzubereiten.
+
+Lerninhalte der Veranstaltung sind: Tiefgreifende, praktische Erfahrungen in der explorativen Analyse, Vorhersage von Mustern, Datenvisualisierung und der Interpretation von Zusammenhängen. Ein Schwerpunkt liegt auf der _kausalen_ Interpretation von Schätzern. Weiterhin lernen Sie ihre Ergebnisse effektiv zu kommunizieren und ihre Analysen reproduzierbar zu erstellen. Dafür bekommen Sie Tools an die Hand, welche ihnen z.B. bei ihrer Abschlussarbeit, wie auch im Unternehmen sehr nützliche Dienste leisten werden.
+
+**Alle Live-Veranstaltungen werden aufgezeichnet und ihnen auf Moodle zur Verfügung gestellt.**
+
+- [Die Folien zur Veranstaltung und den Lehrvideos finden Sie hier](slides.html)
+- [Die Vorlesungsbegleitende Case-Study finden Sie hier](case-study-index.html)
+- [Die für die Veranstaltung zu bearbeitenden RTutor Problem Sets finden Sie hier](https://github.com/projektkurs-datascience/22-23/tree/main/problem-sets)
+- Weitere Tutorials, wie z.B. die Installation von R und RStudio, Github Setup etc. finden Sie unter dem Reiter "Tutorials"
+
+# Download der Folien
+
+[Falls Sie möchten können Sie die Folien auch als PDF herunterladen.](pdf_downloads.html)

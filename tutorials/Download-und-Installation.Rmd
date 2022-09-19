@@ -1,0 +1,109 @@
+---
+title: "Installation von R und RStudio"
+output: 
+  html_document:
+    theme: cosmo
+    code_download: true
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Als ersten Schritt wollen wir R und R-Studio herunterladen und installieren.
+R ist eine frei verfügbare Statistik Software, welche wir in unserem Kurs für ökonometrische Analysen verwenden. 
+R kann über die Internetseite [https://www.r-project.org](https://www.r-project.org) bezogen werden. Hier werden spezielle "Mirrors" für einzelne Länder angegeben, aus welchen eine Seite zum Download herausgesucht werden kann. Wir befinden uns in Deutschland nehmen für diese Anleitung beispielhaft den "Mirror" in Münster. Gehen Sie hierfür auf die CRAN Seite der Uni Münster [https://cran.uni-muenster.de/](https://cran.uni-muenster.de/).
+
+# Installation von R
+
+## Installation für Windows
+
+1. Klicken Sie auf "Download R for Windows"
+2. Klicken Sie den Link "install R for the first time"
+3. Klicken Sie anschließend den Link "Download R 4.x.x for Windows" (wobei x die Versionsnummer beinhaltet)
+4. Speichern Sie die .exe Datei auf ihrem PC und führen Sie diese aus; folgen Sie den Installationsbeschreibungen
+
+## Installation für den Mac
+
+1. Klicken Sie auf "Download R for (Mac) OS X"
+2. Klicken Sie auf den Link welcher zuoberst genannt wird "R-4.x.x.pkg" (in den Folien zur Veranstaltung wird auf die neueste Versionsnummer hingewiesen) um die neueste Version von R herunterzuladen
+3. Speichern Sie die .pkg Datei auf ihrem PC und führen Sie diese aus; folgen Sie den Installationsbeschreibungen
+
+Nachdem Sie R erfolgreich installiert haben sollten Sie noch RStudio installieren
+
+# Installation von RStudio
+
+1. Gehen Sie auf die Seite von <https://www.rstudio.com/products/rstudio/download/> und klicken Sie auf "Download RStudio"
+2. Laden Sie die "RStudio Desktop" Version herunter, welche frei verfügbar ist (Open Source License)
+3. Laden Sie die für Sie benötigte Version von RStudio herunter (Windows/Mac/Linux)
+4. Führen Sie die Datei aus und folgend Sie den Installationsbeschreibungen
+
+# Installation von Paketen in R
+
+Die von uns heruntergeladene R Version ist das Basissystem, auf dem wir nun aufbauen und weitere, für unsere späten Analysen wichtige, R Pakete herunterladen.
+Insbesondere Pakete aus dem ["Tidyverse"](https://www.tidyverse.org/packages/) sind für diese Vorlesung wichtig.
+Um diese Pakete herunterzuladen starten Sie RStudio und geben folgende Befehle ein:
+
+```
+install.packages("tidyverse")
+```
+
+Dieser Befehl läd alle Programme, welche im "Tidyverse" Paket enthalten sind auf ihren PC herunter und installiert diese in RStudio.
+Wenn Sie mehrere Pakete auf einmal herunterladen möchten, so können Sie diese in einem Vektor zusammenfassen. 
+Hier ein Beispiel:
+
+```
+install.packages(c("tidyverse", "devtools", "ggplot2"))
+```
+
+# Laden von Paketen in R
+
+Nach der Installation von Paketen sind diese nicht automatisch in R verfügbar. Wenn Sie RStudio öffnen, dann öffnet sich immer nur die Basisversion. Um bestimmte Pakete in RStudio (und R in der Konsole) verfügbar zu machen, müssen Sie diese vorher laden. Dies geschieht wie folgt:
+```
+library(tidyverse)
+```
+- *Achtung* der Name des Pakets ist hier nicht in Anführungszeichen!
+- ["Tidyverse"](https://www.tidyverse.org/packages/) ist hierbei eine Kollektion von verschiedenen Paketen. Der Befehl search() gibt alle zur Verfügung stehenden Pakete aus.
+```{r, message=FALSE, warning=FALSE}
+library(tidyverse)
+search()
+```
+
+# Update einer bereits vorhandenen R-Version und/oder R-Studio Version
+
+Falls Sie bereits R und R-Studio installiert haben sollten Sie diese auf den neuesten Stand bringen.
+
+R auf den neuesten Stand bringen (nutzen Sie hierfür direkt die R-Konsole und _nicht_ R-Studio):
+Verwenden Sie entweder das Paket `installr` mit der Funktion `updateR()` oder laden Sie R manuell in der [neuesten Version](https://cran.r-project.org/) herunter.
+
+Bitte beachten Sie:
+
+- Falls Sie R in einer früheren Version installiert haben, bspw. 3.1.2, dann sind alle ihre Pakete auch unter dieser Version gespeichert. 
+    - In diesem Fall müssen Sie die Pakete für die Version 3.x.x ebenfalls neu herunterladen bspw. aktualisieren. In den Folien zur Veranstaltung wird auf die neueste Versionsnummer hingewiesen.
+    -  Wenn Sie den Befehl `updateR()` aus dem `installr` Paket verwenden werden Sie direkt durch diesen Aktualisierungsprozess geführt
+- Sie können jedoch Pakete auch durch den Befehl `update.packages()` aktualisieren
+- Wenn es sich bei der neuen R Version um ein major release gehandelt hat (z.B. Upgrade von 3.x.x auf 4.x.x), dann hilft ihnen das Paket `installr` nicht weiter und Sie müssen die 4.x.x Version neu von Hand installieren.
+
+R-Studio auf den neuesten Stand bringen:
+
+- Laden Sie die aktuellste Version von [R-Studio](https://www.rstudio.com/products/rstudio/download/) herunter und installieren Sie diese.
+
+
+# Installation und erste Schritte mit RTutor
+
+In diesem Kurs werden Sie neben der Vorlesung das interative Tool [RTutor](https://github.com/skranz/RTutor) benutzen.
+RTutor wurde von Prof. Kranz hier an der Universität Ulm entwickelt und wir haben zusammen sogenannte Problem Sets kreiert, welche auf diesen Kurs abgestimmt sind und vorlesungsbegleitend von ihnen bearbeitet werden sollen.
+
+`RTutor` können Sie mit dem folgenden Befehl herunterladen und dann mit `library(RTutor)` aufrufen:
+
+```
+install.packages("RTutor",repos = c("https://skranz-repo.github.io/drat/",getOption("repos")))
+library(RTutor)
+```
+
+Die Problem Sets sind als **Vorleistung** zu absolvieren. 
+Ein erfolgreicher Abschluss aller Problem Sets ist die Voraussetzung zur Teilnahme an den Projekten und der multiple Choice Klausur zum Ende des Semesters. Durch die RTutor Problem Sets können Sie das in der Vorlesung Erlernte noch einmal praktisch üben und so direkt den Umgang mit R, RStudio und RMarkdown verinnerlichen.
+
+**Viel Spaß mit dem Projektkurs Data Science und Business Analytics!**

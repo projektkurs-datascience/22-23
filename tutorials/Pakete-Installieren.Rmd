@@ -1,0 +1,90 @@
+---
+title: "Benötigte Pakete mit Versionsnummern"
+output: 
+  html_document:
+    theme: cosmo
+    code_download: true
+    toc: true
+    toc_float: true
+---
+
+Dieses Skript geht davon aus, dass Sie bereits die neueste Version von R und R-Studio installiert haben und bisher noch keine Pakete heruntergeladen haben.
+
+Sollten Sie bisher bereits R und R-Studio installiert haben stellen Sie sicher, dass die neueste Version installiert wurde. Für mehr Hinweise, wie das genau erreicht werden kann sollten Sie einen Blick in die Datei "Download-und-Installation.pdf" auf unserem Moodle Kurs werfen.
+
+# Welche Pakete sollten installiert werden?
+
+Lassen Sie diesen Code-Chunk laufen um alle für den Kurs benötigten Pakete zu installieren.
+Dies kann einige Minuten dauern!
+
+```{r, message=FALSE, eval=FALSE}
+install.packages("tidyverse") # Core-Pakete des Tidyverse mit vielen für die Veranstaltung wichtigen Funktionen
+install.packages("lubridate") # Datumsformate
+install.packages("googleVis") # Visualisierung von Karten
+install.packages("pander") # Schöner Output von deskriptiven Statistiken
+install.packages("readxl") # Excel Datensätze einlesen
+install.packages("haven") # Stata und andere Datensätze einlesen
+install.packages("gridExtra") # Mehrere Grafiken nebeneinander
+install.packages("ggthemes") # Schönere Layouts bei Grafiken
+install.packages("broom") # Wandelt Regressionsoutput in Tidy Data um
+install.packages("rvest") # HTMLs auslesen
+install.packages("stringr") # Worte/Zeichenketten effektiver bearbeiten
+install.packages("skimr") # Gut für erste deskriptive Statistiken
+install.packages("gganimate") # Paket um animierte Grafiken zu erstellen
+install.packages("gifski") # Erstellen von GIFs
+install.packages("plotly") # Animierte Grafiken erzeugen
+install.packages("ggrepel") # Paket um Beschriftungen in Grafiken besser zu setzen
+install.packages("sf") # Nötig um Karten zu erstellen
+install.packages("corrr") # Korrelationsmatrizen leicht erstellen
+install.packages("gt") # Schöne HTML Tabellen
+install.packages("kableExtra") # Schöne HTML Tabellen
+install.packages("ggalt") # Schaubilder nebeneinander platzieren
+install.packages("stargazer") # Schönen Regressionsoutput erzeugen
+install.packages("modelsummary") # Schönen Regressionsoutput erzeugen
+install.packages("RTutor",repos = c("https://skranz-repo.github.io/drat/",getOption("repos"))) # Problem Sets
+```
+
+# Versionen von R, R-Studio und der einzelnen Pakete abrufen
+
+Bitte prüfen Sie ob alle ihre Pakete auf dem neuesten Stand sind (nutzen Sie zum Testen der Versionsnummer `sessionInfo()`, wie im folgenden `Chunk` angegeben).
+
+```{r, message=FALSE, echo=FALSE}
+library(tidyverse) 
+library(lubridate) 
+library(googleVis) 
+library(pander)
+library(knitr) 
+library(readxl) 
+library(haven)
+library(gridExtra) 
+library(ggthemes) 
+library(broom) 
+library(rvest) 
+library(stringr) 
+library(skimr)
+library(gganimate)
+library(plotly)
+library(ggrepel) 
+library(corrr)
+library(ggalt)
+library(sf)
+library(stargazer)
+library(modelsummary)
+library(gt)
+library(kableExtra)
+library(RTutor)
+
+x <- sessionInfo()
+
+print(x, locale=FALSE, basePkgs = TRUE)
+```
+
+# Update der Pakete
+
+Falls Sie die benötigten Pakete nicht in der aktuellen Version auf ihrem PC vorliegen haben, dann können Sie mit 
+
+```{r, eval=FALSE}
+update.packages()
+```
+
+ihre Pakete auf den aktuellen Stand bringen.

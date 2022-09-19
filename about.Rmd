@@ -1,0 +1,29 @@
+---
+title: "About"
+---
+
+```{r setup, include=FALSE}
+htmltools::tagList(rmarkdown::html_dependency_font_awesome())
+```
+
+
+
+This site was created with [R Markdown](http://rmarkdown.rstudio.com/rmarkdown_websites.html). 
+The source can be found [on GitHub <i class="fa fa-github"></i>]().
+
+The site is heavily inspired by the awesome work of Alison Hill, especially her website:
+
+<https://apreshill.github.io/data-vis-labs-2018/>
+
+Who am I?
+
+Alexander Rieber
+  * <a href = "https://github.com/AlexRieber/"><i class="fa fa-github"> GitHub</i></a>
+  * <a href = "https://twitter.com/AlexRieber"><i class="fa fa-twitter"> Twitter</i></a>
+  * <a href = "alexander.rieber@uni-ulm.de"><i class="fa envelope"> Mail</i></a>
+
+The materials were initially created for the course "Projektkurs Data Science und Business Analytics" at Ulm University.
+
+Course Director: Alexander Rieber 
+Teaching Assistant: Julius Düker
+

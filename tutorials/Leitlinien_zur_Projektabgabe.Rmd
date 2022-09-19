@@ -1,0 +1,81 @@
+---
+title: "Leitlinien zur Projektabgabe"
+output: 
+  html_document:
+    theme: cosmo
+    code_download: true
+    toc: true
+    toc_float: true
+---
+
+# Organisatorisches
+
+Der Termin für die Abgabe der Projektarbeit wird im Kalender auf Moodle angezeigt.
+
+- **Gruppengröße:** 3 Personen geben zusammen ein Projekt ab. Ohne zu einer Gruppe zu gehören kann für Sie leider keine Projektleistung verbucht werden.
+- **Was wird abgegeben?** RMarkdown Datei **und** HTML Datei (Beschreibung der Ergebnisse + R-Code). D.h. bitte `knitten` Sie ihre .Rmd regelmäßig!
+- **Screencast:** Für einzelne Projekte sollten Sie einen Screencast anfertigen (wenn dies gefordert ist, dann finden Sie einen entsprechenden Hinweis in der Projektbeschreibung). Ist dies der Fall, so sollten Sie ihren Screencast mit in Github hochladen! Ihr Screencast sollte nicht länger als 5 Minuten dauern und ihre wesentlichen Ergebnisse beinhalten (Grafiken eignen sich meist besonders gut für einen solchen Screencast).
+- **Deadline und wo wird abgegeben?:** Die Dateien werden auf Github bearbeitet und auch dort abgegeben. Es zählt der letzte Commit vor der Deadline zur Projektabgabe als finale Abgabe.
+- **Speichern:** Bitte speichern Sie ihre RMarkdown Datei in utf-8 ab (File -> Save with Encoding... -> UTF-8).
+- **Pull/Commit/Push auf Github:** Sie arbeiten über Github in einem Team zusammen. Bitte committen Sie regelmäßig ihre Änderungen um Merge-Konflikten vorzubeugen!
+- **Default-Einstellungen zum Encoding ändern**: Tools -> Global Options -> Code -> Saving -> Default Text Encoding -> UTF-8.
+- **Default-Einstellung zur Speicherung ändern**: Tools > Global Options > General > Workspace --> Da machen Sie bitte den Haken weg für "Restore .RData into workspace at startup" und stellen das Feld "Save workspace to .RData on exit" auf "Never":
+
+![](./figs/Global-options_RStudio.png)
+
+# Zusammenarbeit
+
+Sie sollten die Projekte immer im Team bearbeiten. Hierbei steht es ihnen frei, wie Sie die Aufgaben innerhalb der Gruppe aufteilen. Sie sollten in regelmäßigen Besprechungen, Online-Meetings, wie auch Tutoriumsterminen zusammen an einer Lösung der Projektarbeit arbeiten und alle Schritte ihrer Teammitglieder nachvollziehen können. Bei tiefergehenden Fragen ist ihre erste Anlaufstelle ihr Tutor und das _Diskussionsforum_ auf Moodle. Stellen Sie immer konkrete Fragen mit einem kleinen Beispiel und ihrem Fehlercode damit ihnen schnell geholfen werden kann. Wie Sie möglichst gute Frage stellen können Sie [hier](https://projektkurs-data-science-ulm2122.netlify.app/tutorials/fragen-im-forum) nachlesen.
+
+# Diskussionsforum auf Moodle
+
+Auf Moodle gibt es ein Diskussionsforum, welches von ihren Fragen lebt.
+Meist stellen sich noch andere Studierende/Teams die gleichen Fragen wie Sie, deshalb scheuen Sie sich nicht davor Fragen zu stellen. Wir helfen gerne!
+
+Um ihnen möglichst schnell helfen zu können schauen Sie sich bitte unsere Guidelines an wie gute Fragen gestellt werden können ([Hier sind die Guidelines zu finden](https://projektkurs-data-science-ulm2122.netlify.app/tutorials/fragen-im-forum))
+
+# Tutorium
+
+Jede Gruppe wurde einem Tutor zugeteilt und es gibt fixe Tutoriumstermine pro Gruppe in jeder Woche. Falls Sie Fragen haben, oder einfach zusammen an dem Projekt arbeiten möchten können Sie dies gern in ihrem Tutorium tun.
+**Hinweis:** Sie sollten nicht nur während ihrer Tutoriumstermine an dem Projekt arbeiten, sondern das Projekt konstant voran bringen. Kalkulieren Sie genug Zeit für die Projekte und den Screencast ein!
+
+# Ausarbeitung des Projekts
+
+## Auf einzelne Fragen eingehen
+
+In der Projektbeschreibung werden einzelne Fragen aufgeworfen, welche Sie beantworten sollten. Hierzu werden Sie Code-Chunks in ihre RMarkdown Datei einbetten.
+Sie sollten zu jeder Frage eine kurze Antwort formulieren. Diese Antwort sollte mit Ergebnissen aus ihrer Ausarbeitung untermauert werden (Ergebnisse aus R-Chunk).
+Bitte beantworten Sie die Fragen immer im Fließtext und _nicht_ im R-Chunk als Kommentar.
+Sie sollen in der RMarkdown Datei _nicht_ beschreiben, was ihr Code macht, **sondern** sie sollen dessen Output beschreiben. Mit Hilfe dieses Outputs sollten Sie die in der Projektbeschreibung gestellte Frage beantworten können. Bitte **antworten Sie immer in ganzen Sätzen** und _nicht_ stichpunktartig.
+
+In der HTML-Datei, welche Sie mit dem jeweiligen Projekt abgeben, sollten Sie alle Code-Informationen unterdrücken. Konkret bedeutet dies, dass Sie folgenden Chunk zu Beginn der Projektausarbeitung eingefügt lassen sollten (wurde von uns bereits ein das .Rmd jeder Projektarbeit eingefügt): 
+
+```{r, eval=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message=FALSE, warning = FALSE)
+```
+
+Der Hintergrund hierfür ist, dass Sie später in ihrer Seminar/Bachelorarbeit auch keinen Code in ihren Fließtext einbetten wollen, sondern nur die Ergebnisse die von diesem Code erzeugt wurden. Dies erhöht die Lesbarkeit ihres Textes.
+
+## Interpretation der _Ergebnisse_
+
+In der RMarkdown Datei sollten Sie nicht ihren Code beschreiben und erläutern was dieser macht. Sie sollten die Ergebnisse dieses Codes beschreiben, d.h. die Grafik, Tabelle oder Regressionsergebnisse.
+Die Fragen in der Projektbeschreibung werden Sie in ihrer Beschreibung und der Interpretation der Ergebnisse leiten.
+
+- Bei der Beschreibung einer deskriptiven Analyse/Tabelle sollten Sie auf Besonderheiten eingehen
+  - Was ist der Median, Mittelwert, Standardabweichung?
+  - Warum weichen diese zwischen verschiedenen Gruppen voneinander ab?
+  - Können hier schon erste interessante Erkenntnisse gezogen werden?
+- Bei der Beschreibung einer Grafik sollten Sie auf Auffälligkeiten eingehen
+  - Sind alle dargestellten Gruppen ähnlich?
+  - Gibt es irgendwo einen Knick, oder ist die Skalierung richtig?
+- Bei der Beschreibung von Regressionsanalysen
+  - Ist der Koeffizient signifikant?
+  - Was sagt uns das Vorzeichen des Koeffizienten?
+  - Können wir hier etwas über die Größe des Effekts sagen?
+
+
+## Kommentare in den Code-Chunks zur besseren Lesbarkeit
+
+In den Code-Chunks empfiehlt es sich einzelne Code-Blöcke zu kommentieren. Dadurch wird gewährleistet, dass ihre Teamkollegen nachvollziehen können, was Sie innerhalb dieses Code-Chunks machen wollten!
+
+Fazit: Kommentare erleichtern die Kommunikation und erhöhen das Verständnis

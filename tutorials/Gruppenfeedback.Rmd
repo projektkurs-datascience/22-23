@@ -1,0 +1,52 @@
+---
+title: "Feedback zu den Review Reports für Gruppen"
+output: 
+  html_document:
+    theme: cosmo
+    code_download: true
+    toc: true
+    toc_float: true
+---
+
+# Bewertung des Review Reports durch die Gruppen
+
+- _Jede Gruppe_ erhält 3 Review Reports pro Projekt
+- Die Bewertung der Reports erfolgt von _jeder Gruppe_ auf der Basis folgender Kriterien:
+
+a) Wie hilfreich war der Report?
+  - Bewertung auf einer Skala von 1 bis 5 (1 = nicht hilfreich)
+  - Hinweise um dies bewerten zu können:
+    - Gab es hilfreiche Kritik?
+    - Ist die Kritik nachvollziehbar?
+    - Können Sie als Gruppe diese Kritik dazu nutzen ihre nächste Projektarbeit aufzuwerten?
+
+b) Wie spezifisch war der Report?
+  - Bewertung auf einer Skala von 1 bis 5 (1 = nicht spezifisch)
+  - Hinweise um dies bewerten zu können:
+    - Hatten Sie das Gefühl ihre Arbeit wurde gelesen und verstanden?
+    - Wurden Kommentare angebracht, welche auf Probleme in ihren Antworten/Grafiken eingehen?
+    - Wurden Probleme in ihrer Interpretation aufgedeckt und auf diese verwiesen?
+ 
+c) Wie reflektiert war der Report?
+  - Bewertung auf einer Skala von 1 bis 5 (1 = nicht reflektiert)
+  - Hinweise um dies bewerten zu können:
+    - Hat der Autor des Reports etwas aus ihrer Ausarbeitung gelernt?
+
+d) Wie ist ihr Gesamturteil zum erhalten Report im Verhältnis zu den anderen Reports (Ranking)?
+  - Bewertung auf einer Skala von 1 bis 3 (1 = bester Report)
+  - Hinweise um dies bewerten zu können:
+    - Gegeben aller Review Reports die ihnen vorliegen: Welcher hat Ihnen am Meisten gebracht, welcher am wenigsten?
+
+# Beispielhafte Bewertung eines Review Reports
+
+```{r, eval=FALSE, warning=FALSE, message=FALSE}
+---
+title: "Feedback Formular für Gruppen"
+output: github_document
+params:
+  hilfreich: 4
+  spezifisch: 4
+  reflektiert: 3
+  ranking: 2
+---
+```

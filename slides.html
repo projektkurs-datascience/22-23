@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Folien für Lehrvideos und Live-Veranstaltungen</title>
+
+<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Data Science & Business Analytics</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="slides.html">
+    <span class="fa fa-home"></span>
+     
+    Folien
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Case-Study
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="case-study-index.html">Was erwartet Sie in der Case-Study?</a>
+    </li>
+    <li>
+      <a href="./case-study/case_study_germany_1.html">Erster Teil der Case-Study</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    RTutor-Problem-Sets
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://github.com/projektkurs-datascience/21-22/tree/main/problem-sets/ps1">Problem Set 1</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-users"></span>
+     
+    Tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="./tutorials/Download-und-Installation.html">Installation von R</a>
+    </li>
+    <li>
+      <a href="./tutorials/Pakete-Installieren.html">Benötigte Pakete</a>
+    </li>
+    <li>
+      <a href="./tutorials/Fragen-im-Forum.html">Hilfreiche Fragen im Forum stellen</a>
+    </li>
+    <li>
+      <a href="./tutorials/Git-und-Github.html">Tutorial zu Git und Github</a>
+    </li>
+    <li>
+      <a href="./tutorials/Leitlinien_zur_Projektabgabe.html">Leitlinien zur Projektausarbeitung</a>
+    </li>
+    <li>
+      <a href="./tutorials/Review_Reports.html">Review Reports erstellen</a>
+    </li>
+    <li>
+      <a href="./tutorials/Gruppenfeedback.html">Feedback zu den Review Report</a>
+    </li>
+    <li>
+      <a href="https://rstudio.com/resources/cheatsheets/">Cheatsheets</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="https://moodle.uni-ulm.de/course/view.php?id=23708">Moodle WiSe</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/projektkurs-datascience/22-23">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="about.html">
+    <span class="fa fa-info"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Folien für Lehrvideos und
+Live-Veranstaltungen</h1>
+
+</div>
+
+
+<p>Die folgenden Bücher sind <strong>kostenfrei</strong>, können
+<strong>online</strong> gelesen werden und dienen als Referenz für
+Themengebiete im Projektkurs</p>
+<ul>
+<li>Modern Dive: <a href="http://moderndive.com"
+class="uri">http://moderndive.com</a></li>
+<li>R for Data Science: <a href="http://r4ds.had.co.nz"
+class="uri">http://r4ds.had.co.nz</a></li>
+<li>Introduction to Data Science: <a
+href="https://rafalab.github.io/dsbook/"
+class="uri">https://rafalab.github.io/dsbook/</a></li>
+<li>Causal Inference: The Mixtape: <a
+href="https://mixtape.scunning.com/index.html"
+class="uri">https://mixtape.scunning.com/index.html</a></li>
+</ul>
+<div id="folien-der-lehrvideos" class="section level2 tabset">
+<h2 class="tabset">Folien der Lehrvideos</h2>
+<p><a href="pdf_downloads.html">Folien als PDF herunterladen</a></p>
+<p><br></br></p>
+<div id="rmarkdown" class="section level3">
+<h3>01: RMarkdown</h3>
+<iframe src="slides/rmarkdown.html" width="672" height="400px" data-external="1">
+</iframe>
+<ul>
+<li><p>R for Data Science, Workflow: <a
+href="http://r4ds.had.co.nz/workflow-basics.html"
+class="uri">http://r4ds.had.co.nz/workflow-basics.html</a></p></li>
+<li><p>Modern Dive, Kapitel zu Getting Started: <a
+href="http://moderndive.com/2-getting-started.html"
+class="uri">http://moderndive.com/2-getting-started.html</a></p></li>
+<li><p>R &amp; RStudio Basics: <a
+href="https://bookdown.org/chesterismay/rbasics/3-rstudiobasics.html"
+class="uri">https://bookdown.org/chesterismay/rbasics/3-rstudiobasics.html</a></p></li>
+<li><p>RStudio IDE Cheatsheet: <a
+href="https://github.com/rstudio/cheatsheets/blob/master/rstudio-ide.pdf"
+class="uri">https://github.com/rstudio/cheatsheets/blob/master/rstudio-ide.pdf</a></p></li>
+</ul>
+</div>
+<div id="datentypen-in-r" class="section level3">
+<h3>02: Datentypen in R</h3>
+<iframe src="slides/data-types.html" width="672" height="400px" data-external="1">
+</iframe>
+</div>
+<div id="warum-git-und-github" class="section level3">
+<h3>03: Warum Git und Github?</h3>
+<iframe src="slides/Vorteile_Git-und-Github.html" width="672" height="400px" data-external="1">
+</iframe>
+<ul>
+<li><p>Happy Git with R: <a href="http://happygitwithr.com/"
+class="uri">http://happygitwithr.com/</a></p></li>
+<li><p>Try Git tutorial: <a
+href="https://try.github.io/levels/1/challenges/1"
+class="uri">https://try.github.io/levels/1/challenges/1</a></p></li>
+<li><p>Introduction to Data Science: <a
+href="https://rafalab.github.io/dsbook/git.html"
+class="uri">https://rafalab.github.io/dsbook/git.html</a> (Kapitel
+39)</p></li>
+</ul>
+</div>
+<div id="programming-basics" class="section level3">
+<h3>04: Programming Basics</h3>
+<iframe src="slides/programming-basics.html" width="672" height="400px" data-external="1">
+</iframe>
+<ul>
+<li>Introduction to Data Science: <a
+href="https://rafalab.github.io/dsbook/programming-basics.html"
+class="uri">https://rafalab.github.io/dsbook/programming-basics.html</a></li>
+</ul>
+</div>
+<div id="vektorarithmetik" class="section level3">
+<h3>05: Vektorarithmetik</h3>
+<iframe src="slides/vector-arithmetics.html" width="672" height="400px" data-external="1">
+</iframe>
+</div>
+<div id="daten-in-r-importieren" class="section level3">
+<h3>06: Daten in R importieren</h3>
+<iframe src="slides/import-data.html" width="672" height="400px" data-external="1">
+</iframe>
+</div>
+<div id="daten-in-die-richtige-form-bringen" class="section level3">
+<h3>07: Daten in die richtige Form bringen</h3>
+<iframe src="slides/reshape-data.html" width="672" height="400px" data-external="1">
+</iframe>
+<ul>
+<li>Blog Post wie Sie ihre Daten aufarbeiten können: <a
+href="https://rladiessydney.org/courses/ryouwithme/02-cleanitup-5/"
+class="uri">https://rladiessydney.org/courses/ryouwithme/02-cleanitup-5/</a></li>
+</ul>
+</div>
+<div id="einführung-in-die-datenaufbereitung" class="section level3">
+<h3>08: Einführung in die Datenaufbereitung</h3>
+<iframe src="slides/data-wrangling-intro.html" width="672" height="400px" data-external="1">
+</iframe>
+</div>
+<div id="datensätze-zusammenführen" class="section level3">
+<h3>09: Datensätze zusammenführen</h3>
+<iframe src="slides/combine-tables.html" width="672" height="400px" data-external="1">
+</iframe>
+<ul>
+<li>Introduction to Data Science: <a
+href="https://rafalab.github.io/dsbook/joining-tables.html"
+class="uri">https://rafalab.github.io/dsbook/joining-tables.html</a></li>
+</ul>
+</div>
+<div id="datum-und-uhrzeit-in-r" class="section level3">
+<h3>10: Datum und Uhrzeit in R</h3>
+<iframe src="slides/dates-and-time.html" width="672" height="400px" data-external="1">
+</iframe>
+</div>
+<div id="visualisierung-mit-ggplot2" class="section level3">
+<h3>11: Visualisierung mit ggplot2</h3>
+<iframe src="slides/Visualisierung_mit_ggplot2.html" width="672" height="400px" data-external="1">
+</iframe>
+<ul>
+<li><p>Ein schönes Tutorial wie Sie (ansprechende) Grafiken mit ggplot2
+erzeugen können gibt <a
+href="https://cedricscherer.netlify.app/2019/05/17/the-evolution-of-a-ggplot-ep.-1/">Cedric
+Scherer</a></p></li>
+<li><p>Weiterhin gibt es eine wöchentliche Challange genannt <a
+href="https://github.com/rfordatascience/tidytuesday">#Tidytuesday</a>
+bei der Sie viele ansprechende Grafiken finden mit dem entsprechende
+Code</p>
+<ul>
+<li><a href="https://github.com/Z3tt/TidyTuesday">Hier der Github Accunt
+von Cedric Scherer mit vielen schönen Beispielen</a> oder <a
+href="https://github.com/gkaramanis/tidytuesday">noch der Account von
+Georgios Karamanis</a> um nur zwei zu nennen</li>
+</ul></li>
+<li><p>Das RStudio <code>ggplot2</code> Cheatsheet finden Sie hier: <a
+href="https://github.com/rstudio/cheatsheets/blob/master/data-visualization-2.1.pdf"
+class="uri">https://github.com/rstudio/cheatsheets/blob/master/data-visualization-2.1.pdf</a></p></li>
+</ul>
+</div>
+<div id="visualisierungsguidelines" class="section level3">
+<h3>12: Visualisierungsguidelines</h3>
+<iframe src="slides/Visualisierung-Guidelines.html" width="672" height="400px" data-external="1">
+</iframe>
+<ul>
+<li><p>Diese Vorlesungseinheit orientiert sich an einem Vortrag von <a
+href="http://kbroman.org/">Karl Broman</a> mit dem Titel: <a
+href="https://www.biostat.wisc.edu/~kbroman/presentations/graphs2017.pdf">“Creating
+effective figures and tables”</a>,</p></li>
+<li><p>Weiterhin sind die Vorlesungsfolien von Peter Aldhous
+eingearbeitet worden: <a
+href="http://paldhous.github.io/ucb/2016/dataviz/index.html">Introduction
+to Data Visualization course</a></p></li>
+<li><p>Wie auch das Buch <a
+href="https://rafalab.github.io/dsbook/">Introduction to Data
+Science</a> (Kapitel 10)</p></li>
+</ul>
+</div>
+<div id="korrelation" class="section level3">
+<h3>13: Korrelation</h3>
+<iframe src="slides/correlation.html" width="672" height="400px" data-external="1">
+</iframe>
+</div>
+<div id="advanced-r-markdown" class="section level3">
+<h3>14: Advanced R Markdown</h3>
+<iframe src="slides/Advanced_RMarkdown.html" width="672" height="400px" data-external="1">
+</iframe>
+<ul>
+<li><p>Hervorragende Einführungen und Übersichten zu R Markdown bietet
+Allison Hill an. <a
+href="https://apreshill.github.io/rmd4cdc/#1">Hier</a> und <a
+href="https://rstudio-education.github.io/teaching-in-production/slides/index.html#1">hier</a>
+finden Sie zwei sehr gute Präsentationen.</p></li>
+<li><p>Für die Erstellung von Präsentation in RMarkdown mittels dem
+Paket xaringan <a
+href="https://spcanelon.github.io/xaringan-basics-and-beyond/index.html">hier
+eine sehr gute Einführung</a>.</p></li>
+<li><p>Wenn Sie eine Abschlussarbeit mit RMarkdown verfassen möchten
+dann würde ich ihnen <a
+href="https://resulumit.com/teaching/rmd_workshop.html#1">diesen
+Vortrag</a> von Herr Resul Umit empfehlen.</p></li>
+</ul>
+</div>
+<div id="stichprobe-vs.-grundgesamtheit" class="section level3">
+<h3>15: Stichprobe vs. Grundgesamtheit</h3>
+<iframe src="slides/sample-vs-population.html" width="672" height="400px" data-external="1">
+</iframe>
+<ul>
+<li>Eine hervorragende Einführung finden Sie im Buch <a
+href="https://moderndive.com/7-sampling.html">ModernDive (Kapitel
+7)</a></li>
+<li>Eine etwas tiefgreifendere Einführung finden Sie in dem Buch <a
+href="https://learningstatisticswithr.com/lsr-0.6.pdf">Learning
+Statistics with R (Kapitel 10)</a></li>
+</ul>
+</div>
+</div>
+<div id="vorlesungsfolien-der-live-veranstaltungen"
+class="section level2 tabset">
+<h2 class="tabset">Vorlesungsfolien der Live-Veranstaltungen</h2>
+<div id="einführung-und-begrüßung" class="section level3">
+<h3>01: Einführung und Begrüßung</h3>
+<iframe src="slides/intro_projektkurs_data-science.html" width="672" height="400px" data-external="1">
+</iframe>
+</div>
+<div id="erster-teil-der-case-study" class="section level3">
+<h3>02: Erster Teil der Case-Study</h3>
+<iframe src="slides/VL_case-study-Teil1.html" width="672" height="400px" data-external="1">
+</iframe>
+</div>
+<div id="zweiter-teil-der-case-study" class="section level3">
+<h3>03: Zweiter Teil der Case-Study</h3>
+<iframe src="slides/VL_case-study-Teil2.html" width="672" height="400px" data-external="1">
+</iframe>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

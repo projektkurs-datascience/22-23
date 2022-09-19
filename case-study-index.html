@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Vorlesungsbegleitende Case-Study</title>
+
+<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<script src="site_libs/navigation-1.1/sourceembed.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+<style type="text/css">
+#rmd-source-code {
+  display: none;
+}
+</style>
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Data Science & Business Analytics</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="slides.html">
+    <span class="fa fa-home"></span>
+     
+    Folien
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Case-Study
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="case-study-index.html">Was erwartet Sie in der Case-Study?</a>
+    </li>
+    <li>
+      <a href="./case-study/case_study_germany_1.html">Erster Teil der Case-Study</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    RTutor-Problem-Sets
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://github.com/projektkurs-datascience/21-22/tree/main/problem-sets/ps1">Problem Set 1</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-users"></span>
+     
+    Tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="./tutorials/Download-und-Installation.html">Installation von R</a>
+    </li>
+    <li>
+      <a href="./tutorials/Pakete-Installieren.html">Benötigte Pakete</a>
+    </li>
+    <li>
+      <a href="./tutorials/Fragen-im-Forum.html">Hilfreiche Fragen im Forum stellen</a>
+    </li>
+    <li>
+      <a href="./tutorials/Git-und-Github.html">Tutorial zu Git und Github</a>
+    </li>
+    <li>
+      <a href="./tutorials/Leitlinien_zur_Projektabgabe.html">Leitlinien zur Projektausarbeitung</a>
+    </li>
+    <li>
+      <a href="./tutorials/Review_Reports.html">Review Reports erstellen</a>
+    </li>
+    <li>
+      <a href="./tutorials/Gruppenfeedback.html">Feedback zu den Review Report</a>
+    </li>
+    <li>
+      <a href="https://rstudio.com/resources/cheatsheets/">Cheatsheets</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="https://moodle.uni-ulm.de/course/view.php?id=23708">Moodle WiSe</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/projektkurs-datascience/22-23">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="about.html">
+    <span class="fa fa-info"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-download-source" href="#">Download Rmd</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Vorlesungsbegleitende Case-Study</h1>
+
+</div>
+
+
+<div id="ziele-der-case-study" class="section level1">
+<h1>Ziele der Case Study</h1>
+<p>Diese Case-Study besteht aus mehreren Teilen und wird Sie durch die
+komplette Vorlesung als konkretes Anschauungsobjekt begleiten. Hierbei
+dient die Case-Study hauptsächlich dazu, ihnen an einem konkreten und
+umfangreichen Beispiel die Kenntnisse für eine erfolgreiche
+Projektarbeit zu vermitteln und diese Kenntnisse zu vertiefen. Natürlich
+können Sie die Case-Study auch als Referenz heranziehen, wenn Sie ihre
+eigene Projektarbeit anfertigen.</p>
+<hr />
+<div id="ersten-teil-der-case-study" class="section level2">
+<h2>Ersten Teil der Case Study</h2>
+<p>Im ersten Teil der Case Study werden Sie ihre Kenntnisse aus der
+Vorlesungseinheit zum Datenhändling, d.h. alles bzgl. Daten einlesen,
+bearbeiten und in eine geeignete Form bringen, direkt auf Daten zur
+Arbeitslosenstatistik, dem BIP und der Verschuldung einzelner Landkreise
+bzw. Gemeinden anwenden. Ziele des ersten Teils der Case Study:</p>
+<ul>
+<li>Zuverlässig Datenquellen für eine Fragestellung ausfinding machen
+und diese automatisiert herunterladen</li>
+<li>Das technische Verständnis wie Daten in R eingelesen und bearbeitet
+werden können. Hierbei lesen Sie relativ feingranulare Informationen zum
+Arbeitsmarkt und zur gesamtwirtschaftlichen Lage in Deutschland ein und
+bearbeiten diese in R</li>
+<li>Wissen, wie verschiedene Datensätze miteinander verknüpft werden
+können</li>
+</ul>
+<p>Ergänzend zu den unterschiedlichen Regionen innerhalb Deutschlands
+werden Sie im 2. RTutor Problem Set Kennzahlen zu verschiedenen Ländern
+der europäischen Union untersuchen und die regionalen Unterschiede
+innerhalb der europäischen Union erleben. Sowohl in der Case-Study als
+auch in den RTutor Problem Sets treffen Sie auf konkrete Probleme, die
+Sie mit ihren Kenntnissen aus der Vorlesung lösen sollen.</p>
+<hr />
+</div>
+<div id="zweiter-teil-der-case-study" class="section level2">
+<h2>Zweiter Teil der Case Study</h2>
+<p>Im zweiten Teil der Case Study werden Sie die eingelesenen und
+aufgearbeiteten Daten aus Teil 1 deskriptiv untersuchen. Hierbei
+erhalten Sie einen Eindruck von den Daten und können mögliche
+Zusammenhänge entdecken indem Sie unterschiedliche Informationen
+visualisieren und auch in Tabellenform auswerten. Ziele des zweiten
+Teils der Case Study:</p>
+<ul>
+<li>Daten visualisieren und Zusämmenhänge grafisch veranschaulichen</li>
+<li>Deskriptive Analysen mittels Korrelationstabellen und deskriptiven
+Tabellen anfertigen</li>
+<li>Das Verständnis wie Sie ihre Informationen zu bestimmten
+Fragestellungen möglichst effektiv aufbereiten</li>
+<li>Interaktive Grafiken erstellen</li>
+</ul>
+<p>Sie erhalten durch deskriptive Analysen einen sehr guten Eindruck von
+den regionalen Unterschieden innerhalb Deutschlands. Das begleitende 3.
+RTutor Problem Set gibt ihnen einen sehr guten Eindruck davon, wie die
+Unterschiede zwischen den einzelnen Ländern auf europäischer Ebene
+aussehen.</p>
+</div>
+</div>
+
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiVm9ybGVzdW5nc2JlZ2xlaXRlbmRlIENhc2UtU3R1ZHkiCm91dHB1dDogCiAgaHRtbF9kb2N1bWVudDoKICAgIHRoZW1lOiBjb3NtbwogICAgY29kZV9kb3dubG9hZDogdHJ1ZQogICAgdG9jOiB0cnVlCiAgICB0b2NfZmxvYXQ6IHRydWUKLS0tCgpgYGB7ciBzZXR1cCwgaW5jbHVkZSA9IEZBTFNFLCBjYWNoZSA9IEZBTFNFfQprbml0cjo6b3B0c19jaHVuayRzZXQoZXJyb3IgPSBUUlVFLCBjb21tZW50ID0gTkEsIHdhcm5pbmdzID0gRkFMU0UsIGVycm9ycyA9IEZBTFNFLCBtZXNzYWdlcyA9IEZBTFNFLCB0aWR5ID0gRkFMU0UsIGVjaG8gPSBGQUxTRSkKYGBgCgojIFppZWxlIGRlciBDYXNlIFN0dWR5CgpEaWVzZSBDYXNlLVN0dWR5IGJlc3RlaHQgYXVzIG1laHJlcmVuIFRlaWxlbiB1bmQgd2lyZCBTaWUgZHVyY2ggZGllIGtvbXBsZXR0ZSBWb3JsZXN1bmcgYWxzIGtvbmtyZXRlcyBBbnNjaGF1dW5nc29iamVrdCBiZWdsZWl0ZW4uIEhpZXJiZWkgZGllbnQgZGllIENhc2UtU3R1ZHkgaGF1cHRzw6RjaGxpY2ggZGF6dSwgaWhuZW4gYW4gZWluZW0ga29ua3JldGVuIHVuZCB1bWZhbmdyZWljaGVuIEJlaXNwaWVsIGRpZSBLZW5udG5pc3NlIGbDvHIgZWluZSBlcmZvbGdyZWljaGUgUHJvamVrdGFyYmVpdCB6dSB2ZXJtaXR0ZWxuIHVuZCBkaWVzZSBLZW5udG5pc3NlIHp1IHZlcnRpZWZlbi4gTmF0w7xybGljaCBrw7ZubmVuIFNpZSBkaWUgQ2FzZS1TdHVkeSBhdWNoIGFscyBSZWZlcmVueiBoZXJhbnppZWhlbiwgd2VubiBTaWUgaWhyZSBlaWdlbmUgUHJvamVrdGFyYmVpdCBhbmZlcnRpZ2VuLiAKCi0tLQoKIyMgRXJzdGVuIFRlaWwgZGVyIENhc2UgU3R1ZHkKCkltIGVyc3RlbiBUZWlsIGRlciBDYXNlIFN0dWR5IHdlcmRlbiBTaWUgaWhyZSBLZW5udG5pc3NlIGF1cyBkZXIgVm9ybGVzdW5nc2VpbmhlaXQgenVtIERhdGVuaMOkbmRsaW5nLCBkLmguIGFsbGVzIGJ6Z2wuIERhdGVuIGVpbmxlc2VuLCBiZWFyYmVpdGVuIHVuZCBpbiBlaW5lIGdlZWlnbmV0ZSBGb3JtIGJyaW5nZW4sIGRpcmVrdCBhdWYgRGF0ZW4genVyIEFyYmVpdHNsb3NlbnN0YXRpc3RpaywgZGVtIEJJUCB1bmQgZGVyIFZlcnNjaHVsZHVuZyBlaW56ZWxuZXIgTGFuZGtyZWlzZSBiencuIEdlbWVpbmRlbiBhbndlbmRlbi4gWmllbGUgZGVzIGVyc3RlbiBUZWlscyBkZXIgQ2FzZSBTdHVkeToKCi0gWnV2ZXJsw6Rzc2lnIERhdGVucXVlbGxlbiBmw7xyIGVpbmUgRnJhZ2VzdGVsbHVuZyBhdXNmaW5kaW5nIG1hY2hlbiB1bmQgZGllc2UgYXV0b21hdGlzaWVydCBoZXJ1bnRlcmxhZGVuIAotIERhcyB0ZWNobmlzY2hlIFZlcnN0w6RuZG5pcyB3aWUgRGF0ZW4gaW4gUiBlaW5nZWxlc2VuIHVuZCBiZWFyYmVpdGV0IHdlcmRlbiBrw7ZubmVuLiBIaWVyYmVpIGxlc2VuIFNpZSByZWxhdGl2IGZlaW5ncmFudWxhcmUgSW5mb3JtYXRpb25lbiB6dW0gQXJiZWl0c21hcmt0IHVuZCB6dXIgZ2VzYW10d2lydHNjaGFmdGxpY2hlbiBMYWdlIGluIERldXRzY2hsYW5kIGVpbiB1bmQgYmVhcmJlaXRlbiBkaWVzZSBpbiBSCi0gV2lzc2VuLCB3aWUgdmVyc2NoaWVkZW5lIERhdGVuc8OkdHplIG1pdGVpbmFuZGVyIHZlcmtuw7xwZnQgd2VyZGVuIGvDtm5uZW4KCkVyZ8OkbnplbmQgenUgZGVuIHVudGVyc2NoaWVkbGljaGVuIFJlZ2lvbmVuIGlubmVyaGFsYiBEZXV0c2NobGFuZHMgd2VyZGVuIFNpZSBpbSAyLiBSVHV0b3IgUHJvYmxlbSBTZXQgS2VubnphaGxlbiB6dSB2ZXJzY2hpZWRlbmVuIEzDpG5kZXJuIGRlciBldXJvcMOkaXNjaGVuIFVuaW9uIHVudGVyc3VjaGVuIHVuZCBkaWUgcmVnaW9uYWxlbiBVbnRlcnNjaGllZGUgaW5uZXJoYWxiIGRlciBldXJvcMOkaXNjaGVuIFVuaW9uIGVybGViZW4uIFNvd29obCBpbiBkZXIgQ2FzZS1TdHVkeSBhbHMgYXVjaCBpbiBkZW4gUlR1dG9yIFByb2JsZW0gU2V0cyB0cmVmZmVuIFNpZSBhdWYga29ua3JldGUgUHJvYmxlbWUsIGRpZSBTaWUgbWl0IGlocmVuIEtlbm50bmlzc2VuIGF1cyBkZXIgVm9ybGVzdW5nIGzDtnNlbiBzb2xsZW4uCgotLS0KCiMjIFp3ZWl0ZXIgVGVpbCBkZXIgQ2FzZSBTdHVkeQoKSW0gendlaXRlbiBUZWlsIGRlciBDYXNlIFN0dWR5IHdlcmRlbiBTaWUgZGllIGVpbmdlbGVzZW5lbiB1bmQgYXVmZ2VhcmJlaXRldGVuIERhdGVuIGF1cyBUZWlsIDEgZGVza3JpcHRpdiB1bnRlcnN1Y2hlbi4gSGllcmJlaSBlcmhhbHRlbiBTaWUgZWluZW4gRWluZHJ1Y2sgdm9uIGRlbiBEYXRlbiB1bmQga8O2bm5lbiBtw7ZnbGljaGUgWnVzYW1tZW5ow6RuZ2UgZW50ZGVja2VuIGluZGVtIFNpZSB1bnRlcnNjaGllZGxpY2hlIEluZm9ybWF0aW9uZW4gdmlzdWFsaXNpZXJlbiB1bmQgYXVjaCBpbiBUYWJlbGxlbmZvcm0gYXVzd2VydGVuLiBaaWVsZSBkZXMgendlaXRlbiBUZWlscyBkZXIgQ2FzZSBTdHVkeToKCi0gRGF0ZW4gdmlzdWFsaXNpZXJlbiB1bmQgWnVzw6RtbWVuaMOkbmdlIGdyYWZpc2NoIHZlcmFuc2NoYXVsaWNoZW4gCi0gRGVza3JpcHRpdmUgQW5hbHlzZW4gbWl0dGVscyBLb3JyZWxhdGlvbnN0YWJlbGxlbiB1bmQgZGVza3JpcHRpdmVuIFRhYmVsbGVuIGFuZmVydGlnZW4KLSBEYXMgVmVyc3TDpG5kbmlzIHdpZSBTaWUgaWhyZSBJbmZvcm1hdGlvbmVuIHp1IGJlc3RpbW10ZW4gRnJhZ2VzdGVsbHVuZ2VuIG3DtmdsaWNoc3QgZWZmZWt0aXYgYXVmYmVyZWl0ZW4KLSBJbnRlcmFrdGl2ZSBHcmFmaWtlbiBlcnN0ZWxsZW4KClNpZSBlcmhhbHRlbiBkdXJjaCBkZXNrcmlwdGl2ZSBBbmFseXNlbiBlaW5lbiBzZWhyIGd1dGVuIEVpbmRydWNrIHZvbiBkZW4gcmVnaW9uYWxlbiBVbnRlcnNjaGllZGVuIGlubmVyaGFsYiBEZXV0c2NobGFuZHMuIERhcyBiZWdsZWl0ZW5kZSAzLiBSVHV0b3IgUHJvYmxlbSBTZXQgZ2lidCBpaG5lbiBlaW5lbiBzZWhyIGd1dGVuIEVpbmRydWNrIGRhdm9uLCB3aWUgZGllIFVudGVyc2NoaWVkZSB6d2lzY2hlbiBkZW4gZWluemVsbmVuIEzDpG5kZXJuIGF1ZiBldXJvcMOkaXNjaGVyIEViZW5lIGF1c3NlaGVuLiAK</div>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeSourceEmbed("case-study-index.Rmd");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,53 @@
+name: Projektkurs Data Science & Business Analytics
+output_dir: '.'
+navbar:
+  title: Data Science & Business Analytics
+  left:
+  - text: Folien
+    icon: fa-home
+    href: slides.html
+  - text: Case-Study
+    menu:
+      - text: "Was erwartet Sie in der Case-Study?"
+        href: case-study-index.html
+      - text: "Erster Teil der Case-Study"
+        href: ./case-study/case_study_germany_1.html
+  - text: RTutor-Problem-Sets
+    menu:
+      - text: "Problem Set 1"
+        href: https://github.com/projektkurs-datascience/21-22/tree/main/problem-sets/ps1
+  - text: Tutorials
+    icon: fa-users
+    menu:
+      - text: "Installation von R"
+        href: ./tutorials/Download-und-Installation.html
+      - text: "Benötigte Pakete"
+        href: ./tutorials/Pakete-Installieren.html
+      - text: "Hilfreiche Fragen im Forum stellen"
+        href: ./tutorials/Fragen-im-Forum.html
+      - text: "Tutorial zu Git und Github"
+        href: ./tutorials/Git-und-Github.html
+      - text: "Leitlinien zur Projektausarbeitung"
+        href: ./tutorials/Leitlinien_zur_Projektabgabe.html
+      - text: "Review Reports erstellen"
+        href: ./tutorials/Review_Reports.html
+      - text: "Feedback zu den Review Report"
+        href: ./tutorials/Gruppenfeedback.html
+      - text: "Cheatsheets"
+        href: https://rstudio.com/resources/cheatsheets/
+  - text: Moodle WiSe
+    href: https://moodle.uni-ulm.de/course/view.php?id=23708
+  right:
+  - icon: fa-github fa-lg
+    href: https://github.com/projektkurs-datascience/22-23
+  - icon: fa-info
+    href: about.html
+
+output:
+  html_document:
+    theme: cosmo
+    lib_dir: site_libs
+    self_contained: no
+    toc_depth: 3
+    toc_float:
+      collapsed: false

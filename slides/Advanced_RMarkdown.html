@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Advanced R Markdown</title>
+    <meta charset="utf-8" />
+    <script src="libs/header-attrs-2.14/header-attrs.js"></script>
+    <script src="https://use.fontawesome.com/5235085b15.js"></script>
+    <link rel="stylesheet" href="style/css/uni-ulm.css" type="text/css" />
+    <link rel="stylesheet" href="style/css/my-fonts.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Advanced R Markdown
+]
+
+---
+
+
+
+
+
+&lt;style type="text/css"&gt;
+.remark-code{line-height: 1.5; font-size: 80%}
+@media print {
+  .has-continuation {
+    display: block;
+  }
+}
+&lt;/style&gt;
+
+
+## Elemente eines RMarkdown Dokuments
+
+.question[Welche Elemente hat eine R Markdown Datei?]
+
+--
+
+.pull-left[
+
+- **YAML-Header**
+
+]
+
+.pull-right[
+
+![](figs/RMarkdown_YAML1.png)
+]
+
+---
+
+## Elemente eines RMarkdown Dokuments
+
+.question[Welche Elemente hat eine R Markdown Datei?]
+
+.pull-left[
+
+- YAML-Header
+- **Text**
+
+]
+
+.pull-right[
+
+![](figs/RMarkdown_Text.png)
+]
+
+---
+
+## Elemente eines RMarkdown Dokuments
+
+.question[Welche Elemente hat eine R Markdown Datei?]
+
+.pull-left[
+
+- YAML-Header
+- Text
+- **Code-Chunks**
+]
+
+.pull-right[
+
+![](figs/RMarkdown_Chunk.png)
+]
+
+---
+
+class: inverse, center, middle
+
+# Metadaten in RMarkdown
+
+---
+
+## Überblick übr YAML
+
+- .Rmd Dokumente beginnen mit einem YAML-Header
+  - Definition der Metadaten wie Titel, Datum, Output-Format ...
+- Wir zwischen drei `---` geschrieben
+
+```
+---
+title:
+output:
+---
+```
+--
+- Variablennamen (`title`, `output` etc) werden immer _klein_ geschrieben und darauf folgt ein Doppelpunkt `:` mit anschließendem Leerzeichen
+- Alle verfügbaren Variablen und deren Optionen finden Sie in [Pandoc's User Guide](https://pandoc.org/MANUAL.html)
+  - Außerdem ist das [R Markdown Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/rmarkdown-2.0.pdf) sehr hilfreich
+  
+---
+
+## YAML Variablen
+
+YAML Variablen können **Text**
+
+```
+---
+*title: "Das ist ein Text"
+output:
+---
+```
+
+---
+
+## YAML Variablen
+
+YAML Variablen können Text, **Optionen**
+
+```
+---
+title: "Das ist ein Text"
+*output: html_document
+---
+```
+
+---
+
+## YAML Variablen
+
+YAML Variablen können Text, Optionen, **Unteroptionen**
+
+```
+---
+title: "Das ist ein Text"
+output: 
+  html_document:
+*    keep_md: TRUE
+---
+```
+
+---
+
+## YAML Variablen
+
+YAML Variablen können Text, Optionen, Unteroptionen und **Code** enthalten
+
+```
+---
+title: "Das ist ein Text"
+*date: "r format(Sys.Date(), '%d %B %Y')"
+output: 
+  html_document:
+    keep_md: TRUE
+---
+```
+
+--
+
+Im Projektkurs erstellen wir HTMLs _und_ Markdown Dokumente durch folgenden YAML-Header:
+
+
+```r
+---
+title: "Das ist ein Text"
+*output: 
+*  html_document:
+*    keep_md: TRUE
+---
+```
+
+--
+
+- Sie müssen auf das _Einrücken_ der dritten Zeile (keep_md) achten!
+
+
+---
+
+## HTML aufwerten
+
+.instructions[Kleine Änderungen im YAML Header haben große Auswirkungen!]
+
+--
+
+&lt;img src="figs/Fragen-Screen1.png" width="80%" /&gt;
+
+---
+
+## HTML aufwerten
+
+.instructions[Kleine Änderungen im YAML Header haben große Auswirkungen!]
+
+&lt;img src="figs/Fragen-Screen2.png" width="140%" /&gt;
+
+---
+
+## HTML aufwerten
+
+.pull-left[
+**Nur mit output: html_document**
+
+&lt;img src="figs/Basic_HTML.png" width="70%" /&gt;
+]
+
+.pull-right[
+**theme, toc und toc_float definiert**
+
+&lt;img src="figs/New_HTML.png" width="80%" /&gt;
+]
+
+---
+
+## HTML aufwerten
+
+&lt;img src="figs/New_HTML.png" width="80%" /&gt;
+
+---
+
+## HTML aufwerten
+
+&lt;img src="figs/Annotated_HTML1.png" width="80%" /&gt;
+
+---
+
+## HTML aufwerten
+
+&lt;img src="figs/Annotated_HTML2.png" width="80%" /&gt;
+
+---
+
+## HTML aufwerten
+
+Im Projektkurs nutzen wir das theme = "cosmo" und setzen ein Inhaltsverzeichnis (toc = TRUE) ein.
+Dieses Inhaltsverzeichnis soll an der linken Seite der HTML erscheinen (toc_float = TRUE).
+
+
+```r
+---
+title: "Das ist ein Text"
+*output: 
+*  html_document:
+*    keep_md: TRUE
+*    toc: TRUE
+*    toc_float: TRUE
+*    theme: "cosmo"
+---
+```
+
+--
+
+Es gibt auch noch andere Themes. Diese finden Sie [hier](https://www.datadreaming.org/post/r-markdown-theme-gallery/) (aber bitte nicht im Projektkurs verwenden!)
+
+---
+
+## Von R Markdown zum gewünschten Output-Format
+
+Durch das komplieren ( `knitten` ) ihres Dokuments bekommen Sie das von ihnen angegebene Dokument
+
+&gt; .Rmd --knitr --&gt; .md --pandoc --&gt; output
+
+- Knitr konvertiert ihr Dokument von .Rmd (RMarkdown) in eine .md (Markdown) Datei
+- `pandoc` transformiert die .md Datei anschließend in ihr gewünschtes Format
+  - Bspw. HTML, Word, PDF, LateX ...
+- In R-Studio drücken Sie für diesen Prozess einfach den `knitr`-Button
+
+&lt;img src="figs/RStudioScreenshot.png" width="80%" /&gt;
+
+---
+
+class: center
+background-image: url("figs/rmd_flowchart.png")
+background-size: contain
+
+
+---
+
+## Vielseitigkeit von RMarkdown
+
+- HTMLs
+- Github Markdown Dokumente
+- PDFs
+- Präsentationen
+- Dashboards
+- Bücher (Stichwort `bookdown`)
+- Webseiten (Stichwort `blogdown`)
+- und noch vieles weitere ... 
+
+Eine ausführliche Erklärung im open access Buch: [RMarkdown the definitive Guide](https://bookdown.org/yihui/rmarkdown/)
+
+Oder auch im [R Markdown Reference Guide](https://rmarkdown.rstudio.com/docs/reference/index.html#section-output-formats)
+
+---
+
+## TeX Installation um PDFs erzeugen zu können
+
+Falls Sie eine TeX-Live oder andere TeX/LateX Version auf ihrem Rechner installiert haben ✔️
+
+--
+
+Falls nicht, dann können Sie sich eine Minimale TeX-Version (tinytex von Xie(2020)) über R installieren:
+
+
+```r
+install.packages(c("tinytex"))
+tinytex::install_tinytex()
+```
+
+---
+
+## YAML - Output Formate
+
+.pull-left[
+Es können unterschiedlichste Output Formate erzeugt werden.
+
+Unter anderen:
+- **HTML**
+
+
+```r
+---
+title: "Das ist ein Text"
+*output: html_document
+---
+```
+]
+
+.pull-right[
+&lt;img src="figs/RMarkdown-HTML.png" width="80%" /&gt;
+
+]
+
+---
+
+## YAML - Output Formate
+
+.pull-left[
+Es können unterschiedlichste Output Formate erzeugt werden.
+
+Unter anderen:
+- HTML
+- **Latex**
+
+
+```r
+---
+title: "Das ist ein Text"
+*output: latex_document
+---
+```
+]
+
+.pull-right[
+&lt;img src="figs/RMarkdown_Latex.png" width="80%" /&gt;
+
+]
+
+---
+
+## YAML - Output Formate
+
+.pull-left[
+Es können unterschiedlichste Output Formate erzeugt werden.
+
+Unter anderen:
+- HTML
+- Latex
+- **PDF**
+
+
+```r
+---
+title: "Das ist ein Text"
+*output: pdf_document
+---
+```
+]
+
+.pull-right[
+&lt;img src="figs/RMarkdown_PDF.png" width="80%" /&gt;
+
+]
+
+---
+
+## YAML - Output Formate
+
+.pull-left[
+Es können unterschiedlichste Output Formate erzeugt werden.
+
+Unter anderen:
+- HTML
+- Latex
+- PDF
+- **Word**
+
+
+```r
+---
+title: "Das ist ein Text"
+*output: word_document
+---
+```
+]
+
+.pull-right[
+&lt;img src="figs/RMarkdown_Word.png" width="80%" /&gt;
+
+]
+
+---
+
+## YAML - Output Formate
+
+- Wir erzeugen im Projektkurs eine HTML **und** .md-Dateien um das Projekt auch immer in Github schnell anschauen zu können
+
+.alert[Probieren Sie es aus! Klicken Sie auf die .md-Datei ihres 1. Projekts auf Github!]
+
+---
+
+class: center
+background-image: url("figs/rmarkdown_hedgehog_wide.png")
+background-size: contain
+
+---
+
+class: inverse, center, middle
+
+# Code Chunk Optionen
+
+---
+
+## Code Chunk Optionen
+
+In einem Chunk haben Sie mehrere Optionen, wie dieser von R interpretiert werden soll.
+
+Allgemeiner Chunk:
+
+- echo: "TRUE"/"FALSE" (Code aus Chunk zeigen/nicht zeigen)
+- message: "TRUE"/"FALSE" (Benachrichtigungen anzeigen/nicht anzeigen)
+- warnings: "TRUE"/"FALSE" (Warnmeldungen anzeigen/nicht anzeigen)
+- eval: "TRUE"/"FALSE" (Chunk nicht beachten/beachten)
+- include: "TRUE"/"FALSE" (Code Output zeigen/nicht zeigen)
+- results: "asis"/"hide" (Output wie er vom Chunk kommt anzeigen/nicht zeigen)
+
+--
+
+Zusätzlich bei Schaubildern:
+
+- out.width: Nummer (Breite des Outputs, kann auch in '%' angegeben werden)
+- fig.height: Nummer (Höhe eines Schaubilds festlegen)
+- fig.width: Nummer (Breite eines Schaubilds festlegen)
+- dpi: Nummer (Qualität ihrer Grafik, für eine höhere Qualität dpi=300 angeben)
+
+---
+
+## echo
+
+.alert[Wir nutzen den in `tidyverse` enthaltenen Datensatz `economics` als Basis für die folgenden Schaubilder.]
+
+.pull-left[
+
+````
+```{r, echo=FALSE}
+library(tidyverse)
+summary(economics)
+```
+````
+
+]
+
+--
+
+.pull-right[
+
+
+```
+## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.1 ──
+```
+
+```
+## ✔ ggplot2 3.3.6      ✔ purrr   0.3.4 
+## ✔ tibble  3.1.7      ✔ dplyr   1.0.10
+## ✔ tidyr   1.2.0      ✔ stringr 1.4.1 
+## ✔ readr   2.1.2      ✔ forcats 0.5.1
+```
+
+```
+## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()
+```
+
+```
+##       date                 pce               pop            psavert      
+##  Min.   :1967-07-01   Min.   :  506.7   Min.   :198712   Min.   : 2.200  
+##  1st Qu.:1979-06-08   1st Qu.: 1578.3   1st Qu.:224896   1st Qu.: 6.400  
+##  Median :1991-05-16   Median : 3936.8   Median :253060   Median : 8.400  
+##  Mean   :1991-05-17   Mean   : 4820.1   Mean   :257160   Mean   : 8.567  
+##  3rd Qu.:2003-04-23   3rd Qu.: 7626.3   3rd Qu.:290291   3rd Qu.:11.100  
+##  Max.   :2015-04-01   Max.   :12193.8   Max.   :320402   Max.   :17.300  
+##     uempmed          unemploy    
+##  Min.   : 4.000   Min.   : 2685  
+##  1st Qu.: 6.000   1st Qu.: 6284  
+##  Median : 7.500   Median : 7494  
+##  Mean   : 8.609   Mean   : 7771  
+##  3rd Qu.: 9.100   3rd Qu.: 8686  
+##  Max.   :25.200   Max.   :15352
+```
+
+]
+
+---
+
+## message/warning
+
+.pull-left[
+
+````
+```{r, message = FALSE, warning = FALSE}
+library(tidyverse)
+```
+````
+
+]
+
+--
+
+.pull-right[
+
+
+```r
+library(tidyverse)
+```
+
+]
+
+---
+
+## eval
+
+.pull-left[
+
+````
+```{r, eval=FALSE}
+library(tidyverse)
+summary(economics)
+```
+````
+
+]
+
+--
+
+.pull-right[
+
+
+```r
+library(tidyverse)
+summary(economics)
+```
+
+]
+
+
+---
+
+## out.width
+
+.pull-left[
+
+````
+```{r, out.width = '70%', echo=FALSE}
+library(tidyverse)
+qplot(economics$pop)
+```
+````
+
+&lt;img src="Advanced_RMarkdown_files/figure-html/unnamed-chunk-24-1.png" width="70%" /&gt;
+
+]
+
+--
+
+.pull-right[
+
+````
+```{r, out.width = '10%', echo=FALSE}
+library(tidyverse)
+qplot(economics$pop)
+```
+````
+
+&lt;img src="Advanced_RMarkdown_files/figure-html/unnamed-chunk-25-1.png" width="10%" /&gt;
+
+Andere Optionen bspw.:
+- fig.width
+- fig.high
+]
+
+---
+
+## Global **setup** chunks
+
+.pull-left[
+
+One Chunk to rule them all. (Alison Hill)
+
+````
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  warning = FALSE,
+  message = FALSE,
+  echo = FALSE,
+  fig.path = "figs/"
+)
+```
+````
+
+]
+
+.pull-right[
+
+- Chunk bekommt das Label **`setup`**
+- Ist der erste Chunk in einem RMarkdown Dokument
+- Hier werden globale Optionen für alle folgenden Chunks definiert
+- Sie können weiterhin in jedem Chunk individuelle Optionen verwenden und diese globalen Optionen überschreiben
+- **Tipp:** Verwenden Sie für den **setup** Chunk **include = FALSE** damit er nicht im Dokuemnt auftaucht
+]
+
+
+
+---
+
+class: inverse, center, middle
+
+# Präsentationen mit R Markdown
+
+---
+
+## Präsentationen mit R Markdown mit dem Paket `xaringan`
+
+.instructions[Wir wollen uns noch speziell mit Präsentationen mit R Markdown beschäftigen!]
+
+--
+
+- Ihre Projektausarbeitung ist bereits in R Markdown
+- Durch kleine Änderungen im YAML-Header können Sie daraus eine Präsentation erstellen mit Grafiken direkt aus R mit hoher Qualität 
+  - **Pro Tip**: Im Code Chunk `dpi = 300` verwenden für gestochen scharfe Grafiken
+
+
+```r
+#install.packages(xaringan)
+library(xaringan)
+```
+
+---
+
+## Output-Format
+
+
+```
+---
+output: xaringan::moon_reader
+---
+```
+
+
+---
+
+## Neue Folien
+
+.pull-left[
+
+- Die erste Folie beginnt dort wo der YAML-Header endet!
+- Durch drei --- können Sie eine neue Folie beginnen
+]
+
+.pull-right[
+
+
+```
+---
+output: xaringan::moon_reader
+---
+
+Ich bin ihre 1. Folie
+
+---
+
+Und ich ihre zweite
+```
+
+]
+
+---
+
+## Neue Folien
+
+.pull-left[
+
+- Die erste Folie beginnt dort wo der YAML-Header endet!
+- Durch drei --- können Sie eine neue Folie beginnen
+]
+
+.pull-right[
+
+
+```
+---
+output: xaringan::moon_reader
+---
+
+Ich bin ihre 1. Folie
+
+---
+
+Und ich ihre zweite
+```
+
+]   
+
+---
+
+## Neue Folien designen
+
+.pull-left[
+
+.alert[Sie können jede Folie individuell designen mit der `class:` Option.]
+
+Möglichkeiten:
+- Für die Position des Geschriebenen (vertikal): top, bottom, middle 
+- Für die Position des Geschriebenen (horizontal): left, right, center
+- Um das Farbschema umzudrehen: inverse
+
+]
+
+.pull-right[
+
+
+```
+---
+output: xaringan::moon_reader
+---
+
+class: inverse, center, middle
+
+# Introfolie
+
+---
+
+class: bottom, right
+
+# Vorstellung
+
+Ich bin ihre 1. Folie
+
+---
+
+Und ich ihre zweite
+```
+
+]
+
+---
+
+# Das Paket `xaringanthemer`
+
+
+```r
+#install.packages("xaringanthemer")
+library(xaringanthemer)
+```
+
+- Damit können Sie ihre Präsentationen auch ohne CSS oder remark.js Kenntnisse leicht anpassen und individualisieren
+- Eine Einführung in xaringanthemer finden Sie [hier](https://pkg.garrickadenbuie.com/xaringanthemer/)
+- Eine Einführung in xaringan finden Sie [hier](https://slides.yihui.org/xaringan/#1)
+
+---
+
+# Ein beispielhafter YAML-Header
+
+
+```
+---
+author: Alexander Rieber
+date: '2022-09-20'
+title: Beispielpräsentation in xaringan
+output: 
+  xaringan::moon_reader
+    css: xaringan-themer.css
+---
+```
+
+````
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+style_mono_accent(
+  #Farbpalette richtet sich nach Hex-Farbcode (bspw. hier: https://encycolorpedia.de/)
+  #Farbpalette kann leicht angepasst werden
+  base_color = "#1c5253", 
+  header_font_google = google_font("Josefin Sans"),
+  text_font_google   = google_font("Montserrat", "300", "300i"),
+  code_font_google   = google_font("Fira Mono")
+)
+```
+````
+
+---
+
+# Präsentationen 
+
+- Sie können sich auch gerne an den Folien zum Projektkurs orientieren z.B. mit dem Format 16:9 (ratio: "16:9")
+- Natürlich müssen Sie ihre Ausarbeitung nicht in xaringan machen!
+
+.instructions[Jedoch bietet es sich an um die schönen Grafiken und Tabellen ohne Verlust in die Präsentation aufnehmen zu können.]
+---
+
+class: inverse, center,middle
+
+# R Projekte
+
+---
+
+## Arbeiten mit R-Projekten
+
+In R sollten Sie ihre Arbeit in Projekte strukturieren. 
+
+Ist sehr nützlich da in dem Fall alle nötigen Dateien beieinander in einem Projekt liegen, inkl. Historie etc.
+  - Mehr Informationen zu R-Projekten und warum diese sinnvoll sind finden Sie [hier](https://support.rstudio.com/hc/en-us/articles/200526207-Using-Projects)
+
+.alert[Sie sollten für ihre unterschiedlichen Projekte immer einzelne R-Projekte erstellen]
+
+--
+
+**Projekt erzeugen bei vorhandenem Ordner:**
+
+&gt; File -&gt; New Project -&gt; Existing Directory -&gt; Browse -&gt; Open .Rmd
+
+**Projekt erzeugen bei neuem Ordner:**
+
+&gt; File -&gt; New Project -&gt; New Directory -&gt; New Projekt -&gt; Neuer Ordner erstellen
+
+---
+
+# Take aways
+
+- Nutzen Sie **YAML um Metadaten** für ihr Dokument zu setzen
+- Nutzen Sie **YAML** auch um ihr **Dokument** entsprechend **aufzubauen** (Inhaltsübersicht, Themes etc.)
+- Verwenden Sie **`knitr` Chunk Optionen** (eval, echo, include ...) um ihr finales Dokument entsprechend zu **gestalten**
+- Verwenden Sie **fett**, _kursiv_ und Listenelemente um ihren Text zu strukturieren
+- Verwenden Sie **R Projekte** für **jedes neue Projekt** das Sie starten
+
+--
+
+.center[.instructions[`knitten` Sie **früh** und **oft**! Nur so können Sie sicher gehen das ihre Ergebnisse zu 100% reproduzierbar sind!]]
+
+&lt;img src="figs/RStudioScreenshot.png" width="150%" /&gt;
+
+---
+
+## Quellen
+
+- Eine sehr gute Einführung in RMarkdown und wie man damit wissenschaftliche Texte (z.B. auch Bachelorarbeiten) schreibt finden Sie [hier](https://resulumit.com/teaching/rmd_workshop.html)
+- Eine allgemeine Einführung in RMarkdown von [Alison Horst](https://alison.rbind.io/tags/rmarkdown/)
+- Alle Zeichnungen von [Allison Horst](https://www.allisonhorst.com/) und [Desirée de Leon](https://desiree.rbind.io/)
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "atelier-forest-light",
+"highlightLanguage": ["r", "yaml", "markdown"],
+"slideNumberFormat": "",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

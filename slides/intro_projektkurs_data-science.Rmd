@@ -1,0 +1,660 @@
+---
+title: "Willkommen zum Projektkurs Data Science und Business Analytics"
+author: 'Dr. Alexander Rieber<br> <a href="https://github.com/AlexRieber"><i class="fa fa-github fa-fw"></i>&nbsp; AlexRieber</a><br> <a href="mailto:alexander.rieber@uni-ulm.de"><i class="fa fa-paper-plane fa-fw"></i>&nbsp; alexander.rieber@uni-ulm.de</a><br>'
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["style/css/uni-ulm.css", "style/css/my-fonts.css"]
+    seal: true
+    nature:
+      highlightStyle: atelier-forest-light
+      highlightLanguage: ["r", "yaml", "markdown"]
+      slideNumberFormat: "" 
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: "16:9"
+    includes:
+      in_header: style/header.html 
+#xaringan::inf_mr() #[Start Preview -> Type into console]
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, 
+  comment = NA, dpi = 300,
+  fig.align = "center", out.width = "70%", cache = FALSE)
+library(tidyverse)
+library(here)
+library(knitr)
+#devtools::install_github("hadley/emo")
+library(emo)
+library(extrafont)
+library(png) 
+library(xaringan)
+library(countdown)
+
+ggplot2::theme_set(theme_minimal())
+# update those defaults
+update_font_defaults <- function(font_choice = "Lato") {
+    ggplot2::update_geom_defaults("text", list(family = font_choice))
+    ggplot2::update_geom_defaults("label", list(family = font_choice))
+    
+}
+theme_bakeoff <- function(font_choice = "Lato"){ 
+  
+  update_font_defaults()
+  
+  ggplot2::theme_minimal(base_family = font_choice)
+  
+}
+ggplot2::theme_set(theme_bakeoff())
+```
+
+
+# Mit wem haben Sie es zu tun?
+
+## Ihr Dozent und Übungsleiter
+
+.pull-left[
+<br><br>
+**Dozent**
+
+Dr. Alexander Rieber
+
+<a href="mailto:alexander.rieber@uni-ulm.de"><i class="fa fa-paper-plane fa-fw"></i>&nbsp; alexander.rieber@uni-ulm.de</a><br>
+
+Büro: Helmholtzstraße 18, Raum 1.22
+]
+
+.pull-right[
+<br><br>
+**Übungsleiter**
+
+Julius Düker
+
+<a href="mailto:julius.dueker@uni-ulm.de"><i class="fa fa-paper-plane fa-fw"></i>&nbsp; julius.dueker@uni-ulm.de</a>
+
+Büro: Helmholtzstraße 18, Raum 1.10
+]
+
+---
+
+## Ihre Tutoren
+
+.pull-left[
+
+<br><br>
+**Tutor**
+
+Jonas Grüneberg
+
+<a href="mailto:jonas.grueneberg@uni-ulm.de"><i class="fa fa-paper-plane fa-fw"></i>&nbsp; jonas.grueneberg@uni-ulm.de</a>
+
+<br><br>
+**Tutor**
+
+Max Gabler
+
+<a href="mailto:max.gabler@uni-ulm.de"><i class="fa fa-paper-plane fa-fw"></i>&nbsp; max.gabler@uni-ulm.de</a>
+]
+
+.pull-right[
+
+<br><br>
+**Tutor**
+
+Oliver Pesch
+
+<a href="mailto:oliver.pesch@uni-ulm.de"><i class="fa fa-paper-plane fa-fw"></i>&nbsp; oliver.pesch@uni-ulm.de</a>
+
+<br><br>
+**Tutor**
+
+Christoph Kiesl
+
+<a href="mailto:christoph.kiesl@uni-ulm.de"><i class="fa fa-paper-plane fa-fw"></i>&nbsp; christoph.kiesl@uni-ulm.de</a>
+]
+
+---
+class: inverse, center, middle
+
+# Vorlesungsdetails
+
+---
+
+## Aufbau der Veranstaltung
+
+- Interaktive Vorlesung mit Übungsaufgaben
+- [Anonymer Chat](https://quizchat.econ.mathematik.uni-ulm.de/pkds/) in der Veranstaltung (mit Umfragen)
+- `RTutor` Übungsaufgaben um Inhalte zu vertiefen
+- Ein gemeinsames Projekt mit dem Dozenten
+- Zwei selbstständige Projekte
+- Peer Review der Projekte
+
+---
+
+## Wo finden Sie die Kursmaterialien?
+
+.center[.instructions[Unserer Kommunikation mit Ihnen erfolgt über unsere Moodle und Github Seite]]
+
+Auf diesen Seiten finden Sie:
+
+--
+- Veranstaltungsplanung in Excel und als Wochenkalender `r emo::ji("calendar")`
+
+--
+- Vorlesungsfolien `r emo::ji("spiral_notepad")`
+
+--
+- Lehrvideos `r emo::ji("video")`
+
+--
+- RTutor Problem Sets (Übungskurse zum erlernen von R) -> `RTutor`
+
+--
+- Aufgabenstellungen für die einzelnen Projekte `r emo::ji("book")`
+
+--
+- Auswahl der Tutoriumszeiten für die Projektteams `r emo::ji("busts_in_silhouette")`
+
+--
+- Forum für Fragen `r emo::ji("man_student")` `r emo::ji("woman_student")` `r emo::ji("exclamation_question_mark")`
+
+--
+- Zoom Räume für Vorlesung und Tutorien `r emo::ji("watch")`
+
+---
+
+## Interaktive Vorlesung
+
+Bis zum 11. November werden Vorlesungen in Form von **Präsenzveranstaltungen in H3** jeden **Mittwoch und Freitag von 10:15 - 11:45 Uhr** stattfinden, welche in **Zoom gestreamed** werden. Weiterhin gibt es **Lehrvideos, Tutorials und RTutor Problem Sets**, welche die Vorlesung begleiten.
+Weiterhin wird eine Projektarbeit innerhalb der Vorlesung mit ihnen gemeinsam erarbeitet. Diese macht 10% der Endnote aus.
+
+.center[.alert[Anschließend gibt es zwei selbstständige Projektarbeiten, welche in die Endnote einfließen werden.]]
+
+--
+
+- Interaktive Vorlesung mit integrierten Übungsaufgaben
+- Geblockte Vorlesungseinheiten zu Beginn des Semesters
+- Vorlesungen dienen der praktischen Anwendung aus den Lehrvideos
+  - Hier wird eine Case-Study systematisch behandelt
+- RTutor Problem Sets und Tutorials sollen zum "learning-by-doing" anregen
+- Vorlesungs- und Übungsunterlagen werden zu Beginn der jeweiligen Vorlesungswoche hochgeladen
+
+---
+class: inverse, middle, center
+
+# Was Sie in dieser Vorlesung lernen
+
+---
+
+## Was Sie in dieser Vorlesung lernen
+
+--
+
+- **Programmierung in R**: Sie werden wissen, wie Sie die Statistik-Software R dazu benutzen können um unterschiedlichste Fragestellungen zu beantworten
+
+--
+- **Datenbearbeitung**: Sie werden mit unterschiedlichsten Datensätzen arbeiten können und verstehen, diese aufzuarbeiten und zu visualisieren
+
+--
+- **Reproduzierbarkeit**: Sie können die Ergebnisse ihrer Arbeit so kummunizieren, dass Dritte sie nachvollziehen und reproduzieren können 
+
+--
+- **Präsentationstechniken**: Sie können die Ergebnisse ihrer Arbeit anschaulich und kompakt präsentieren 
+
+--
+- **Statistik**: Sie können die Ergebnisse ihrer (Regressions-) Analysen interpretieren
+
+--
+- **Kausalität**: Sie können kausale Zusammenhänge aus experimentellen Daten und Beobachtungsdaten ableiten
+
+---
+
+
+## Was Sie in dieser Vorlesung lernen
+
+- **Programmierung in R**: Sie werden wissen, wie Sie die Statistik-Software R dazu benutzen können um unterschiedlichste Fragestellungen zu beantworten (`r emo::ji("heavy_check_mark")`)
+- **Datenbearbeitung**: Sie werden mit unterschiedlichsten Datensätzen arbeiten können und verstehen, diese aufzuarbeiten und zu visualisieren (`r emo::ji("heavy_check_mark")`)
+- **Reproduzierbarkeit**: Sie können die Ergebnisse ihrer Arbeit so kummunizieren, dass Dritte sie nachvollziehen und reproduzieren können (`r emo::ji("heavy_check_mark")`)
+- **Präsentationstechniken**: Sie können die Ergebnisse ihrer Arbeit anschaulich und kompakt präsentieren (`r emo::ji("heavy_check_mark")`)
+- **Statistik**: Sie können die Ergebnisse ihrer (Regressions-) Analysen interpretieren (`r emo::ji("check")`)
+- **Kausalität**: Sie können kausale Zusammenhänge aus experimentellen Daten und Beobachtungsdaten ableiten (`r emo::ji("check")`)
+
+.center[.alert[Der Statistikteil wird im zweiten Teil des Kurses, d.h. im Sommersemester 2023, abgedeckt.]]
+
+---
+
+class: inverse, center, middle
+
+# Übungsaufgaben mit `RTutor`
+
+---
+
+## Wie Sie die Vorlesungsinhalte vertiefen
+
+- Wöchentliche `RTutor` Problem Sets, welche die Unterrichtseinheit aufgreifen und vertiefen
+- Den Umgang mit R-Markdown erlernen als Vorbereitung für die späteren Projekte
+- _Individuelle_ Abgabe der `RTutor` Problem Sets als **Vorleistung** 
+
+--
+
+Die `RTutor` Problem Sets behandeln vorlesungsbegleitend folgende Inhalte:
+
+- Einführung in R
+- Datenaufbereitung
+- Visualisierung von Daten
+
+---
+
+class: inverse, center, middle
+
+# Unterstützungsangebote
+
+---
+
+## Wo bekommen Sie Hilfe?
+
+- Auf Moodle gibt es ein Diskussionforum, scheuen Sie sich nicht dort ihre Fragen zu stellen!
+    - Bitte benutzen Sie dieses Forum, bevor Sie eine Mail an den Tutor, Übungsleiter oder Dozent stellen
+    - Wir haben einige Beispiele aufgearbeitet, wie Sie Fragen stellen sollten, damit Sie schnell eine antworten erhalten. Das Dokument finden Sie in Moodle unter `Fragen-im-Forum.html`
+--
+- Es finden parallel zu den Projektarbeiten Tutorien statt, wobei jede Gruppe einen festen Termin pro Woche erhält
+
+--
+- Für Fragen zur Notengebung oder persönliche Fragen können Sie dem Dozenten eine E-Mail schicken
+
+---
+
+## Tutorium
+
+- Bereits ab der 1. Vorlesungswoche gibt es ein vorlesungsbegleitendes Tutorium.
+  - Im Excel Veranstaltungskalender auf der Moodle-Seite sind beispielhafte Tutoriumstermine eingetragen. Der für ihre Gruppe relevante Termin wird auf Moodle bekannt gegeben
+- Die Tutorien werden wöchentlich über Zoom in Moodle stattfinden.
+- Die Tutorinnen und Tutoren beantworten auch ihre Fragen auf Moodle
+  - Bitte stellen Sie ihre Fragen im Forum, wenn ihr Problem allgemeiner Natur ist
+
+--
+
+.instructions[Das Tutorium soll hauptsächlich dazu dienen Sie bei ihren individuellen Projektausarbeitungen zu unterstützen!]
+
+---
+
+## Tutorium
+
+Der **erste Tutoriumstermin** ist am **20.10.2022** von **14 - 18 Uhr**
+
+- In diesem Tutorium werden technische Probleme geklärt
+- Bitte beachten Sie alle Hinweise in den Videos und die schriftlichen Ausführungen zur Installation von R und RStudio, Github Account erstellen etc.
+
+--
+
+Die **erste Übung** ist am **23.10.2022** von **10:15 - 11:45 Uhr**
+
+- Fokus: Technische Fragen zu RStudio Cloud und dem 1. Übungsblatt werden hier beantwortet
+- Falls jedoch noch technische Fragen aus dem Tutorium vom 20.10.2022 offen sind werden diese hier auch behandelt
+
+--
+
+.instructions[Es ist sehr wichtig, dass jeder die neueste Version von R (Version 4.2.1), RStudio (Version 2022.07.1-554) installiert hat und sein Konto über git versioniert da die späteren Projekte hierrüber laufen.]
+
+.alert[Bitte schauen Sie sich die Videos zur Installation von R, RStudio und Github an!]
+
+---
+class: inverse, center, middle
+
+# Wie können Sie _uns_ unterstützen?
+
+---
+
+## Wie können Sie _uns_ unterstützen?
+
+Diese Veranstaltung ist seit der Prüfungsordung 2019 im Pflichtkatalog des Bachelor Wirtschaftswissenschaften enthalten.
+
+Wir haben auf Basis des Feedbacks der der letzten zwei Jahre einige Änderungen vorgenommen und möchten die Veranstaltung kontinuierlich weiterentwickeln und sind hierfür auf ihre Hilfe angewiesen.
+
+--
+
+Daher haben wir zu dieser Veranstaltung eine wissenschaftliche Begleitstudie gestartet um den Projektkurs zu verbessern.
+- Analyse der Elemente im Projektkurs
+  - Github Commits
+  - Vorleistung und Prüfungsergebnisse
+  - Subjektive Einschätzung zu den Projekten
+- Pseudonymisierung der Daten
+  - Keine Rückschlüsse auf einzelne Personen möglich
+
+.alert[Hierfür haben wir eine **Einverständniserklärung und Datenschutzerklärung vorbereitet** und bitten Sie diese anzuschauen. Falls wir ihre Daten für die Begleitstudie verwenden dürfen, so geben Sie dies bitte im Formular auf Moodle entsprechend an.]
+
+
+---
+
+.instructions[Bitte lesen Sie die **Einverständniserklärung und Datenschutzerklärung** durch und geben Sie im Moodle Kurs an, ob Sie damit einverstanden sind, oder nicht.]
+
+```{r, echo=FALSE}
+countdown(minutes = 10)
+```
+
+---
+class: inverse, center, middle
+
+# Mit welchen Daten bekommen _Sie_ es zu tun?
+
+---
+
+## Case-Study: Verschuldung in Deutschland
+
+--
+
+.pull-left[
+<br><br>
+In der Case-Study widmen Sie sich der Frage:
+
+.alert[Gibt es einen Zusammenhang zwischen der Verschuldung eines Landkreises und dessen Arbeitslosenquote?]
+
+Zur Beantwortung dieser Frage werten Sie u.a. Informationen vom statistischen Bundesamt auf Landkreisebene aus.
+]
+.pull-right[
+<br><br>
+```{r, echo=FALSE, out.width="110%"}
+verschuldung <- "figs/verschuldung.png"
+include_graphics(verschuldung)
+```
+]
+
+---
+
+
+## Projekt 1: Betrugserkennung im Unternehmen
+
+--
+
+.pull-left[
+<br><br>
+In diesem Projekt widmen Sie sich der Frage:
+
+.alert[Wie kann ein Wirtschaftsprüfer mögliche Bilanzmanipulationen aufspüren?]
+
+Zur Beantwortung dieser Frage werten Sie Informationen von Journalbuchungen aus.
+]
+.pull-right[
+<br><br>
+```{r, echo=FALSE, out.width="110%"}
+buchung <- "figs/Buchungen_wochentag.png"
+include_graphics(buchung)
+```
+]
+
+---
+
+## Projekt 2: xxx
+
+--
+
+.pull-left[
+<br><br>
+In diesem Projekt widmen Sie sich der Frage:
+
+.alert[xxx]
+
+yyy
+]
+.pull-right[
+<br><br>
+```{r, echo=FALSE, out.width="50%"}
+duesseldorf <- "figs/Screenshot_Duesseldorf.png"
+include_graphics(duesseldorf)
+```
+]
+
+---
+
+## Projekt 3: Gefühlte vs. tatsächliche Inflation
+
+--
+
+.pull-left[
+<br><br>
+In diesem Projekt widmen Sie sich der Frage:
+
+.alert[Was sind die Treiber der Inflation und warum ist die Inflation teilweise gefühlt höher als tatsächlich vom statistischen Bundesamt berichtet?]
+
+Zur Beantwortung dieser Frage sollen Sie sich zuerst darüber im klaren werden, wie Inflation überhaupt gemessen wird. Danach schauen Sie sich unterschiedliche Datenquellen zur Inflation an und auch zu Umfragen bzgl. der gefühlten Inflation unter den Bürgern. 
+]
+.pull-right[
+<br><br>
+```{r, eval = FALSE, echo=FALSE, out.width="110%"}
+
+```
+]
+
+
+---
+
+## Was Sie in den Projekten lernen
+
+- Analysen auf **echten Daten**
+
+--
+- Download und zusammenfügen eigener Datensätze
+
+--
+- Deskriptive Analysen und Grafiken
+
+--
+- Beschreibung der Analysen
+
+--
+- **Im Sommersemester 2023**: Statistische Auswertungen
+
+---
+
+## Was Sie durch Review Reports lernen
+
+- Rekapitulation des Projekts
+
+--
+- Kritische Auseinandersetzung mit der Arbeit von Mitstudierenden
+
+--
+- Erkennen was die andere Gruppe gut/schlecht gemacht hat und daraus für seine eigene Arbeit Erkenntnisse gewinnen
+
+--
+- Automatisch: Vorbereitung auf die Klausur
+
+--
+- Neben den Review Reports von Mitstudierenden erhalten Sie auch Feedback eines Tutors zu ihrer Arbeit. Dadurch können Sie die Reviews ihrer Mitstudierenden besser einordnen
+
+--
+
+.instructions[Die Review Reports für jedes Projekt sind _individuelle_ Abgaben!]
+
+---
+class: inverse, center, middle
+
+# Wie setzt sich die Note zusammen?
+
+---
+
+## Notengebung
+
+Nach den Vorlesungseinheiten und der Einführung in R gibt es drei Projekte:
+
+- Erstes Projekt: Zusammen mit dem Dozenten: 10 Punkte = 10% der Note
+
+--
+- Zweites Projekt: 30 Punkte = 30% der Note
+
+--
+- Drittes Projekt: 30 Punkte = 30% der Note
+
+--
+- Multiple-Choice Abschlussprüfung: 30 Punkte = 30% der Note
+
+--
+
+Es werden immer **Gruppen von drei Personen** geformt, welche die **Projekte zusammen** abgeben.
+Natürlich dürfen alle Teilnehmer Projekte gerne miteinander diskutieren. 
+
+Jedoch muss jede Gruppe eine _individuelle Ausarbeitung_ abgeben. 
+Wenn sich die Lösung einzelner Abschnitte der Projektes (oder das komplette Projekt) zu stark ähnelt, wird dies mit 0 Punkten für das Projekt geahndet (für alle beteiligten Gruppen).
+
+---
+
+## Klausur
+
+**Vorleistung 1 a):** Die **RTutor Problem Sets** müssen **individuell** bearbeitet und eingereicht werden um für die Projekte und Klausur zugelassen zu werden
+  - Letztes RTutor Problem Set ist am 07. November fällig
+  - Mindestens 80% der Punkte **pro Problem Set** müssen erreicht werden um für die Projekte zugelassen zu werden
+
+--
+
+**Vorleistung 1 b):** Am 09.11.2022 findet anstatt der Vorlesung eine (multiple-choice) **Probeklausur** statt um ihnen ein Gefühl für die Klausur am Ende des Semesters zu geben. Es müssen mind. 30% der Punkte erreicht werden um die Vorleistung zu erhalten.
+
+--
+
+**Vorleistung 2:** Die **Peer Reviews** müssen **individuell** bearbeitet und eingereicht werden um für die Klausur zugelassen zu werden
+  - Studenten ranken die Review Reports nach Nützlichkeit:
+    - Bei _mindestens_ einem Projekt muss der Review Report _mindestens_ auf Platz 2 gerankt werden. 
+    - Wenn alle Reports als "nützlich" eingestuft wurden, entscheidet der Dozent über die Zulassung zu Klausur
+
+--
+
+.alert[Die multiple choice Abschlussprüfung beinhaltet Fragen zu den drei Teilprojekten, den Vorlesungsinhalten, der Case-Study und den `RTutor` Problem Sets.]
+
+---
+
+## Teilen von Code
+
+- Viel ist im Web verfügbar und darf auch gerne verwendet werden
+    - Wenn Sie Code aus dem Internet verwenden, dann müssen Sie die Quelle entsprechend kennzeichnen!
+    - Falls Sie die Quelle nicht zitieren wird dies als Plagiat gewertet und wird mit einer 5.0 für das gesamte Projekt geahndet
+- `RTutor` Problem Sets sind selbstständig auszuführen. Code darf nicht mit anderen geteilt werden!
+
+--
+
+.instructions[Projekte dürfen innerhalb der Gruppe und auch gerne mit anderen Gruppen diskutiert werden, jedoch darf kein Code an andere Gruppen weitergegeben werden!]
+
+---
+
+## Notengebung der Projekte
+
+- Im zweiten Projekt muss neben der schriftlichen Ausarbeitung (70% der Note für das Projekt) auch ein Screencast (30% der Note für das Projekt) gehalten werden
+    - Der Screencast sollte nicht länger als 5 Minuten gehen
+--
+- Im dritten Projekt muss neben der schriftlichen Ausarbeitung (70% der Note für das Projekt) auch ein Screencast (30% der Note für das Projekt) gehalten werden
+    - Der Screencast sollte nicht länger als 5 Minuten gehen
+
+--
+
+.instructions[Bitte bereiten Sie den Screencast frühzeitig vor, er gibt 30% der Note!]
+
+---
+
+## Dokumentation und Coding Standard
+
+Sie sollten mit ihren Gruppenpartnern zusammenarbeiten, dafür gilt es einige Prinzipien zu beachten:
+
+- Benutzen Sie immer einfache Textdateien um miteinander zusammen zu arbeiten 
+    - Dateien, welche Sie miteinander bearbeiten sollten mit einem Texteditor zu lesen sein (Notepad ++ / vim / RStudio ...)
+    - Hier eignet sich das in der Vorlesung vorgestellte RMarkdown bestens
+- Strukturieren Sie ihren Code (Kommentare)
+- Begrenzen Sie ihren Code (max. 80 Zeichen pro Zeile)
+- Rücken Sie einzelne Bausteine ein (Alles was zu einer Funktion gehört sollte mit vier Leerzeichen eingerückt werden)
+
+---
+
+## Zeitmanagement    
+
+- Definieren Sie Meilensteine
+    - Bis wann muss was von wem erstellt worden sein?
+
+--
+
+- Bleiben Sie in Kontakt mit ihrem/ihrer Gruppenpartner/in, bspw. über Github oder Moodle, um über ihren Projektfortschritt zu sprechen
+--
+
+- Stellen Sie unbedingt Fragen im Forum auf Moodle!
+    - Hier können Fragen oft sehr schnell beantwortet werden und meist haben mehrere Gruppen die gleiche Frage
+    - Wenn Sie die Antwort auf eine Frage wissen, dann scheuen Sie sich nicht diese in Moodle zu posten!
+
+--
+
+- Nutzen Sie die Möglichkeit des Tutoriums und sprechen Sie dort Schwierigkeiten direkt an
+--
+
+- Kommen Sie bei tiefergehenden Fragen frühzeitig auf den Übungsleiter und Dozenten zu
+--
+
+- Planen Sie genügend Zeit für die Erstellung und das Halten des Screencast ein
+  - Der Screencast gibt 30% der Projektnote -> Nicht auf die leichte Schulter nehmen!
+
+---
+
+## Vorbereitung bis zum Tutorium bzw. der Übung am Freitag
+
+.center[.alert[**Wir haben für alle diese Bereiche Lehrvideos erstellt**]]
+
+---
+
+## Vorbereitung bis zum Tutorium bzw. der Übung am Freitag
+
+- Laden Sie R und RStudio herunter
+    - Nutzen Sie hierfür das Tutorial auf unserer Moodle Seite
+    - _Bitte beachten Sie_: 
+        - Installieren Sie die neueste Version von R (4.2.1) und R-Studio (2022.07.1)
+        - Wenn Sie bereits R und R-Studio installiert haben stellen Sie sicher, dass diese auf dem neuesten Stand sind (hier hilft ihnen das Paket `installr` mit der Funktion `updateR()`)
+        - Sie können die Version von R über die Eingabe des Befehls `version` prüfen
+        - Sie können die Version von R-Studio über die Eingabe des Befehls `RStudio.Version()` prüfen
+        - Installieren Sie die Pakete `tidyverse` und `RTutor`
+        - Stellen Sie sicher, dass ihre Pakete unter der neuesten Version von R funktionieren (hier hilft der Befehl `update.packages()`)
+    - Falls Sie eine niedrigere Hauptversion von R installiert haben (z.B. 3.5.1), dann müssen Sie per Hand die Version 4.2.1 installieren. Hier kann ihnen `installr` nicht weiterhelfen
+
+---
+
+## Erstellen eines Github Accounts
+
+.instructions[
+Gehen Sie auf [github.com](https://github.com/) und erstellen Sie sich einen Account (falls Sie noch keinen haben). 
+]
+
+Tipps zum Nutzernamen:<sup>✦</sup>
+
+.midi[
+- Nehmen Sie ihren richtigen Namen auf
+- Wählen Sie **keinen fiktiven Namen**, welcher schwer zu finden ist.
+- Kurz und prägnent
+- Keine Info über die aktuelle Uni o.ä.
+]
+
+.footnote[ 
+<sup>✦</sup> Source: [Happy git with R](http://happygitwithr.com/github-acct.html#username-advice) von Jenny Bryan
+]
+
+---
+
+## Geben Sie ihren Github Namen in Moodle an
+
+Abfrage in Moodle:
+  - Github Name
+  - E-Mail Adresse ihres Github-Kontos (wir empfehlen hier die **Uni-Ulm E-Mail-Adresse zu verwenden**)
+    - Wenn Sie die Uni Ulm Adresse verwenden können Sie [zusätzliche Vorteile beantragen](https://education.github.com/discount_requests/student_application)
+  
+---
+
+## Erstellen Sie einen Account bei RStudio Cloud
+
+.instructions[
+Gehen Sie auf [RStudio-Cloud](https://rstudio.cloud/) und loggen sich mit ihrem Github Account ein
+]
+
+---
+
+## Gruppenzusammensetzung
+
+- Die Gruppen werden zufällig zugeteilt
+- Es werden immer Gruppen von 3 Personen gebildet
+- Alle Projekte werden in dieser Gruppe bearbeitet
+- Die Gruppe bekommt **eine Note** für **alle Gruppenmitglieder**
+  - Teamwork ist angesagt, mit der entsprechenden Koordination im Team
+
+Es werden zeitnah Tutoriumstermine auf Moodle bekannt gegeben und jede Gruppe kann sich für Tutoriumszeiten bewerben.

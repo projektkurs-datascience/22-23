@@ -1,0 +1,1476 @@
+---
+title: "Case-Study zur Arbeitslosigkeit in Deutschland"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["style/css/uni-ulm.css", "style/css/my-fonts.css"]
+    seal: true
+    nature:
+      highlightStyle: atelier-forest-light
+      highlightLanguage: ["r", "yaml", "markdown"]
+      slideNumberFormat: "" 
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: "16:9"
+    includes:
+      in_header: style/header.html 
+---
+
+
+```{r setup, include=F}
+#knitr::opts_chunk$set(fig.width = 6, message = F, warning = F, eval =F,
+#                      comment = "", cache = F)
+knitr::opts_chunk$set(fig.width = 6,  message = F, warning = F, eval = T, cache = F)
+library(flipbookr)
+library(knitr)
+library(countdown)
+```
+
+```{css, eval = TRUE, echo = FALSE}
+.remark-code{line-height: 1.5; font-size: 80%}
+@media print {
+  .has-continuation {
+    display: block;
+  }
+}
+```
+
+## Organisatorische Hinweise
+
+- Viele Deadlines
+- Ungewohntes Format (sehr technisch)
+- Github, RStudio, R
+- Arbeitsschritte mit Github (3. Problem Set von Github herunterladen und lösen)
+
+.alert[Dies ist alles neu und das ist uns bewusst!]
+
+.question[Warum das Ganze?]
+--
+
+- Durch die Deadlines sollten Sie sich mit dem Stoff auseinandersetzen
+- Github, R, RStudio und RMarkdown müssen Sie in den Projekten nutzen $\rightarrow$ Üben mit RTutor
+- Visualisierung, Interpretation und Präsentation in den Projekten gefragt $\rightarrow$ Üben mit der Case-Study
+
+
+---
+
+## Recap letzte Vorlesungseinheit
+
+- Verschiedene Arten einen Datensatz einzulesen
+  - `readr`, `readxl`, `haven`...
+- Variablenbezeichnungen stehen nicht zwangsläufig in erster Spalte
+- Es gibt oft und viele `NA`s in echten Daten
+  - Konsistenzchecks wichtig
+- Datensätze sind nicht immer in der Form das wir diese direkt Einlesen können
+  - Aus verschiedenen Quellen einlesen, z.B. über eine `for`-Schleife
+  - Umformen, da die Daten im `wide`-Format vorliegen -> `pivot_longer`
+- Es ist wichtig sich selbst ein Bild von den Daten zu machen
+
+
+---
+
+class: inverse, center, middle
+
+# Analyse der Daten
+
+---
+
+## Deskriptive vs. induktive Statistik
+
+- Deskriptive Statistik (beschreibende Statistik) ist beschreibend (wer hätte es gedacht)
+- Induktive (auch schließende) Statistik versucht aus der Stichprobe auf die Grundgesamtheit zu schließen
+--
+
+- Keine Unterscheidung in der Formel
+- Keine Unterscheidung in dem Datensatz der verwendet wird
+
+--
+
+.question[Worin genau besteht der Unterschied zwischen der deskriptiven und der induktiven Statistik?]
+
+---
+
+## Deskriptive Statistik
+
+- Beschreibung des Datensatzes
+  - **Beispiel:** Daten von der Agentur für Arbeit über die Arbeitslosenquote in den Landkreisen
+- Mehrere Arten denkbar
+  - Tabellenform
+  - Visualisierung mittels Schaubildern
+
+.instructions[Sie wollen etwas über ihren aktuellen Datensatz lernen]
+
+---
+
+## Induktive Statistik
+
+- Interesse gilt nicht dem Datensatz selbst, sondern der Population
+  - Sie haben keine Vollerhebung durchgeführt, sondern nur eine (zufällige) Stichprobe der Population gezogen
+- **Beispiel:** Mikrozensus, d.h. eine Befragung von zufällig ausgewählten Haushalten in Deutschland
+- Sie wollen aus der Stichprobe schätzen, wie sich die beobachtete Größe in der Population verhält
+- Es gibt viele Arten der induktiven Statistik. Die zwei häufigsten:
+  - Vorhersage
+  - Erkennen kausaler Zusammenhänge
+
+--
+
+.alert[In die induktive Statistik tauchen wir nächstes Semester tiefer ein.]
+
+---
+
+class: inverse, center, middle
+
+# Deskriptive Statistik
+
+---
+
+## Univariate deskriptive Statistik
+
+- Eine Variable wird dargestellt:
+  - Verteilung 
+  - Mittelwert
+  - Standardabweichung
+  - Median 
+  - Quantile
+- Überblick verschaffen, Eigenschaften der Variablen aufzeigen
+
+---
+
+## Univariate deskriptive Statistik
+
+- Darstellung über eine Tabelle
+  - Median, Mittelwert, Standardabweichung und Quantile
+- Darstellung über einen Boxplot
+  - Median, Inter-Quartile-Range (ICR), Ausreißer
+- Darstellung über ein Histogram
+  - Verteilung mit Anzahl an Beobachtungen
+- Darstellung über einen Kerndichteschätzer
+  - Verteilung mit Dichte
+
+---
+
+## Univariate deskriptive Statistik (Boxplot)
+
+```{r, echo=FALSE, out.width='80%'}
+include_graphics("./figs/boxplot-explanation-1.png")
+```
+
+---
+
+## Bivariate deskriptive Statistik
+
+Darstellung von Zusammenhängen zweier Variablen
+
+- Korrelation zweier Variablen
+- Wenn sich eine Variable verändert, wie verändert sich die andere Variable?
+
+Darstellung als:
+- Streudiagramm
+- Korrelationskoeffizient (meist innerhalb eines Korrelationsmatrix)
+
+---
+
+class: inverse, center, middle
+
+# Wie sieht die deskriptive Statistik in der Praxis aus?
+
+---
+
+## Zweiter Teil der Case Study
+
+Eingelesene Daten deskriptiv untersuchen
+
+- Erster Schritt: Deskriptive Tabellen mit `kableExtra` und `gt`
+- Zweiter Schritt: Grafiken mit `ggplot2`
+
+--
+
+Ziele des zweiten Teils der Case Study:
+
+- Daten visualisieren und Zusämmenhänge grafisch veranschaulichen 
+- Deskriptive Analysen mittels Korrelationstabellen und deskriptiven Tabellen anfertigen
+- Das Verständnis wie Sie ihre Informationen zu bestimmten Fragestellungen möglichst effektiv aufbereiten
+- Interaktive Grafiken erstellen
+
+--
+
+.alert[Im dritten RTutor Problem Set werden Sie Visualisierung zu einzelnen Ländern auf europäischer Ebene.]
+
+---
+
+## Daten und Pakete laden
+
+Wir laden die aus Teil 1 erstellten Datensätze:
+
+```{r}
+library(tidyverse)
+library(skimr)
+library(sf)
+library(viridis)
+library(plotly)
+library(kableExtra)
+library(gt)
+library(corrr)
+```
+
+```{r}
+# Daten einlesen
+einkommen <- readRDS("../case-study/data/einkommen.rds")
+bundesland <- readRDS("../case-study/data/bundesland.rds")
+landkreise <- readRDS("../case-study/data/landkreise.rds")
+bip_zeitreihe <- readRDS("../case-study/data/bip_zeitreihe.rds")
+gemeinden <- readRDS("../case-study/data/gemeinden.rds")
+gesamtdaten <- readRDS("../case-study/data/gesamtdaten.rds")
+schulden_bereinigt <- readRDS("../case-study/data/schulden_bereinigt.rds")
+```
+
+---
+
+class: inverse, center, middle
+
+# Deskriptive Analysen
+
+---
+
+## Arbeitslosenquote berechnen
+
+.instructions[**Zuerst:** Überblick über die Daten gewinnen]
+
+- Wie viele Landkreise haben wir in den Daten?
+- Wie ist die Verteilung der Schulden, Arbeitsenquote und des BIP? 
+
+--
+
+Hierzu müssen wir erst noch die Arbeitslosenquote berechnen:
+
+$Arbeitslosenquote = Erwerbslose / (Erwerbstätige + Erwerbslose)$
+
+```{r}
+# Zuerst wollen wir uns noch die Arbeitslosenquote pro Landkreis berechnen
+gesamtdaten <- gesamtdaten %>%
+  mutate(alo_quote = (total_alo / (erw+total_alo))*100)
+```
+
+---
+
+## Anzahl an Beobachtungen
+
+**Quick and dirty**(einfacher Tibble Datensatz): Einen Blick auf die Anzahl an Erwerbstätigen und Einwohnern in Deutschland werfen. 
+
+```{r}
+# Wie viele Erwerbstätige und Einwohner (ohne Berlin, Hamburg, Bremen und Bremerhaven) hat Deutschland?
+gesamtdaten %>% 
+  summarise(total_erw = sum(erw, na.rm=TRUE), total_einwohner = sum(Einwohner, na.rm=TRUE))
+```
+--
+
+- 41 Mio. Erwerbstätige und 76,5 Mio Einwohner in Deutschland
+- Folgende Stadtstaaten sind nicht in unseren Berechnungen enthalten:
+  - Hamburg (1.8 Mio.)
+  - Berlin (3.75 Mio.) 
+  - Bremen (0.7 Mio.) 
+  - Bremerhaven (0.1 Mio.) 
+
+---
+
+## Anzahl an Beobachtungen
+
+.instructions[ _Etwas besser_ mit `skimr` Daten veranschaulichen]
+
+--
+
+```{r, eval=FALSE}
+# Anschließend wollen wir eine Summary Statistic für alle Variablen ausgeben lassen
+# Entfernen der Histogramme, damit alles auch schön in PDF gedruckt werden kann
+gesamtdaten %>% 
+  select(alo_quote, Schulden_pro_kopf_lk, bip_pro_kopf, landkreis_name) %>%
+  skim_without_charts() %>%
+  summary()
+```
+
+---
+
+## Anzahl an Beobachtungen
+
+```{r, echo=FALSE}
+# Anschließend wollen wir eine Summary Statistic für alle Variablen ausgeben lassen
+# Entfernen der Histogramme, damit alles auch schön in PDF gedruckt werden kann
+gesamtdaten %>% 
+  select(alo_quote, Schulden_pro_kopf_lk, bip_pro_kopf, landkreis_name) %>%
+  skim_without_charts() %>%
+  summary()
+```
+
+---
+
+## Anzahl an Beobachtungen
+
+- 401 individuelle Beobachtungen in unserem Datensatz. 
+
+Hierbei handelt es sich um alle Landkreise und kreisfreien Städte in Deutschland. 
+
+.question[Stimmen diese Angaben?]
+--
+
+- In Deutschland gibt es 294 Landkreise. 
+- Weiterhin gibt es in Deutschland 107 kreisfreie Städte
+
+(Quelle: Wikipedia)
+
+---
+
+## Anzahl an Beobachtungen
+
+```{r, echo=FALSE}
+# Anschließend wollen wir eine Summary Statistic für alle Variablen ausgeben lassen
+# Entfernen der Histogramme, damit alles auch schön in PDF gedruckt werden kann
+gesamtdaten %>% 
+  select(alo_quote, Schulden_pro_kopf_lk, bip_pro_kopf, landkreis_name) %>%
+  skim_without_charts() %>%
+  yank("character")
+```
+
+- Nur 379 unterschiedliche Landkreis Namen in unserem Datensatz mit 401 unterschiedlichen Beobachtungen (Regionalschlüsseln). 
+
+.question[Woher kommt dies?]
+--
+
+- Stadt München ist eine Beobachtung 
+- Landkreis München eine weitere Beobachtung 
+
+Beide haben unterschiedliche Regionalschlüssel. 
+D.h. der "landkreis_name" ist der gleiche, jedoch ist der Regionalschlüssel ein anderer.
+
+---
+
+## Anzahl an Beobachtungen
+
+Nun möchten wir uns noch die einzelnen Variablen aus dem Datensatz näher anschauen:
+
+```{r, echo=FALSE}
+# Anschließend wollen wir eine Summary Statistic für alle Variablen ausgeben lassen
+# Entfernen der Histogramme, damit alles auch schön in PDF gedruckt werden kann
+gesamtdaten %>% 
+  select(alo_quote, Schulden_pro_kopf_lk, bip_pro_kopf, landkreis_name) %>%
+  skim_without_charts() %>%
+  yank("numeric")
+```
+
+---
+
+## Anzahl an Beobachtungen
+
+- Fehlende Beobachtungen für Schulden pro Kopf: _vier_ Landkreise
+- Fehlende Beobachtungen für BIP pro Kopf: _zwei_ Landkreise
+- Fehlende Beobachtung für Einwohner: _vier_ Landkreise
+
+```{r}
+gesamtdaten %>%
+  filter(is.na(Einwohner)) %>%
+  select(landkreis_name)
+```
+
+--
+
+.instructions[Wir können diese Landkreise nicht mit in unsere Analyse mit einbeziehen auf Grund der fehlenden Informationen zu Einwohnern!]
+
+---
+
+## Beschreibung der Tabelle
+
+```{r, echo=FALSE}
+# Anschließend wollen wir eine Summary Statistic für alle Variablen ausgeben lassen
+# Entfernen der Histogramme, damit alles auch schön in PDF gedruckt werden kann
+gesamtdaten %>% 
+  select(alo_quote, Schulden_pro_kopf_lk, bip_pro_kopf, landkreis_name) %>%
+  skim_without_charts() %>%
+  yank("numeric")
+```
+
+--
+
+.question[Bitte beschreiben Sie die Tabelle in ihren eigenen Worten!]
+
+Gehen Sie hierbei bitte auf eine Variable (alo_quote, Schulden_pro_Kopf_lk, bip_pro_kopf) und einen der folgenden Punkte ein:
+- Mittelwert
+- Standardabweichung
+- Median
+
+--
+
+```{r, echo=FALSE}
+countdown(minutes = 5)
+```
+
+---
+
+## Arbeitslosenquote
+
+Mittelwert: 5,33 Prozent
+  - Sehr hoch
+  - Jedoch SGB II und SGB III
+  - Konsistenzcheck auf [Statista](https://de.statista.com/statistik/daten/studie/1224/umfrage/arbeitslosenquote-in-deutschland-seit-1995/) zeigt eine Arbeitslosenquote von 5,8% für 2017
+  - **Jedoch:** Wir haben nicht Berlin und Hamburg in den Daten
+
+Standardabweichung: 2,36
+  - Sehr hohe Streuung
+  - Deutliche regionale Unterschiede
+  - Ist in Prozentpunkten 
+ 
+Median: 4,99 Prozent
+  - Nahe am Mittelwert
+  - Deutet darauf hin das es wenige Landkreise mit sehr extremen Ausreißern gibt
+
+---
+
+## Verschuldung pro Kopf
+
+Mittelwert: 2743€
+  - Moderat von der Höhe her
+
+Standardabweichung: 2148€
+  - Sehr hohe Streuung
+  - Deutliche regionale Unterschiede
+ 
+Median: 2081€
+  - Weiter weg vom Mittelwert
+  - Deutet darauf hin das es einzelne Landkreise mit sehr extremen Ausreißern gibt
+
+---
+
+## BIP pro Kopf
+
+Mittelwert: 37086€
+  - Insgesamt recht hoch
+  - Starker Wirtschaftsstandort Deutschland
+
+Standardabweichung: 16127€
+  - Sehr hohe Streuung
+  - Deutliche regionale Unterschiede
+  - Könnte von einzelnen Landkreisen getrieben werden
+ 
+Median: 33105€
+  - Weiter weg vom Mittelwert
+  - Deutet darauf hin das es einzelne Landkreise mit sehr extremen Ausreißern gibt
+
+---
+
+class: inverse, center, middle
+
+# Die Arbeitslosenquote auf Bundeslandebene
+
+---
+
+## Die Arbeitslosenquote auf Bundeslandebene
+
+.instructions[Es gibt deutliche Unterschiede in der Arbeitslosenquote über die Bundesländer hinweg!]
+
+Wir betrachten:
+  - Querschnittsdaten aus 2017
+  - Alle Landkreise
+  - Für einige Landkreise haben wir keine Informationen (sogenannte "Missing values" -> `n_missing`)
+  
+.question[Was wollen wir?]
+
+Die regionale Verteilung der Arbeitslosenquote in Deutschland im Jahr 2017 näher betrachten. 
+
+---
+
+## Die Arbeitslosenquote auf Bundeslandebene
+
+Zuerst aggregieren wir die Daten auf Bundeslandebene:
+
+```{r, eval=FALSE}
+bula_data <- gesamtdaten %>% 
+  group_by( bundesland_name ) %>%
+  summarise(mean_alo = mean(alo_quote), sd_alo = sd(alo_quote), median_alo = median(alo_quote)) %>%
+  ungroup()
+```
+
+---
+
+## Die Arbeitslosenquote auf Bundeslandebene
+
+`r chunk_reveal(chunk_name = "bula_data")`
+
+```{r bula_data, include = F}
+gesamtdaten %>% 
+  group_by( bundesland_name ) %>%
+  summarise(mean_alo = mean(alo_quote), 
+            sd_alo = sd(alo_quote), 
+            median_alo = median(alo_quote)) %>%
+  ungroup() -> bula_data
+```
+
+---
+
+## Die Arbeitslosenquote auf Bundeslandebene
+
+Anschließend wollen wir uns eine ansprechende und informative deskriptive Tabelle erstellen:
+
+.pull-left[
+```{r, echo=FALSE}
+bula_data %>%
+  arrange( mean_alo ) %>%
+  filter( !is.na(mean_alo) )
+```
+]
+
+--
+
+.pull-right[
+```{r, echo=FALSE, out.width='70%'}
+bula_data %>%
+  arrange( mean_alo ) %>%
+  filter( !is.na(mean_alo) ) %>%
+  kbl(col.names = c("Bundesland",
+                    "Mittelwert",
+                    "Std.",
+                    "Median"), digits = 2) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                font_size = 8) %>%
+  kable_paper(full_width = F) %>%
+  row_spec(c(7,9, 11,12,14), bold = T, color = "white", background = "#BBBBBB") %>%
+  add_header_above(c(" " = 1, "Arbeitslosenquote" = 3), align = "c") %>%
+  footnote(general = "Wir haben keine Informationen zu Berlin und Hamburg, weshalb sie nicht in der Tabelle aufgeführt wurden.", 
+           general_title = "Bitte beachten: ",
+           number = "Die ostdeutschen Bundesländer sind grau hinterlegt.")
+```
+]
+
+---
+
+## Die Arbeitslosenquote auf Bundeslandebene
+
+Die Darstellung mit dem Paket `kableExtra` ist deutlich ansprechender als nur einen Tibble zu zeigen!
+
+Folgender Code wurde hier verwendet, welchen wir in der nächsten Folie Schritt für Schritt durchgehen werden:
+
+```{r, eval=FALSE, out.width='70%'}
+bula_data %>%
+  arrange( mean_alo ) %>%
+  filter( !is.na(mean_alo) ) %>%
+  kbl(col.names = c("Bundesland",
+                    "Mittelwert",
+                    "Std.",
+                    "Median"), digits = 2) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive")) %>%
+  kable_paper(full_width = F) %>%
+  row_spec(c(7,9, 11,12,14), bold = T, color = "white", background = "#BBBBBB") %>%
+  add_header_above(c(" " = 1, "Arbeitslosenquote" = 3), align = "c") %>%
+  footnote(general = "Wir haben keine Informationen zu Berlin und Hamburg, weshalb sie nicht in der Tabelle aufgeführt wurden.", 
+           general_title = "Bitte beachten: ",
+           number = "Die ostdeutschen Bundesländer sind grau hinterlegt.")
+```
+
+---
+
+`r chunk_reveal(chunk_name = "bula_kable")`
+
+```{r bula_kable, include = F}
+bula_data %>%
+  arrange( mean_alo ) %>%
+  filter( !is.na(mean_alo) ) %>%
+  kbl(col.names = c("Bundesland",
+                    "Mittelwert",
+                    "Std.",
+                    "Median"), digits = 2) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive")) %>%
+  kable_paper(full_width = F) %>%
+  row_spec(c(7,9, 11,12,14), bold = T, color = "white", background = "#BBBBBB") %>%
+  add_header_above(c(" " = 1, "Arbeitslosenquote" = 3), align = "c") %>%
+  footnote(general = "Wir haben keine Informationen zu Berlin und Hamburg, weshalb sie nicht in der Tabelle aufgeführt wurden.", 
+           general_title = "Bitte beachten: ",
+           number = "Die ostdeutschen Bundesländer sind grau hinterlegt.")
+```
+
+---
+
+```{r, echo=FALSE}
+bula_data %>%
+  arrange( mean_alo ) %>%
+  filter( !is.na(mean_alo) ) %>%
+  kbl(col.names = c("Bundesland",
+                    "Mittelwert",
+                    "Std.",
+                    "Median"), digits = 2) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                font_size = 11) %>%
+  kable_paper(full_width = F) %>%
+  row_spec(c(7,9, 11,12,14), bold = T, color = "white", background = "#BBBBBB") %>%
+  add_header_above(c(" " = 1, "Arbeitslosenquote" = 3), align = "c") %>%
+  footnote(general = "Wir haben keine Informationen zu Berlin und Hamburg, weshalb sie nicht in der Tabelle aufgeführt wurden.", 
+           general_title = "Bitte beachten: ",
+           number = "Die ostdeutschen Bundesländer sind grau hinterlegt.")
+```
+
+---
+
+## Die Arbeitslosenquote auf Bundeslandebene
+
+.question[Was lernen wir aus der deskriptiven Tabelle?]
+
+--
+- Landkreise im Süden Deutschlands haben durchschnittlich eine sehr niedrige Arbeitslosenquote (<4%)
+--
+
+- Landkreise in den ostdeutschen Bundesländern leiden unter hohen Arbeitslosenquoten (>8%)
+--
+
+- Standardabweichung bei allen Bundesländern vergleichbar   
+  - Es gibt hier vermutlich keine großen Ausreißer bei den Arbeitslosenquoten in den Landkreisen
+
+--
+- Median liegt recht nahe am Mittelwert für die Bundesländern
+
+.alert[Sehr große Unterschiede in den durchschnittlichen Arbeitslosenquoten zwischen Landkreisen in Ost- und Westdeutschland!]
+
+---
+
+## Die Arbeitslosenquote zwischen Ost- und Westdeutschland
+
+Wir wollen uns eine neue Variable "ost", bzw. "ost_name" generieren.
+Anschließend können wir uns die Arbeitslosigkeit für Ost- und Westdeutschland anschauen.
+
+```{r, eval=FALSE}
+gesamtdaten <- gesamtdaten %>%
+  mutate( ost = as.factor(ifelse(bundesland_name %in% c("Brandenburg", "Mecklenburg-Vorpommern", "Sachsen", "Sachsen-Anhalt", "Thüringen"), 1, 0)),
+          ost_name = ifelse(ost == 1, "Ostdeutschland", "Westdeutschland"))
+```
+
+---
+
+`r chunk_reveal(chunk_name = "ost")`
+
+```{r ost, include = F}
+gesamtdaten %>%
+  mutate( ost = as.factor(ifelse(bundesland_name %in% c("Brandenburg", "Mecklenburg-Vorpommern", "Sachsen", "Sachsen-Anhalt", "Thüringen"), 1, 0)),
+          ost_name = ifelse(ost == 1, "Ostdeutschland", "Westdeutschland"))
+```
+
+```{r, echo=FALSE}
+gesamtdaten <- gesamtdaten %>%
+  mutate( ost = as.factor(
+    ifelse(bundesland_name %in% c("Brandenburg", "Mecklenburg-Vorpommern", "Sachsen", "Sachsen-Anhalt", "Thüringen"), 1, 0)
+    ),
+          ost_name = ifelse(ost == 1, "Ostdeutschland", "Westdeutschland"))
+```
+
+---
+
+## Die Arbeitslosenquote zwischen Ost- und Westdeutschland
+
+```{r eval=FALSE}
+gesamtdaten %>%
+  group_by(ost_name) %>%
+  summarise(mean_alo = mean(alo_quote, na.rm = T), sd_alo = sd(alo_quote, na.rm = T), min_alo = min(alo_quote, na.rm = T), q25 = quantile(alo_quote, c(0.25), na.rm = T), median_alo = median(alo_quote, na.rm = T), q75 = quantile(alo_quote, 0.75, na.rm = T), max_alo = max(alo_quote, na.rm = T)) %>%
+  ungroup() %>%
+  kbl(col.names = c("Bundesland",
+                    "Mittelwert",
+                    "Std.",
+                    "Minimum",
+                    "P25",
+                    "Median",
+                    "P75",
+                    "Maximum"), digits = 2) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive")) %>%
+  kable_paper(full_width = F) %>%
+  add_header_above(c(" " = 1, "Arbeitslosenquote" = 7), align = "c") %>%
+  footnote(general = "Wir haben keine Informationen zu Berlin und Hamburg, weshalb sie nicht in der Berechnung enthalten sind.",
+           general_title = "Bitte beachten: ")
+```
+
+---
+
+`r chunk_reveal(chunk_name = "ost_deskriptiv")`
+
+```{r ost_deskriptiv, include = F}
+gesamtdaten %>%
+  group_by(ost_name) %>%
+  summarise(mean_alo = mean(alo_quote, na.rm = T), sd_alo = sd(alo_quote, na.rm = T), min_alo = min(alo_quote, na.rm = T), q25 = quantile(alo_quote, c(0.25), na.rm = T), median_alo = median(alo_quote, na.rm = T), q75 = quantile(alo_quote, 0.75, na.rm = T), max_alo = max(alo_quote, na.rm = T)) %>%
+  ungroup() %>%
+  kbl(col.names = c("Bundesland",
+                    "Mittelwert",
+                    "Std.",
+                    "Minimum",
+                    "P25",
+                    "Median",
+                    "P75",
+                    "Maximum"), digits = 2) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive")) %>%
+  kable_paper(full_width = F) %>%
+  add_header_above(c(" " = 1, "Arbeitslosenquote" = 7), align = "c") %>%
+  footnote(general = "Wir haben keine Informationen zu Berlin und Hamburg, weshalb sie nicht in der Berechnung enthalten sind.",
+           general_title = "Bitte beachten: ")
+```
+
+---
+
+## Die Arbeitslosenquote zwischen Ost- und Westdeutschland
+
+Große Unterschiede werden sichtbar:
+- Fast 3 Prozentpunkte niedriger in den Landkreisen der westdeutschen Bundesländer
+- Die Standardabweichung ist vergleichbar
+- Der Median liegt in den westdeutschen Landkreisen sogar noch deutlicher unter dem Mittelwert als in ostdeutschen
+- Im **25% Quantil** in den **ostdeutschen Landkreisen** ist die Arbeitslosenquote bei **6,04%**
+- Bei den **westdeutschen Landkreisen** ist das **75% Quantil** bei einer Arbeitslosenquote von **6,22%**!
+
+---
+
+## Arbeitslosenquote, BIP pro Kopf und Schulden pro Kopf 
+
+```{r, eval=FALSE}
+gesamtdaten %>% 
+  group_by( bundesland_name ) %>%
+  summarise(mean_alo = mean(alo_quote), sd_alo = sd(alo_quote), mean_bip_kopf = mean(bip_pro_kopf), sd_bip_kopf = sd(bip_pro_kopf), mean_schulden_kopf = mean(Schulden_gesamt/Einwohner), sd_schulden = sd(Schulden_gesamt/Einwohner)) %>%
+  ungroup() -> bula_data_all
+
+bula_data_all %>%
+  arrange( mean_alo ) %>%
+  filter( !is.na(mean_schulden_kopf) ) %>%
+  kbl(col.names = c("Bundesland", "Mittelwert","Std.","Mittelwert","Std.", "Mittelwert","Std."), digits = 2, format = "html", 
+      caption = "Deskriptive Tabelle komplett") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive")) %>%
+  kable_paper(full_width = F) %>%
+  row_spec(c(7,9, 11,12,13), bold = T, color = "white", background = "#BBBBBB") %>%
+  add_header_above(c(" " = 1, "Arbeitslosenquote" = 2, "BIP pro Kopf" = 2, "Schulden pro Kopf" = 2), align = "c") %>%
+  footnote(general = "Wir haben keine Informationen zu Berlin, Hamburg und Bremen bzgl. ihrer Schulden pro Kopf, weshalb sie nicht in der Tabelle aufgeführt wurden.", 
+           general_title = "Bitte beachten: ",
+           number = "Die ostdeutschen Bundesländer sind grau hinterlegt.")
+```
+
+---
+
+`r chunk_reveal(chunk_name = "alo_schulden_bip")`
+
+```{r alo_schulden_bip, include=FALSE}
+gesamtdaten %>% 
+  group_by( bundesland_name ) %>%
+  summarise(mean_alo = mean(alo_quote), sd_alo = sd(alo_quote), mean_bip_kopf = mean(bip_pro_kopf), sd_bip_kopf = sd(bip_pro_kopf), mean_schulden_kopf = mean(Schulden_gesamt/Einwohner), sd_schulden = sd(Schulden_gesamt/Einwohner)) %>%
+  ungroup() -> bula_data_all
+
+bula_data_all %>%
+  arrange( mean_alo ) %>%
+  filter( !is.na(mean_schulden_kopf) ) %>%
+  kbl(col.names = c("Bundesland", "Mittelwert","Std.","Mittelwert","Std.", "Mittelwert","Std."), digits = 2, format = "html", 
+      caption = "Deskriptive Tabelle komplett") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                font_size = 9) %>%
+  kable_paper(full_width = F) %>%
+  row_spec(c(7,9, 11,12,13), bold = T, color = "white", background = "#BBBBBB") %>%
+  add_header_above(c(" " = 1, "Arbeitslosenquote" = 2, "BIP pro Kopf" = 2, "Schulden pro Kopf" = 2), align = "c") %>%
+  footnote(general = "Wir haben keine Informationen zu Berlin, Hamburg und Bremen bzgl. ihrer Schulden pro Kopf, weshalb sie nicht in der Tabelle aufgeführt wurden.", 
+           general_title = "Bitte beachten: ",
+           number = "Die ostdeutschen Bundesländer sind grau hinterlegt.")
+```
+
+---
+
+## Arbeitslosenquote, BIP pro Kopf und Schulden pro Kopf 
+
+```{r, echo=FALSE}
+bula_data_all <- gesamtdaten %>% 
+  group_by( bundesland_name ) %>%
+  summarise(mean_alo = mean(alo_quote), sd_alo = sd(alo_quote), mean_bip_kopf = mean(bip_pro_kopf), sd_bip_kopf = sd(bip_pro_kopf), mean_schulden_kopf = mean(Schulden_gesamt/Einwohner), sd_schulden = sd(Schulden_gesamt/Einwohner)) %>%
+  ungroup()
+
+bula_data_all %>%
+  arrange( mean_alo ) %>%
+  filter( !is.na(mean_schulden_kopf) ) %>%
+  kbl(col.names = c("Bundesland", "Mittelwert","Std.","Mittelwert","Std.", "Mittelwert","Std."), digits = 2, format = "html", 
+      caption = "Deskriptive Tabelle komplett") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                font_size = 9) %>%
+  kable_paper(full_width = F) %>%
+  row_spec(c(7,9, 11,12,13), bold = T, color = "white", background = "#BBBBBB") %>%
+  add_header_above(c(" " = 1, "Arbeitslosenquote" = 2, "BIP pro Kopf" = 2, "Schulden pro Kopf" = 2), align = "c") %>%
+  footnote(general = "Wir haben keine Informationen zu Berlin, Hamburg und Bremen bzgl. ihrer Schulden pro Kopf, weshalb sie nicht in der Tabelle aufgeführt wurden.", 
+           general_title = "Bitte beachten: ",
+           number = "Die ostdeutschen Bundesländer sind grau hinterlegt.")
+```
+
+---
+
+## Arbeitslosenquote, BIP pro Kopf und Schulden pro Kopf 
+
+- Landkreise in Bundesländer mit niedrigen Arbeitslosenquoten haben durchschnittlich ein hohes BIP pro Kopf
+- Ostdeutsche Landkreise haben im Durchschnitt ein BIP pro Kopf < 30000€
+- Westdeutsche Landkreise haben im Durchschnitt ein BIP pro Kopf > 30000€
+- Kein klares Bild der Landkreise hinsichtlich der Schulden pro Kopf
+
+--
+
+.alert[Allein durch Mittelwert und Standardabweichung können wir bereits sehr viel über regionale Unterschiede lernen.]
+
+---
+
+## Entwicklung des BIP
+
+Auch zeitliche Entwicklungen können in einer Tabelle dargestellt werden
+
+.instructions[Als Beispiel sollten Sie sich die Tabelle zur Entwicklung des BIP pro Kopf in der Case-Study anschauen]
+
+---
+
+class: inverse, center, middle
+
+# Datenvisualisierung
+
+---
+
+## Arbeitslosenquote
+
+.alert[Das Auge verarbeitet Informationen deutlich schneller und intuitiver wenn diese in einer Grafik präsentiert werden, anstatt in Tabellenform.]
+
+--
+
+Daher ist es wichtig Grafiken in den desktiptiven Analysen mit einzubeziehen
+
+**Daten:** Querschnittsdaten zur Arbeitslosigkeit in den Landkreisen aus dem Jahr 2017
+
+--
+
+Die folgende Grafik sollte enthalten:
+- **Zeige alle Daten**: Jeder Landkreis wird durch einen Punkt in der Grafik repräsentiert
+- Boxplot der Arbeitslosigkeit wird über die Punktewolke gelegt
+
+
+---
+
+`r chunk_reveal(chunk_name = "alo_jitter")`
+
+```{r alo_jitter, include = FALSE, out.width='50%'}
+gesamtdaten %>%
+  select(alo_quote, landkreis_name, bundesland_name, ost_name) %>%
+  mutate(baden_wuerttemberg = as.factor(ifelse(bundesland_name == "Baden-Württemberg", 1, 0))) %>%
+  ggplot(aes(x = ost_name, y=alo_quote)) +
+  geom_jitter(aes(color = ifelse(baden_wuerttemberg == 1, "darkred", "darkgrey")), alpha=0.5) +
+  scale_color_identity() +
+  geom_boxplot(alpha = 0.1) +
+  theme_minimal() +
+  labs(title = "Arbeitslosenquote in Deutschland",
+       subtitle = "Eine Beobachtung repräsentiert einen Landkreis, Baden-Württemberg rot eingefärbt",
+       x = "",
+       y = "Arbeitslosenquote",
+       caption = "Quelle: Daten der Agentur für Arbeit aus dem Jahr 2017")
+```
+
+---
+
+## Arbeitslosenquote
+
+.instructions[Beschreiben Sie das gezeigte Schaubild]
+
+
+```{r echo=FALSE, out.width='35%', dpi = 300}
+alo_quote_jitter_farben <- gesamtdaten %>%
+  select(alo_quote, landkreis_name, bundesland_name, ost_name) %>%
+  mutate(baden_wuerttemberg = as.factor(ifelse(bundesland_name == "Baden-Württemberg", 1, 0))) %>%
+  ggplot(aes(x = ost_name, y=alo_quote)) +
+  geom_jitter(aes(color = ifelse(baden_wuerttemberg == 1, "darkred", "darkgrey")), alpha=0.5) +
+  scale_color_identity() +
+  geom_boxplot(alpha = 0.1) +
+  theme_minimal() +
+  labs(title = "Arbeitslosenquote in Deutschland",
+       subtitle = "Eine Beobachtung repräsentiert einen Landkreis, Baden-Württemberg rot eingefärbt",
+       x = "",
+       y = "Arbeitslosenquote",
+       caption = "Quelle: Daten der Agentur für Arbeit aus dem Jahr 2017")
+
+alo_quote_jitter_farben
+```
+
+
+---
+
+## Arbeitslosenquote
+
+**Beschreibung** des Schaubilds:
+- Rote Datenpunkte Baden-Württemberg, fast alle unter dem Median in Westdeutschland
+- Median in Westdeutschland deutlich geringer als in Ostdeutschland
+- 75% Quantil in Westdeutschland entspricht (fast) 25% Quantil in Ostdeutschland
+- Alle Landkreise unter 15% Arbeitslosenquote; Verglichen mit den europäischen Daten sehr gut
+
+
+---
+
+## Bruttoinlandsprodukt pro Kopf
+
+Es gibt deutliche regionale Unterschiede zwischen den Landkreisen. Doch ist dies auch beim BIP pro Kopf der Fall?
+Und war das schon immer so?
+
+.instructions[Wir betrachten das BIP pro Kopf über die Zeit für ost- und westdeutsche Landkreise!]
+
+Hier können wir sehen:
+- ob es auch regionale Unterschiede im BIP pro Kopf gibt
+- ob die regionalen Unterschiede schon längere Zeit bestehen
+- ob die regionalen Unterschiede sich vergrößern oder verkleinern
+
+---
+
+## Bruttoinlandsprodukt pro Kopf
+
+Das Bruttoinlandsprodukt stellt die wichtigste gesamtwirtschaftliche Kenngröße dar. Falls das BIP in einem Landkreis hoch ist könnte dies unter anderem daran liegen, dass 
+
+- viele Personen in diesem Landkreis erwerbstätig sind, 
+- oder das die Erwerbstätigen in Branchen mit hoher Produktivität arbeiten. 
+
+Falls der erste Punkt zutrifft sollte ein hohes BIP pro Kopf (berechnet als BIP pro **Einwohner**) tendenziell auch mit einer niedrigeren Arbeitslosenquote einhergehen. 
+
+--
+
+.instruction[Beschreiben und interpretieren Sie das gezeigte Schaubild.]
+
+---
+
+```{r, echo=FALSE}
+# Zuerst die Information zu landkreis_name und bundesland_name zum Datensatz big_long hinzumergen
+namen <- gesamtdaten %>%
+  select(Regionalschluessel, bundesland_name, landkreis_name, ost_name)
+
+bip_zeitreihe_namen <- bip_zeitreihe %>%
+  filter( nchar(Regionalschluessel) == 5) %>%
+  left_join(.,namen, by="Regionalschluessel")
+```
+
+`r chunk_reveal(chunk_name = "bip1")`
+
+```{r bip1, include=FALSE}
+options(scipen = 5)
+bip_zeitreihe_namen %>%
+  filter( Jahr >= 2000 ) %>%
+  group_by(ost_name, Jahr) %>%
+  mutate( durchschnitt = mean(bip_pro_kopf),
+          ulm = ifelse(landkreis_name == "Ulm", bip_pro_kopf,NA)) %>%
+  ggplot() +
+  geom_line(aes(x = Jahr, y = bip_pro_kopf, group = Regionalschluessel), color = "grey") +
+  geom_line(aes(x = Jahr, y = durchschnitt, group = Regionalschluessel), color = "darkblue") +
+  geom_line(aes(x = Jahr, y = ulm, group = Regionalschluessel), color = "darkgreen") +
+  scale_y_continuous(trans = "log10") + 
+  theme_minimal() +
+  facet_wrap(ost_name ~ .) +
+  theme(legend.position = "none") +
+  labs(title = "Ein Vergleich des BIP pro Kopf von ost- und westdeutschen Landkreisen",
+       subtitle = "Durchschnittswerte in Dunkelblau, Ulm in Dunkelgrün",
+       caption = "Quelle: Daten der Statistischen Ämter der Länder und des Bundes.",
+       x = "Jahr",
+       y = "BIP pro Kopf")
+``` 
+
+---
+
+## Bruttoinlandsprodukt pro Kopf
+
+**Beschreibung:**
+- Logarithmische Skalierung der y-Achse
+- Das Niveau des BIP pro Kopf ist in den ostdeutschen Landkreisen deutlich niedriger als in den westdeutschen. 
+- Stadtkreis Ulm hat ein sehr hohes BIP pro Kopf, auch im Zeitablauf
+- Das BIP Pro Kopf nimmt im Zeitablauf in den ostdeutschen Landkreisen zu, doch erreicht es mit durchschnittlich 28338€ den Wert, welchen die westdeutschen Landkreise durchschnittlich in 2006 hatten!
+- In 2008/2009 gibt es überall einen Einbruch beim BIP pro Kopf, jedoch scheint dieser in den ostdeutschen Bundesländern nicht so stark gewesen zu sein
+
+--
+
+**Interpretation:**
+- Eine Wachstumsprozess im BIP pro Kopf findet in allen Landkreisen statt, jedoch gibt es für die ostdeutschen Landkreise, welche deutlich niedriger gestartet sind, keinen erkennbaren Anpassungsprozess in Form eines schnelleren Wachstums
+- Wir sehen auch keinen Anpassungsprozess der Landkreise in Westdeutschland
+- Fraglich ist, ob wir hier mit einem Anpassungsprozess von strukturschwachen Landkreisen überhaupt rechnen sollten
+
+---
+
+## Bruttoinlandsprodukt pro Kopf
+
+Daten ab 1992 vorhanden, d.h. wir können auch weiter zuück gehen:
+- **Allerdings:** Keine Daten zu _allen_ Landkreisen, daher Vorsicht!
+- Hier sehen wir einen Anpassungsprozess in den 1990er Jahren
+- Anpassung verlangsamt sich, ab 2010 praktisch parallel 
+
+---
+
+class: center
+
+```{r, echo=FALSE, out.width='50%'}
+bip_zeitreihe_namen %>%
+  group_by(ost_name, Jahr) %>%
+  mutate( durchschnitt = mean(bip_pro_kopf, na.rm = T),
+          ulm = ifelse(landkreis_name == "Ulm", bip_pro_kopf,NA)) %>%
+  ggplot() +
+  geom_line(aes(x = Jahr, y = durchschnitt, group = Regionalschluessel, color = ost_name)) +
+  scale_color_manual(values = c("#D55E00", "#0072B2")) +
+  scale_y_continuous(trans = "log10") + 
+  theme_minimal() +
+  theme(legend.position = "none") +
+  labs(title = "Ein Vergleich des BIP pro Kopf von ost- und westdeutschen Landkreisen",
+       subtitle = "Zeitreihe ab 1992 bis 2017",
+       caption = "Quelle: Daten der Statistischen Ämter der Länder und des Bundes.",
+       x = "Jahr",
+       y = "BIP pro Kopf") +
+  geom_text(aes(x=2000, y=15000, label = "Durchschnitt für ostdeutsche Landkreise"), color = "#D55E00", hjust=0, size=4, alpha = 0.1) +
+  geom_curve(aes(x = 2007, xend = 2005, y = 15500, yend = 18500), curvature = .3, color = "#D55E00", size = 0.1) +
+  geom_text(aes(x=1992, y=31000, label = "Durchschnitt für westdeutsche Landkreise"), color = "#0072B2", hjust=0, size=4, alpha = 0.1) +
+  geom_curve(aes(x = 1995, xend = 1997, y = 29000, yend = 25000), curvature = .2, color = "#0072B2", size = 0.1)
+
+```
+
+---
+
+## Wachstum des BIP pro Kopf
+
+Paneldaten beim BIP pro Kopf vorhanden, d.h. wir können:
+
+- Das **Wachstum** des BIP pro Kopf
+- Für alle Landkreise in Deutschland
+- Seit 2000 bis 2017 
+
+berechnen und visualisieren.
+
+--
+
+.question[Können wir einen Anpassungsprozess über die Wachstumsraten des BIP pro Kopf feststellen?]
+
+---
+
+`r chunk_reveal(chunk_name = "bip2")`
+
+```{r bip2,  include=FALSE}
+bip_zeitreihe_namen %>%
+  group_by(Regionalschluessel) %>%
+  arrange(Regionalschluessel, Jahr) %>%
+  mutate( bip_pro_kopf_wachstum = 100*(bip_pro_kopf - lag(bip_pro_kopf)) / bip_pro_kopf) %>%
+  ungroup() %>%
+  group_by(ost_name, Jahr) %>%
+  mutate( durchschnitt = mean(bip_pro_kopf_wachstum, na.rm=TRUE)) %>%
+  ungroup() -> bip_wachstum
+
+bip_wachstum %>%
+  filter( Jahr >= 2000 ) %>%
+  ggplot() +
+  geom_line(aes(x = Jahr, y = bip_pro_kopf_wachstum, group = Regionalschluessel), color = "grey") +
+  geom_line(aes(x = Jahr, y = durchschnitt, group = Regionalschluessel, color = ost_name)) +
+  scale_color_manual(values = c("#D55E00", "#0072B2")) +
+  theme_minimal() +
+  labs(color = "Durchschnitt der Landkreise",
+       title = "Die Wachstumsrate des BIP pro Kopf von ost- und westdeutschen\nLandkreisen",
+       caption = "Quelle: Daten der Statistischen Ämter der Länder und des Bundes.",
+       x = "Jahr",
+       y = "Veränderung des BIP pro Kopf") +
+  theme(legend.position = "none") +
+  geom_text(aes(x=2000, y=40, label = "-- Durchschnitt für ostdeutsche Landkreise"), color = "#D55E00", hjust=0, size=4, alpha = 0.1) +
+  geom_text(aes(x=2000, y=35, label = "-- Durchschnitt für westdeutsche Landkreise"), color = "#0072B2", hjust=0, size=4, alpha = 0.1)
+```
+
+---
+
+## Wachstum des BIP pro Kopf
+
+**Beschreibung**:
+- Im Durchschnitt sehr ähnliche Wachstumsraten
+- Immer wieder vereinzelt sehr hohe Wachstumsraten pro Landkreis  
+  - Hängt vermutlich mit großen Projekten auf Landkreisebene zusammen
+- Der Einbruch in der Finanzkrise ist sowohl bei ost- als auch westdeutschen Landkreisen zu sehen
+
+**Interpretation**:
+- Es findet keine Anpassung des BIP pro Kopf über die Zeit statt
+- Die Gelder durch den Soli-Ausgleich führen nicht zu der (erhofften) starken Aufholjagt
+- Ostdeutsche Landkreise haben sich stark entwickelt
+  - Diese Etwicklung sollte jedoch nicht absolut, sondern relativ zu westdeutschen Landkreisen betrachtet werden
+
+--
+
+.alert[Es ist kein Anpassungsprozess ersichtlich, dafür sind die Wachstumsraten zu ähnlich.]
+
+---
+ 
+## Bruttoinlandsprodukt pro Kopf
+
+Bisherige Grafiken:
+- Punktewolke + Boxplot zeigt die Verteilung
+- Liniendiagramm zeigt die Entwicklung
+
+--
+
+Alternative Darstellungen der Verteilung:
+- Historgamm (nächste Folie)
+- Kerndichteschätzer (siehe ausführliche Case-Study)
+
+Alternative Darstellung der Entwicklung:
+- Small multiples (siehe ausführliche Case-Study)
+- Slopechart (siehe z.B. [Data Vizualisation von Claus Wilke](https://clauswilke.com/dataviz/visualizing-associations.html#associations-correlograms) mit [Code hier](https://github.com/clauswilke/dataviz/blob/master/visualizing_associations.Rmd))
+
+---
+
+`r chunk_reveal(chunk_name = "bip3")`
+
+```{r bip3, include=FALSE}
+gesamtdaten %>%
+  filter(bip_pro_kopf<100000) %>%
+  group_by(ost_name) %>%
+  summarise(durchschnitt = mean(bip_pro_kopf)) %>%
+  ungroup() -> mittel
+
+ggplot(gesamtdaten, aes(x = bip_pro_kopf)) +
+  geom_histogram(data = filter(gesamtdaten, bip_pro_kopf<100000), binwidth = 1000) +
+  facet_grid(ost_name~.) +
+  geom_vline(data = mittel, aes(xintercept = durchschnitt), color = "blue") +
+  theme_bw() +
+  labs(title = "Verteilung des BIP pro Kopf für Ost- und Westdeutschland",
+       subtitle = "Beobachtungen auf Landkreisebene in 2017",
+       x = "BIP pro Kopf",
+       y = "Anzahl an Beobachtungen")
+```
+
+---
+
+## Verteilung des BIP pro Kopf in 2017
+
+```{r, echo=FALSE, dpi = 300, out.width='40%'}
+gesamtdaten %>%
+  filter(bip_pro_kopf<100000) %>%
+  group_by(ost_name) %>%
+  summarise(durchschnitt = mean(bip_pro_kopf)) %>%
+  ungroup() -> mittel
+
+ggplot(gesamtdaten, aes(x = bip_pro_kopf)) +
+  geom_histogram(data = filter(gesamtdaten, bip_pro_kopf<100000), binwidth = 1000) +
+  facet_grid(ost_name~.) +
+  geom_vline(data = mittel, aes(xintercept = durchschnitt), color = "blue") +
+  theme_bw() +
+  labs(title = "Verteilung des BIP pro Kopf für Ost- und Westdeutschland",
+       subtitle = "Beobachtungen auf Landkreisebene in 2017",
+       x = "BIP pro Kopf",
+       y = "Anzahl an Beobachtungen")
+```
+
+---
+
+## Verteilung des BIP pro Kopf in 2017
+
+Das Histogramm bestätigen das Bild des Boxplots:
+- Deutliche Unterschiede zwischen ost- und westdeutschend Landkreisen in 2017
+- Deutlich mehr Ausreißer nach oben bei westdeutschen Landkreisen
+- Verteilung ist für ostdeutsche Landkreise enger um den Mittelwert für das BIP pro Kopf von 28338€
+- Mittelwert und Median für westdeutsche Landkreise liegt deutlich weiter auseinander und zeigt, dass es hier mehr Ausreißer in den Daten gibt
+
+---
+
+class: inverse, center, middle
+
+## Verschuldung der einzelnen Landkreise
+
+---
+
+## Verschuldung
+
+.questions[Warum könnte die Verschuldung des öffentlichen Haushalts ein Indikator für eine hohe Arbeitslosenquote sein?]
+
+--
+
+Darstellung der Verschuldung der Landkreise mittels einer Deutschlandkarte.
+
+.instructions[Beschreiben und interpretieren Sie die folgende Grafik.]
+
+---
+
+```{r,  echo=FALSE}
+schulden_landkreise_anteil <- left_join(landkreise, gesamtdaten, by="Regionalschluessel") %>%
+  mutate(anteil_schulden = Schulden_gesamt / bip,
+         anteil_schulden = as.factor(case_when(
+    anteil_schulden <= 0.02~ "0 - 2%",
+    anteil_schulden > 0.02 & anteil_schulden <= 0.04 ~ "2% - 4%",
+    anteil_schulden > 0.04 & anteil_schulden <= 0.06 ~ "4% - 6%",
+    anteil_schulden > 0.06 & anteil_schulden <= 0.08 ~ "6% - 8%",
+    anteil_schulden > 0.08 & anteil_schulden <= 0.10 ~ "8% - 10%",
+    anteil_schulden > 0.10  ~ ">10%"
+  )))
+```
+
+
+`r chunk_reveal(chunk_name = "schulden1")`
+
+```{r schulden1,  include=FALSE}
+ggplot(
+  # define main data source
+  data = schulden_landkreise_anteil
+) +
+  geom_sf(
+    mapping = aes(
+      fill = fct_relevel(anteil_schulden, ">10%", after = Inf)
+    ),
+    color = "white",
+    size = 0.1
+  ) +
+  # use the Viridis color scale
+  scale_fill_viridis_d(
+    option = "inferno",
+    name = "Anteil der Schulden\nam BIP",
+    alpha = 0.8, # make fill a bit brighter
+    begin = 0.1,
+    end = 0.9,
+    direction = -1,
+    guide = guide_legend(reverse = T)) +
+  # use thicker white stroke for cantonal borders
+  geom_sf(
+    data = bundesland,
+    fill = "transparent",
+    color = "white",
+    size = 0.5
+  ) +
+  # add titles
+  labs(x = NULL,
+       y = NULL,
+       title = "Wie verschuldet sind die deutschen Landkreise?",
+       subtitle = "Öffentliche Schulden im Vergleich zum BIP in 2017") +
+  theme_minimal() -> plot_schulden_lk
+
+plot_schulden_lk
+```
+
+---
+
+## Verschuldung
+
+**Beschreibung:**
+- Niedgrige Verschuldung im Verhältnis zum BIP: Bayern, Baden-Württemberg, Rheinland-Pflanz, Niedersachesen
+- Hohe Verschuldung: Nordrhein-Westfalen, Saarland, Sachse, Mecklenburg-Vorpommern
+- Mittlere Verschuldung: Brandenburg, Thüringen, Hessen
+
+**Interpretation:**
+- Strukturschwache Landkreise sind vermehrt in Ostdeutschland zu finden, allerdings scheint es eher ein Nord/Süd Gefälle als ein Ost/West Gefälle zu geben
+- Die ehemalige Herzkammer der deutschen Industrie, das Ruhrgebiet, leidet unter dem Strukturwandel hin zu erneuerbaren Energien
+  - Es fallen hier wichtige Steuereinnahmen für die öffentliche Hand weg
+
+---
+
+## Vergleich der Arbeitslosenquote und Verschuldung
+
+.pull-left[
+```{r, echo=FALSE, out.width='70%'}
+plot_schulden_lk
+```
+
+]
+
+.pull-right[
+```{r, echo=FALSE, out.width='70%'}
+schulden_landkreise <- left_join(landkreise, gesamtdaten, by="Regionalschluessel") %>%
+  mutate(alo_quote_lk = as.factor(case_when(
+    alo_quote <= 2 ~ "0 - 2%",
+    alo_quote > 2 & alo_quote <= 4 ~ "2 - 4%",
+    alo_quote > 4 & alo_quote <= 6 ~ "4 - 6%",
+    alo_quote > 6 & alo_quote <= 8 ~ "6 - 8%",
+    alo_quote > 8 & alo_quote <= 10 ~ "8 - 10%",
+    alo_quote > 10 & alo_quote <= 13.5 ~ "10 - 13.5%"
+  )))
+
+plot_alo_lk <- ggplot(
+  # define main data source
+  data = schulden_landkreise
+) +
+  geom_sf(
+    mapping = aes(
+      fill = fct_relevel(alo_quote_lk, "10 - 13.5%", after = 5)
+    ),
+    color = "white",
+    size = 0.1
+  ) +
+  # use the Viridis color scale
+  scale_fill_viridis_d(
+    option = "inferno",
+    name = "Schulden\npro Kopf in €",
+    alpha = 0.8, # make fill a bit brighter
+    begin = 0.1,
+    end = 0.9,
+    direction = -1,
+    guide = guide_legend(reverse = T)) +
+  # use thicker white stroke for cantonal borders
+  geom_sf(
+    data = bundesland,
+    fill = "transparent",
+    color = "white",
+    size = 0.5
+  ) +
+  # add titles
+  labs(x = NULL,
+       y = NULL,
+       title = "Arbeitslosigkeit in Deutschland",
+       subtitle = "Dargestellt ist die Arbeitslosenquote für alle Landkreise in 2017") +
+  theme_minimal()
+
+
+plot_alo_lk
+```
+
+]
+
+---
+
+## Vergleich der Arbeitslosenquote und Verschuldung
+
+- Tendenziell sind die Landkreise mit höheren Schulden auch die mit einer höheren Arbeitslosenquote
+- Verschuldung könnte ein erklärender Faktor für die Arbeitslosenquote sein
+- Grafisch ist der Zusammenhang jedoch nicht eindeutig verifizierbar
+  - Um Zusammenhänge deutlich zu machen müssen wir uns der **bivariaten deskriptiven Statistik** bemühen, insbesondere **Streudiagrammen** und **Korrelationsmatrizen**
+
+Karten sind eine schöne Art geografisch unterschiedliche Informationen darzustellen, allerdings ist das Auge schlecht darin Farbverläufe zu unterschieden!
+
+.alert[Bei Karten immer eine sehr kontrastreiche Farbpalette verwenden!]
+
+---
+
+class: inverse, center, middle
+
+# Bivariate deskriptive Analyse
+
+---
+
+## Die Korrelation
+
+**Bisher:** Univariate Analyse, d.h. nur eine Variable
+
+**Jetzt:** Bivariate Analyse, d.h. Zusammenhang zwischen **zwei** Variablen untersuchen
+
+.alert[Hierzu nutzen wir die Korrelation der Variablen!]
+
+Der Korrelationskoeffizient für zwei Variablen $(x_1, y_1), \dots, (x_n,y_n)$ ist definiert als:
+
+$$
+\rho = \frac{1}{n} \sum_{i=1}^n \left( \frac{x_i-\mu_x}{\sigma_x} \right)\left( \frac{y_i-\mu_y}{\sigma_y} \right)
+$$
+mit $\mu_x, \mu_y$ als Mittelwerte von $x_1,\dots, x_n$ und $y_1, \dots, y_n$. 
+$\sigma_x, \sigma_y$ sind die Standardabweichungen von diesem Mittelwert. 
+$\rho$ wird üblicherweise genutzt um den Korrelationskoeffizienten zu bezeichnen. 
+
+--
+
+.question[Wie hängt die Arbeitslosenquote in den einzelnen Landkreisen mit deren BIP-pro-Kopf-Wachstum zusammen?]
+
+---
+
+## Korrelation zwischen Arbeitslosenquote und BIP-pro-Kopf-Wachstum
+
+Wir können uns die oben beschriebene Formel bzgl. des Zusammenhangs von zwei Variablen immer auch grafisch verdeutlichen
+
+- Wir haben zwei Dimensionen
+  - Variable x: BIP-pro-Kopf-Wachstum
+  - Variable y: Arbeitslosenquote
+
+Im Streudiagramm können wir Variable x auf der x-Achse und Variable y auf der y-Achse abtragen
+
+---
+
+```{r, echo=FALSE}
+bip_wachstum_2017 <- bip_wachstum %>%
+  filter( Jahr == 2017 ) %>%
+  select(Regionalschluessel, bip_pro_kopf_wachstum, Jahr)
+
+gesamtdaten <- left_join(gesamtdaten, bip_wachstum_2017, by = "Regionalschluessel") %>%
+  mutate(anteil_schulden = Schulden_gesamt / bip)
+```
+
+`r chunk_reveal(chunk_name = "cor1")`
+
+```{r cor1, include=FALSE}
+gesamtdaten %>%
+  ggplot(aes(x = bip_pro_kopf_wachstum, y = alo_quote)) + 
+  geom_point() + 
+  labs( x = "Wachstum des BIP %", 
+        y = "Arbeitslosenquote in %",
+        title = "Korrelation des BIP-Wachstums und der Arbeitslosenquote") +
+  theme_minimal() 
+```
+
+---
+
+## Korrelation zwischen Arbeitslosenquote und BIP-Wachstum
+
+- Es fallen die Ausreißer ins Auge (+10% und -10%)
+  - Vorheriges Jahr hohes/niedriges BIP, dadurch jetzt niedriges/hohes BIP-Wachstum
+- Insgesamt scheint der Zusammenhang jetzt nicht so stark zu sein
+  - Punktewolke deutet auf einen leicht negativen Zusammenhang hin
+
+Korrelationskoeffizient:
+
+```{r}
+cor(gesamtdaten$alo_quote, 
+    gesamtdaten$bip_pro_kopf_wachstum,
+    use = "pairwise.complete.obs")
+```
+
+--
+
+.instructions[Nun sollten wir noch die Korrelation zwischen Arbeitslosenquote und Verschuldung anschauen!]
+
+---
+
+`r chunk_reveal(chunk_name = "cor2")`
+
+```{r cor2, include=FALSE}
+cor_alo_verschuldung <- cor(gesamtdaten$alo_quote, gesamtdaten$anteil_schulden,use = "pairwise.complete.obs")
+
+gesamtdaten %>%
+  ggplot(aes(x = anteil_schulden, y = alo_quote)) + 
+  geom_point() + 
+  labs( x = "Anteil der Schulden am BIP in %", 
+        y = "Arbeitslosenquote in %",
+        title = "Korrelation der öffentlichen Verschuldung und der Arbeitslosenquote") +
+  theme_minimal() +
+  geom_text(x = 0.02, y =13, label = paste("r = ", as.character(round(cor_alo_verschuldung,2))))
+```
+
+---
+
+## Korrelation zwischen Arbeitslosenquote und Verschuldung
+
+Hier ist der positive Zusammenhang zwischen Verschuldung (x-Achse) und Arbeitslosenquote (y-Achse) deutlicher
+
+Korrelationskoeffizient zeigt mit $rho$ = 0.59 auch einen starken Zusammenhang
+
+$rho$ | Beschreibung (nährungsweise)
+---|---
++/- 0.1-0.3 | Schwacher 
++/- 0.3-0.5 | Mittel
++/- 0.5-0.8 | Stark
++/- 0.8-0.9 | Sehr stark
+
+--
+
+.alert[Wir sehen eine positive Korrelation zwischen der Verschuldung von Landkreisen und deren Arbeitslosenquoten.]
+
+---
+
+## Interpretation der Korrelation
+
+- Hat an sich keine intuitive quantitative Interpretation
+- Ist eine univariate Repräsentation des Zusammenhangs zweier Variablen
+- Kann dabei helfen stark korrelierte Variablen im Datensatz aufzuzeigen
+  - Dies ist für eine spätere lineare Regression wichtig
+  - Stichwort Multikollinearität
+
+.alert[Im nächsten Semester beschäftigen wir uns mit der linearen Regression, hier können die Koeffizienten direkt interpretiert werden.]
+
+---
+
+## Zusammenfassung und Ausblick
+
+**Dieses Semester:** Deskriptiven Statistik 
+
+**Nächstes Semester:** Induktive Statistik, insbesondere durch lineare Regressionen
+
+.question[Was haben wir bisher gelernt?]
+
+--
+- Daten in R einlesen
+- Diese Daten kompakt mittels Tabellen und Grafiken beschreiben 
+- Den Zusammenhang einzelner Variablen untersuchen
+
+---
+
+## Übungsaufgaben
+
+Im ersten Teil der Case Study hatten Sie sich noch die durchschnittlichen Einkommen auf Landkreisebene in R eingelesen. Nun sollten Sie diese Tabelle deskriptiv analysieren:
+
+- Erstellen Sie eine deskriptive Tabelle, welche das Einkommen für das Jahr 2017 darstellt. Wie ist hier die Verteilung der Einkommen?
+  - Beschreiben Sie Mittelwert, Standardabweichung, sowie Median
+- Erstellen Sie ein Liniendiagramm zu der Entwicklung des Einkommensniveaus in den einzelnen Landkreisen seit 2000. Sie können sich hierbei an dem Diagramm zum BIP pro Kopf orientieren.
+  - Hinweis: Mergen Sie zu dem Datensatz "Einkommen" zuerst noch die Information zu "Landkreis_name, Bundesland_name und ost_name" hinzu (siehe auch hierzu [diesen Abschnitt](#bruttoinlandsprodukt_pro_kopf))
+- Erstellen Sie eine Karte zum Einkommensniveau der einzelnen Landkreise. Sie können sich hierbei an der Karte zur Verschuldung orientieren.
+- Erstellen Sie eine Korrelationstablle zwischen Arbeitslosenquote, Anteil Schulden, BIP pro Kopf und Einkommen. Sie können sich hierbei an der [Tabelle der Korrleationen aus diesem Abschnitt](#interpretation_der_korrelation) orientieren.

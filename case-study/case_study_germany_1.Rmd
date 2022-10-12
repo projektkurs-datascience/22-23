@@ -45,7 +45,7 @@ Gemeindeebene.
 Uns interessieren die **Pro-Kopf Verschulung**, **Arbeitslosigkeit** und das **BIP**.
 
 -   Die Informationen über die Verschuldung der **Gemeinden** finden wir auf den Seiten des Statistischen Bundesamts im Report: [Integrierte Schulden der Gemeinden und Gemeindeverbände](https://www.statistikportal.de/de/veroeffentlichungen/integrierte-schulden-der-gemeinden-und-gemeindeverbaende).
--   Die Informationen zur Arbeitslosigkeit auf **Verwaltungsgemeinschaftsebene** finden wir auf den Seiten der [Bundesagentur für Arbeit](https://statistik.arbeitsagentur.de/Navigation/Statistik/Statistik-nach-Themen/Arbeitslose-und-gemeldetes-Stellenangebot/Arbeitslose/Arbeitslose-Nav.html).
+-   Die Informationen zur Arbeitslosigkeit auf **Verwaltungsgemeinschaftsebene** finden wir auf den Seiten der [Bundesagentur für Arbeit](https://statistik.arbeitsagentur.de/DE/Navigation/Statistiken/Statistiken-nach-Regionen/BA-Gebietsstruktur-Nav.html).
 -   Die Informationen zum BIP auf **Landkreisebene** finden wir auf den Seiten der [Statistischen Ämter des Bundes und der Länder](https://www.statistikportal.de/de/vgrdl).
 
 ## Nötige Pakete laden
@@ -89,11 +89,11 @@ if (!file.exists("./data/Arbeitslose_2017.xlsx.zip")){
   download.file("https://statistik.arbeitsagentur.de/Statistikdaten/Detail/201712/iiia4/gem-jz/gem-jz-dlk-0-201712-zip.zip", "./data/Arbeitslose_2017.xlsx.zip")
 }
 
-# Link für die Daten von September 2021: https://statistik.arbeitsagentur.de/Statistikdaten/Detail/Aktuell/iiia4/gemeinde-arbeitslose-quoten/arbeitslose-quoten-dlk-0-zip.zip
+# Link für die Daten von September 2022: https://statistik.arbeitsagentur.de/Statistikdaten/Detail/Aktuell/iiia4/gemeinde-arbeitslose-quoten/arbeitslose-quoten-dlk-0-zip.zip
 
-# BIP pro Gemeinde aus dem Jahr 2020
-if (!file.exists("./data/BIP_2020.xlsx")){
-  download.file("https://www.statistikportal.de/sites/default/files/2021-07/vgrdl_r2b1_bs2020.xlsx", "./data/BIP_2020.xlsx")
+# BIP pro Gemeinde aus dem Jahr 2021
+if (!file.exists("./data/BIP_2021.xlsx")){
+  download.file("https://www.statistikportal.de/sites/default/files/2022-07/vgrdl_r2b1_bs2021.xlsx", "./data/BIP_2021.xlsx")
 }
 
 ```
@@ -105,7 +105,7 @@ Wenn dies der Fall ist, so werden sie nicht mehr erneut heruntergeladen.
 
 Wir haben hier auch die Daten für die Arbeitslosenquote aus dem jahr 2017 heruntergeladen, da wir die passenden Informationen zur Pro-Kopf Verschuldung der Gemeinden aus nur aus dem Jahr **2017** online erhalten.
 Ich habe ihnen die Links zum neueren Datensätzen für die Arbeitslosigkeit in den R Chunk geschrieben.
-Für das BIP haben wir die neueste Datenreihe aus dem Jahr 2020 bezogen da wir hier Paneldaten haben und keine Querschnittsdaten (was dies genau heißt wird im Laufe der Case-Study erläutert).
+Für das BIP haben wir die neueste Datenreihe aus dem Jahr 2021 bezogen da wir hier Paneldaten haben und keine Querschnittsdaten (was dies genau heißt wird im Laufe der Case-Study erläutert).
 
 # Daten einlesen
 
@@ -159,12 +159,9 @@ alo <- read_xlsx(alo_name, sheet="6")
 head(alo,10)
 ```
 
-Ok.
-Hier ist es wohl nicht vorteilhaft von der ersten Zeile ab die Informationen aus dem Tabellenblatt einzulesen.
+Ok. Hier ist es wohl nicht vorteilhaft von der ersten Zeile ab die Informationen aus dem Tabellenblatt einzulesen.
 So wie es aussieht sind in den ersten 3 Zeilen Informationen zum Tabellenblatt und dem Berichtsjahr enthalten, dann kommt eine leere Zeile und dann kommen die eigentlichen Spaltenbeschriftungen.
-Diese sind dann jedoch wiederum in 4 Zeilen unterteilt.
-Was sind denn hier nun die Spaltenüberschriften, d.h.
-die Variablennamen im Datensatz?
+Diese sind dann jedoch wiederum in 4 Zeilen unterteilt. Was sind denn hier nun die Spaltenüberschriften, d.h. die Variablennamen im Datensatz?
 
 ## Spezifizieren welche Spalten eingelesen werden sollen
 
@@ -207,8 +204,7 @@ data_alo <- alo %>%
 ## Konsistenzcheck
 
 Nun sollten wir noch die Daten auf Konsistenz prüfen.
-D.h.
-machen die Angaben Sinn und sind die Daten in sich konsistent?
+D.h. machen die Angaben Sinn und sind die Daten in sich konsistent?
 Hierfür sollten wir zum Einen externe Datenquellen untersuchen und zum Anderen die Daten intern prüfen.
 
 Wir haben hier sehr feingranulare Informationen über die Arbeitslosenzahl in 2017 vorliegen, jedoch können wir die Daten auch auf eine höhere Ebene aggregieren und damit leicht mit anderen Quellen vergleichen.
@@ -259,7 +255,7 @@ check_consitency
 ```
 
 Es scheint so, als ob es tatsächlich kleinere Differenzen zwischen den von der Agentur für Arbeit auf Bundeslandebene postulierten Zahlen zur Arbeitslosigkeit und den auf Basis der einzelnen Gemeinden berechneten Werten gibt.
-Diese Unterschiede sind jedoch marginal (Werte zwischen \[-17,12\]) und werden von uns im folgenden nicht näher untersucht.
+Diese Unterschiede sind jedoch marginal (Werte zwischen [-17,12]) und werden von uns im folgenden nicht näher untersucht.
 
 # Pro-Kopf Verschuldung
 
@@ -376,7 +372,7 @@ schulden_bereinigt <- schulden_bereinigt %>%
 ### Berechnung der Schulden pro Kopf von Hand
 
 Um die interne Validität unserer Daten beurteilen zu können wollen wir im ersten Schritt eine Variable `Schulden_pro_Kopf_new` generieren, welche die `Schulden_pro_Kopf` von Hand berechnet.
-Wie schon [im Abschnitt Variablen umformen](#variablen_umformen) erwähnt, müssen wir hierfür jedoch erst folgendes beachten, bevor wir Berechnungen durchführen können:
+Wie schon [im Abschnitt Variablen umformen](#variablen-umformen) erwähnt, müssen wir hierfür jedoch erst folgendes beachten, bevor wir Berechnungen durchführen können:
 
 -   Wir müssen die geschweiften Klammern entfernen (mit `str_remove_all`), als auch die Leerzeichen innerhalb der Zahlen (z.B. 15 653), was wir mit `gsub("[[:space:]]")` erreichen. Tun wir das nicht, so würden wir wieder `NA`s im Datensatz erhalten.
 -   Durch die ifelse Bedingung wird der Befehl `str_remove_all` nur angewendet, wenn tatsächlich geschweifte Klammern vorhanden sind
@@ -465,16 +461,16 @@ new <- left_join(avg_versch_kreis, avg_versch_kreis_calc, by="landkreis") %>%
 skim_without_charts(new$differenz)
 ```
 
-Die Differenzen liegen auch hier zwischen -49 Cent bis +30,58 Euro und können vermutlich auf Rundungsfehler zurückgeführt werden.
+Die Differenzen liegen hier zwischen -49 Cent bis +30,58 Euro und können vermutlich auf Rundungsfehler zurückgeführt werden.
 D.h.
 hier können wir die vom statistischen Bundesamt herausgegebenen Berechnungen auf Landkreisebene verifizieren.
-Der Landkreis Plön bildet hier eine Ausnahme, dies liegt aber vermutlich an der Zuordnung einzelner Teilgemeinden zum Landkreis, welche sich in 2007 geändert hat (siehe Fußnote 2 im Excel-Tabellenblatt "SH").
+Der Landkreis Plön bildet eine Ausnahme, dies liegt aber vermutlich an der Zuordnung einzelner Teilgemeinden zum Landkreis, welche sich in 2007 geändert hat (siehe Fußnote 2 im Excel-Tabellenblatt "SH").
 
 # Bruttoinlandsprodukt
 
 Im nächsten Schritt wollen wir uns die Daten zum Bruttoinlandsprodukt einzelner Landkreise anschauen und diese in R einlesen.
-Wir haben diese direkt als Excel Datei heruntergeladen und können diese Datei direkt in R einlesen.
-Neben dem BIP beziehen wir aus diesem Excel-File die Anzahl an Erwerbstätigen, mit dem wir später die Arbeitslosenquote berechnen können und die Anzahl an Einwohner, mit denen wir das BIP-pro-Kopf anrechnen können.
+Wir haben diese direkt als Excel Datei heruntergeladen und können die Datei direkt in R einlesen.
+Neben dem BIP beziehen wir aus diesem Excel-File die Anzahl an Erwerbstätigen, mit denen wir später die Arbeitslosenquote berechnen können und die Anzahl an Einwohner, mit denen wir das BIP-pro-Kopf berechnen können.
 
 ## Nur einzelne Spalten einlesen
 
@@ -488,13 +484,13 @@ Folgende Schritte wollen wir in einem Chunk erledigen:
 
 -   Die ersten vier Zeilen benötigen wir nicht
 
--   Die letzte Zeile enthält eine kurze Beschreibung die wir nicht benötigen -> Behalte alle Zeilen, bei der `Lfd. Nr.` numerisch ist
+-   Die letzte Zeile enthält eine kurze Beschreibung die wir nicht benötigen -> Vorgehen: Behalte alle Zeilen, bei der `Lfd. Nr.` numerisch ist
 
 -   Die folgenden Variablen benötigen wir nicht für unsere Analyse und können entfernt werden: `Lfd. Nr.`, `EU-Code`, `NUTS 1`, `NUTS 2`, `NUTS 3`, `Land`, `Gebietseinheit`
 
 ```{r, warning=FALSE, message=FALSE}
 # Blatt 1.1 einlesen und die ersten 4 Zeilen skippen
-bip_name <- "./data/BIP_2020.xlsx"
+bip_name <- "./data/BIP_2021.xlsx"
 bip <- read_xlsx(bip_name, sheet="1.1", skip = 4)
 erwerb <- read_xlsx(bip_name, sheet="3.1", skip = 4)
 einwohner <- read_xlsx(bip_name, sheet = "5.", skip = 4)
@@ -522,7 +518,7 @@ head(bip_wide)
 ```
 
 Dieser Datensatz ist ein sogenanntes Panel.
-In den vorherigen Datensätzen zur Anzahl der Arbeitslosen und der Pro-Kopf-Verschuldung hatten wir nur das Jahr 2017 gegeben.
+In den vorherigen Datensätzen zur Anzahl der Arbeitslosen und der Pro-Kopf-Verschuldung hatten wir Querschnittsdaten (d.h. Daten nur das Jahr 2017) gegeben.
 Nun haben wir die Entwicklung des BIP, die Anzahl an Erwerbstätigen und die Anzahl an Einwohnern seit 1992 bis 2017 für alle Landkreise in Deutschland.
 
 ## Daten in das `long`-Format überführen
@@ -544,7 +540,9 @@ Leider ist es hier nicht möglich die Datensätze direkt in das `long`-Format zu
 Dies sagt uns die erscheinende Fehlermeldung:
 
 ---
+
 Fehler: Can't combine `1992` <character> and `2000` <double>.
+
 ---
 
 Da wir wissen, dass das BIP, die Anzahl an Erwerbstätigen und die Anzahl an Einwohnern normalerweise numerisch wiedergegeben wird, ist wohl die Klasse `double` korrekt und wir sollten die Spalten von 1992 bis 1999 entsprechend umformatieren.
@@ -576,7 +574,7 @@ Hierfür verbinden wir den neuen Datensatz `bip_double` mit unserem bisher beste
 bip_wide_test <- bip_wide %>%
   bind_cols(bip_double)
 
-head(filter(bip_wide_test, is.na(`1992...29`)))
+head(filter(bip_wide_test, is.na(`1994...31`)))
 ```
 
 Hier sehen wir bereits warum die Klasse der Variablen `1992` bis `1999` `character` war und nicht `double`.
@@ -625,8 +623,8 @@ einwohner_long <- pivot_longer(einwohner_wide, cols = c("2000":"1999") , names_t
 ## Konsistenzchecks
 
 Wir haben bereits in dem Abschnitt "Pro-Kopf Verschuldung" die Einwohner zur Berechnung der Pro-Kopf-Verschuldung für 2017 eingelesen.
-Für eine längerfristige Betrachtung konnten wir nun mit dem BIP Datensatz die Anzahl der Einwohner von 1992 bis 2020 einlesen.
-In diesem Konsistenzcheck wollen wir untersuchen ob die Anzahl der Einwohner aus beiden Datenquellen identisch ist.
+Für eine längerfristige Betrachtung konnten wir nun mit dem BIP Datensatz die Anzahl der Einwohner von 1992 bis 2021 einlesen.
+In diesem Konsistenzcheck wollen wir untersuchen ob die Anzahl der Einwohner aus beiden Datenquellen in 2017 identisch ist.
 Hierbei ist es natürlich wichtig, wann die Daten zur Einwohnerzahl erhoben wurden und deshalb könnten diese auch geringfügig abweichen.
 Aber dem gehen wir nun auf den Grund:
 
@@ -639,6 +637,8 @@ schulden_check <- schulden_bereinigt %>%
 einwohner_check <- left_join(schulden_check, filter(einwohner_long, Jahr == 2017), by=c("Regionalschluessel")) %>%
   mutate(diff = Einwohner - einwohner) %>%
   arrange(desc(diff))
+
+einwohner_check
 ```
 
 Die Differenz liegt immer bei +/- 2000 Einwohnern, was im Toleranzbereich bei den großen Städte mit mehr als 120.000 Einwohnern ist.
@@ -702,12 +702,12 @@ Wir behalten den Regionalschlüssel (ARS), den Namen des Kreises/der Gemeinde (G
 Wir müssen uns zusätzlich noch etwas mit der Dokumentation des Kartenmaterials beschäftigen.
 Da wir nur die Verwaltungseinheiten ohne die Nord- und Ostsee und ohne den Bodensee darstellen möchten, so müssen wir noch auf GF = 4 filtern, wie auf Seite 9 der Dokumentation beschrieben wird (tun wir dies nicht, so hätten wir die Nordseegebiete doppelt drin):
 
-------------------------------------------------------------------------
+---
 
 **Grundsätzlich gilt:** Jede Verwaltungseinheit besitzt genau einen Attributsatz mit dem GF-Wert 4.
 Zusätzlich kann eine Verwaltungseinheit einen Attributsatz mit dem GF-Wert 2 besitzen.
 
-------------------------------------------------------------------------
+---
 
 ```{r}
 # Auf GF == 4 filtern und ARS als String speichern (ist aktuell als factor abgespeichert)

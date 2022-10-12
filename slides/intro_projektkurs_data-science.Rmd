@@ -1,6 +1,6 @@
 ---
 title: "Willkommen zum Projektkurs Data Science und Business Analytics"
-author: 'Dr. Alexander Rieber<br> <a href="https://github.com/AlexRieber"><i class="fa fa-github fa-fw"></i>&nbsp; AlexRieber</a><br> <a href="mailto:alexander.rieber@uni-ulm.de"><i class="fa fa-paper-plane fa-fw"></i>&nbsp; alexander.rieber@uni-ulm.de</a><br>'
+author: 'Dr. Alexander Rieber<br> <a href="http://twitter.com/AlexRieber"><i class="fa fa-twitter fa-fw"></i>&nbsp; AlexRieber</a> <br> <a href="https://github.com/AlexRieber"><i class="fa fa-github fa-fw"></i>&nbsp; AlexRieber</a><br> <a href="mailto:alexander.rieber@uni-ulm.de"><i class="fa fa-paper-plane fa-fw"></i>&nbsp; alexander.rieber@uni-ulm.de</a><br>'
 output:
   xaringan::moon_reader:
     lib_dir: libs
@@ -13,6 +13,7 @@ output:
       highlightLines: true
       countIncrementalSlides: false
       ratio: "16:9"
+      beforeInit: "https://platform.twitter.com/widgets.js"
     includes:
       in_header: style/header.html 
 #xaringan::inf_mr() #[Start Preview -> Type into console]
@@ -257,7 +258,7 @@ class: inverse, center, middle
 
 - Auf Moodle gibt es ein Diskussionforum, scheuen Sie sich nicht dort ihre Fragen zu stellen!
     - Bitte benutzen Sie dieses Forum, bevor Sie eine Mail an den Tutor, Übungsleiter oder Dozent stellen
-    - Wir haben einige Beispiele aufgearbeitet, wie Sie Fragen stellen sollten, damit Sie schnell eine antworten erhalten. Das Dokument finden Sie in Moodle unter `Fragen-im-Forum.html`
+    - Wir haben einige Beispiele aufgearbeitet, wie Sie Fragen stellen sollten, damit Sie schnell eine antworten erhalten. Das Dokument finden Sie in Moodle unter `Wie stelle ich Fragen im Forum?`
 --
 - Es finden parallel zu den Projektarbeiten Tutorien statt, wobei jede Gruppe einen festen Termin pro Woche erhält
 
@@ -270,7 +271,7 @@ class: inverse, center, middle
 
 - Bereits ab der 1. Vorlesungswoche gibt es ein vorlesungsbegleitendes Tutorium.
   - Im Excel Veranstaltungskalender auf der Moodle-Seite sind beispielhafte Tutoriumstermine eingetragen. Der für ihre Gruppe relevante Termin wird auf Moodle bekannt gegeben
-- Die Tutorien werden wöchentlich über Zoom in Moodle stattfinden.
+- Die Tutorien werden wöchentlich in Präsenz stattfinden (die Räume werden in Moodle bekannt gegeben)
 - Die Tutorinnen und Tutoren beantworten auch ihre Fragen auf Moodle
   - Bitte stellen Sie ihre Fragen im Forum, wenn ihr Problem allgemeiner Natur ist
 
@@ -282,21 +283,21 @@ class: inverse, center, middle
 
 ## Tutorium
 
-Der **erste Tutoriumstermin** ist am **20.10.2022** von **14 - 18 Uhr**
+Der **erste Tutoriumstermin** ist am **20.10.2022** von **14 - 18 Uhr** ( **online** )
 
 - In diesem Tutorium werden technische Probleme geklärt
 - Bitte beachten Sie alle Hinweise in den Videos und die schriftlichen Ausführungen zur Installation von R und RStudio, Github Account erstellen etc.
 
 --
 
-Die **erste Übung** ist am **23.10.2022** von **10:15 - 11:45 Uhr**
+Die **erste Übung** ist am **21.10.2022** von **10:15 - 11:45 Uhr** ( in **H3** ) 
 
 - Fokus: Technische Fragen zu RStudio Cloud und dem 1. Übungsblatt werden hier beantwortet
 - Falls jedoch noch technische Fragen aus dem Tutorium vom 20.10.2022 offen sind werden diese hier auch behandelt
 
 --
 
-.instructions[Es ist sehr wichtig, dass jeder die neueste Version von R (Version 4.2.1), RStudio (Version 2022.07.1-554) installiert hat und sein Konto über git versioniert da die späteren Projekte hierrüber laufen.]
+.instructions[Es ist sehr wichtig, dass jeder die neueste Version von R (Version 4.2.1) und RStudio (Version 2022.07.2-576) installiert hat und sein Konto über git versioniert da die späteren Projekte hierrüber laufen.]
 
 .alert[Bitte schauen Sie sich die Videos zur Installation von R, RStudio und Github an!]
 
@@ -386,7 +387,7 @@ include_graphics(buchung)
 
 ---
 
-## Projekt 2: xxx
+## Projekt 2: Standortwahl von Pflegeheimen um Ulm
 
 --
 
@@ -394,21 +395,25 @@ include_graphics(buchung)
 <br><br>
 In diesem Projekt widmen Sie sich der Frage:
 
-.alert[xxx]
+.alert[Wie sieht die Altersstruktur in Ulm und um Ulm aus? Wo wäre ein geeigneter Standort für ein Alten- und Pflegeheim?]
 
-yyy
+Zur Beantwortung dieser Frage Werten Sie Industriedaten aus, die uns von der [Exaris Solutions](https://exaris-solutions.de/) zur Verfügung gestellt wurden. 
+
+**Besonderheit in diesem Projekt:** Am 05.12.2022 gibt es einen Workshop mit dem Geschäftsführer von Exaris Solutions, der mit ihnen tiefergehende Analysen durchführen wird.
 ]
 .pull-right[
 <br><br>
-```{r, echo=FALSE, out.width="50%"}
-duesseldorf <- "figs/Screenshot_Duesseldorf.png"
-include_graphics(duesseldorf)
+```{r, echo=FALSE, out.width="100%"}
+seniorenheim <- "figs/seniorenheim_bad-waldsee.jpg"
+include_graphics(seniorenheim)
 ```
+
+<font size="1">Quelle: https://www.st-elisabeth-stiftung.de/wohnen-und-pflege/wohnangebote-fuer-senioren/wohnpark-st-franziskus</font> 
 ]
 
 ---
 
-## Projekt 3: Gefühlte vs. tatsächliche Inflation
+## Projekt 3: Die Inflation in Deutschland, dem Euroraum und den USA
 
 --
 
@@ -416,15 +421,22 @@ include_graphics(duesseldorf)
 <br><br>
 In diesem Projekt widmen Sie sich der Frage:
 
-.alert[Was sind die Treiber der Inflation und warum ist die Inflation teilweise gefühlt höher als tatsächlich vom statistischen Bundesamt berichtet?]
+.alert[Was sind die Treiber der Inflation in unterschiedlichen Ländern und welche Rolle spielen Zentralbanken für die Geldwertstabilität?]
 
-Zur Beantwortung dieser Frage sollen Sie sich zuerst darüber im klaren werden, wie Inflation überhaupt gemessen wird. Danach schauen Sie sich unterschiedliche Datenquellen zur Inflation an und auch zu Umfragen bzgl. der gefühlten Inflation unter den Bürgern. 
+In diesem Projekt beantworten Sie folgende Fragen:
+
+- Wie wird Inflation gemessen?
+- Was sind die Unterschiede in den einzelnen Ländern in der Inflation(smessung)?
+- Was können Zentralbanken für die Geldwertstabilität tun?
 ]
 .pull-right[
 <br><br>
-```{r, eval = FALSE, echo=FALSE, out.width="110%"}
-
+```{r, echo = FALSE, out.width="100%"}
+ezb <- "figs/ezb.jpg"
+include_graphics(ezb)
 ```
+
+<font size="1">Quelle: https://www.tagesschau.de/wirtschaft/finanzen/ezb-inflation-geldpolitik-strategie-101.html</font> 
 ]
 
 
@@ -601,7 +613,7 @@ Sie sollten mit ihren Gruppenpartnern zusammenarbeiten, dafür gilt es einige Pr
 - Laden Sie R und RStudio herunter
     - Nutzen Sie hierfür das Tutorial auf unserer Moodle Seite
     - _Bitte beachten Sie_: 
-        - Installieren Sie die neueste Version von R (4.2.1) und R-Studio (2022.07.1)
+        - Installieren Sie die neueste Version von R (4.2.1) und R-Studio (2022.07.2)
         - Wenn Sie bereits R und R-Studio installiert haben stellen Sie sicher, dass diese auf dem neuesten Stand sind (hier hilft ihnen das Paket `installr` mit der Funktion `updateR()`)
         - Sie können die Version von R über die Eingabe des Befehls `version` prüfen
         - Sie können die Version von R-Studio über die Eingabe des Befehls `RStudio.Version()` prüfen
@@ -653,7 +665,7 @@ Gehen Sie auf [RStudio-Cloud](https://rstudio.cloud/) und loggen sich mit ihrem 
 
 - Die Gruppen werden zufällig zugeteilt
 - Es werden immer Gruppen von 3 Personen gebildet
-- Alle Projekte werden in dieser Gruppe bearbeitet
+- Für jedes Projekt werden neue Gruppe gebildet
 - Die Gruppe bekommt **eine Note** für **alle Gruppenmitglieder**
   - Teamwork ist angesagt, mit der entsprechenden Koordination im Team
 

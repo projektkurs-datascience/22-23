@@ -572,7 +572,7 @@ Gehen Sie hierbei bitte auf eine Variable (alo_quote, Schulden_pro_Kopf_lk, bip_
 
 --
 
-<div class="countdown" id="timer_7c049694" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_a717cb5a" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
@@ -615,16 +615,16 @@ Median: 2081€
 
 ## BIP pro Kopf
 
-Mittelwert: 37086€
+Mittelwert: 36828€
   - Insgesamt recht hoch
   - Starker Wirtschaftsstandort Deutschland
 
-Standardabweichung: 16127€
+Standardabweichung: 16197€
   - Sehr hohe Streuung
   - Deutliche regionale Unterschiede
   - Könnte von einzelnen Landkreisen getrieben werden
  
-Median: 33105€
+Median: 32592€
   - Weiter weg vom Mittelwert
   - Deutet darauf hin das es einzelne Landkreise mit sehr extremen Ausreißern gibt
 
@@ -4852,7 +4852,7 @@ bip_zeitreihe_namen %&gt;%
 - Logarithmische Skalierung der y-Achse
 - Das Niveau des BIP pro Kopf ist in den ostdeutschen Landkreisen deutlich niedriger als in den westdeutschen. 
 - Stadtkreis Ulm hat ein sehr hohes BIP pro Kopf, auch im Zeitablauf
-- Das BIP Pro Kopf nimmt im Zeitablauf in den ostdeutschen Landkreisen zu, doch erreicht es mit durchschnittlich 28338€ den Wert, welchen die westdeutschen Landkreise durchschnittlich in 2006 hatten!
+- Das BIP Pro Kopf nimmt im Zeitablauf in den ostdeutschen Landkreisen zu, doch erreicht es mit durchschnittlich 28091€ den Wert, welchen die westdeutschen Landkreise durchschnittlich in 2006 hatten!
 - In 2008/2009 gibt es überall einen Einbruch beim BIP pro Kopf, jedoch scheint dieser in den ostdeutschen Bundesländern nicht so stark gewesen zu sein
 
 --
@@ -5584,7 +5584,7 @@ bip_wachstum %&gt;%
 
 **Interpretation**:
 - Es findet keine Anpassung des BIP pro Kopf über die Zeit statt
-- Die Gelder durch den Soli-Ausgleich führen nicht zu der (erhofften) starken Aufholjagt
+- Die Gelder durch den Soli-Ausgleich führen nicht zu der (erhofften) starken Aufholjagd
 - Ostdeutsche Landkreise haben sich stark entwickelt
   - Diese Etwicklung sollte jedoch nicht absolut, sondern relativ zu westdeutschen Landkreisen betrachtet werden
 
@@ -5653,42 +5653,6 @@ count: false
 
 ```r
 gesamtdaten %&gt;%
-* filter(bip_pro_kopf&lt;100000)
-```
-]
- 
-.panel2-bip3-auto[
-
-```
-## # A tibble: 395 × 14
-##    Regionalsch…¹ total…² landk…³ bunde…⁴ bunde…⁵ Schul…⁶ Einwo…⁷ Schul…⁸     bip
-##    &lt;chr&gt;           &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;     &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
-##  1 01001            4512 Flensb… 01      Schles…   5791.   87770  5.08e8 3.67e 9
-##  2 01002           12345 Kiel    01      Schles…   3839.  247135  9.49e8 1.14e10
-##  3 01003            9692 Lübeck  01      Schles…   5567.  216739  1.21e9 9.16e 9
-##  4 01004            3836 Neumün… 01      Schles…   5409.   78759  4.26e8 3.34e 9
-##  5 01051            4632 Dithma… 01      Schles…   1670.  133684  2.23e8 4.47e 9
-##  6 01053            5592 Herzog… 01      Schles…   1293.  195677  2.53e8 4.50e 9
-##  7 01054            5657 Nordfr… 01      Schles…   2624.  165642  4.35e8 5.74e 9
-##  8 01055            5748 Osthol… 01      Schles…   1890.  200931  3.80e8 5.27e 9
-##  9 01056            8599 Pinneb… 01      Schles…   2225.  311713  6.94e8 9.07e 9
-## 10 01057            3264 Plön    01      Schles…   1532.  128763  1.97e8 2.55e 9
-## # … with 385 more rows, 5 more variables: bip_pro_kopf &lt;dbl&gt;, erw &lt;dbl&gt;,
-## #   alo_quote &lt;dbl&gt;, ost &lt;fct&gt;, ost_name &lt;chr&gt;, and abbreviated variable names
-## #   ¹​Regionalschluessel, ²​total_alo, ³​landkreis_name, ⁴​bundesland,
-## #   ⁵​bundesland_name, ⁶​Schulden_pro_kopf_lk, ⁷​Einwohner, ⁸​Schulden_gesamt
-```
-]
-
----
-count: false
- 
-
-.panel1-bip3-auto[
-
-```r
-gesamtdaten %&gt;%
-  filter(bip_pro_kopf&lt;100000) %&gt;%
 * group_by(ost_name)
 ```
 ]
@@ -5696,7 +5660,7 @@ gesamtdaten %&gt;%
 .panel2-bip3-auto[
 
 ```
-## # A tibble: 395 × 14
+## # A tibble: 401 × 14
 ## # Groups:   ost_name [2]
 ##    Regionalsch…¹ total…² landk…³ bunde…⁴ bunde…⁵ Schul…⁶ Einwo…⁷ Schul…⁸     bip
 ##    &lt;chr&gt;           &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;     &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
@@ -5710,7 +5674,7 @@ gesamtdaten %&gt;%
 ##  8 01055            5748 Osthol… 01      Schles…   1890.  200931  3.80e8 5.27e 9
 ##  9 01056            8599 Pinneb… 01      Schles…   2225.  311713  6.94e8 9.07e 9
 ## 10 01057            3264 Plön    01      Schles…   1532.  128763  1.97e8 2.55e 9
-## # … with 385 more rows, 5 more variables: bip_pro_kopf &lt;dbl&gt;, erw &lt;dbl&gt;,
+## # … with 391 more rows, 5 more variables: bip_pro_kopf &lt;dbl&gt;, erw &lt;dbl&gt;,
 ## #   alo_quote &lt;dbl&gt;, ost &lt;fct&gt;, ost_name &lt;chr&gt;, and abbreviated variable names
 ## #   ¹​Regionalschluessel, ²​total_alo, ³​landkreis_name, ⁴​bundesland,
 ## #   ⁵​bundesland_name, ⁶​Schulden_pro_kopf_lk, ⁷​Einwohner, ⁸​Schulden_gesamt
@@ -5725,9 +5689,8 @@ count: false
 
 ```r
 gesamtdaten %&gt;%
-  filter(bip_pro_kopf&lt;100000) %&gt;%
   group_by(ost_name) %&gt;%
-* summarise(durchschnitt = mean(bip_pro_kopf))
+* summarise(durchschnitt = mean(bip_pro_kopf, na.rm = T))
 ```
 ]
  
@@ -5738,7 +5701,7 @@ gesamtdaten %&gt;%
 ##   ost_name        durchschnitt
 ##   &lt;chr&gt;                  &lt;dbl&gt;
 ## 1 Ostdeutschland        28091.
-## 2 Westdeutschland       37783.
+## 2 Westdeutschland       38884.
 ```
 ]
 
@@ -5750,9 +5713,8 @@ count: false
 
 ```r
 gesamtdaten %&gt;%
-  filter(bip_pro_kopf&lt;100000) %&gt;%
   group_by(ost_name) %&gt;%
-  summarise(durchschnitt = mean(bip_pro_kopf)) %&gt;%
+  summarise(durchschnitt = mean(bip_pro_kopf, na.rm = T)) %&gt;%
 * ungroup() -&gt; mittel
 ```
 ]
@@ -5769,12 +5731,32 @@ count: false
 
 ```r
 gesamtdaten %&gt;%
-  filter(bip_pro_kopf&lt;100000) %&gt;%
   group_by(ost_name) %&gt;%
-  summarise(durchschnitt = mean(bip_pro_kopf)) %&gt;%
+  summarise(durchschnitt = mean(bip_pro_kopf, na.rm = T)) %&gt;%
   ungroup() -&gt; mittel
 
 *ggplot(gesamtdaten, aes(x = bip_pro_kopf))
+```
+]
+ 
+.panel2-bip3-auto[
+![](VL_case-study-Teil2_files/figure-html/bip3_auto_05_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-bip3-auto[
+
+```r
+gesamtdaten %&gt;%
+  group_by(ost_name) %&gt;%
+  summarise(durchschnitt = mean(bip_pro_kopf, na.rm = T)) %&gt;%
+  ungroup() -&gt; mittel
+
+ggplot(gesamtdaten, aes(x = bip_pro_kopf)) +
+* geom_histogram(data = filter(gesamtdaten, bip_pro_kopf&lt;100000), binwidth = 1000)
 ```
 ]
  
@@ -5790,13 +5772,13 @@ count: false
 
 ```r
 gesamtdaten %&gt;%
-  filter(bip_pro_kopf&lt;100000) %&gt;%
   group_by(ost_name) %&gt;%
-  summarise(durchschnitt = mean(bip_pro_kopf)) %&gt;%
+  summarise(durchschnitt = mean(bip_pro_kopf, na.rm = T)) %&gt;%
   ungroup() -&gt; mittel
 
 ggplot(gesamtdaten, aes(x = bip_pro_kopf)) +
-* geom_histogram(data = filter(gesamtdaten, bip_pro_kopf&lt;100000), binwidth = 1000)
+  geom_histogram(data = filter(gesamtdaten, bip_pro_kopf&lt;100000), binwidth = 1000) +
+* geom_vline(data = mittel, aes(xintercept = durchschnitt), color = "blue")
 ```
 ]
  
@@ -5812,13 +5794,13 @@ count: false
 
 ```r
 gesamtdaten %&gt;%
-  filter(bip_pro_kopf&lt;100000) %&gt;%
   group_by(ost_name) %&gt;%
-  summarise(durchschnitt = mean(bip_pro_kopf)) %&gt;%
+  summarise(durchschnitt = mean(bip_pro_kopf, na.rm = T)) %&gt;%
   ungroup() -&gt; mittel
 
 ggplot(gesamtdaten, aes(x = bip_pro_kopf)) +
   geom_histogram(data = filter(gesamtdaten, bip_pro_kopf&lt;100000), binwidth = 1000) +
+  geom_vline(data = mittel, aes(xintercept = durchschnitt), color = "blue") +
 * facet_grid(ost_name~.)
 ```
 ]
@@ -5835,15 +5817,15 @@ count: false
 
 ```r
 gesamtdaten %&gt;%
-  filter(bip_pro_kopf&lt;100000) %&gt;%
   group_by(ost_name) %&gt;%
-  summarise(durchschnitt = mean(bip_pro_kopf)) %&gt;%
+  summarise(durchschnitt = mean(bip_pro_kopf, na.rm = T)) %&gt;%
   ungroup() -&gt; mittel
 
 ggplot(gesamtdaten, aes(x = bip_pro_kopf)) +
   geom_histogram(data = filter(gesamtdaten, bip_pro_kopf&lt;100000), binwidth = 1000) +
+  geom_vline(data = mittel, aes(xintercept = durchschnitt), color = "blue") +
   facet_grid(ost_name~.) +
-* geom_vline(data = mittel, aes(xintercept = durchschnitt), color = "blue")
+* theme_bw()
 ```
 ]
  
@@ -5859,40 +5841,14 @@ count: false
 
 ```r
 gesamtdaten %&gt;%
-  filter(bip_pro_kopf&lt;100000) %&gt;%
   group_by(ost_name) %&gt;%
-  summarise(durchschnitt = mean(bip_pro_kopf)) %&gt;%
+  summarise(durchschnitt = mean(bip_pro_kopf, na.rm = T)) %&gt;%
   ungroup() -&gt; mittel
 
 ggplot(gesamtdaten, aes(x = bip_pro_kopf)) +
   geom_histogram(data = filter(gesamtdaten, bip_pro_kopf&lt;100000), binwidth = 1000) +
-  facet_grid(ost_name~.) +
   geom_vline(data = mittel, aes(xintercept = durchschnitt), color = "blue") +
-* theme_bw()
-```
-]
- 
-.panel2-bip3-auto[
-![](VL_case-study-Teil2_files/figure-html/bip3_auto_10_output-1.png)&lt;!-- --&gt;
-]
-
----
-count: false
- 
-
-.panel1-bip3-auto[
-
-```r
-gesamtdaten %&gt;%
-  filter(bip_pro_kopf&lt;100000) %&gt;%
-  group_by(ost_name) %&gt;%
-  summarise(durchschnitt = mean(bip_pro_kopf)) %&gt;%
-  ungroup() -&gt; mittel
-
-ggplot(gesamtdaten, aes(x = bip_pro_kopf)) +
-  geom_histogram(data = filter(gesamtdaten, bip_pro_kopf&lt;100000), binwidth = 1000) +
   facet_grid(ost_name~.) +
-  geom_vline(data = mittel, aes(xintercept = durchschnitt), color = "blue") +
   theme_bw() +
 * labs(title = "Verteilung des BIP pro Kopf für Ost- und Westdeutschland",
 *      subtitle = "Beobachtungen auf Landkreisebene in 2017",
@@ -5902,7 +5858,7 @@ ggplot(gesamtdaten, aes(x = bip_pro_kopf)) +
 ]
  
 .panel2-bip3-auto[
-![](VL_case-study-Teil2_files/figure-html/bip3_auto_11_output-1.png)&lt;!-- --&gt;
+![](VL_case-study-Teil2_files/figure-html/bip3_auto_10_output-1.png)&lt;!-- --&gt;
 ]
 
 &lt;style&gt;
@@ -5949,7 +5905,7 @@ ggplot(gesamtdaten, aes(x = bip_pro_kopf)) +
 Das Histogramm bestätigen das Bild des Boxplots:
 - Deutliche Unterschiede zwischen ost- und westdeutschend Landkreisen in 2017
 - Deutlich mehr Ausreißer nach oben bei westdeutschen Landkreisen
-- Verteilung ist für ostdeutsche Landkreise enger um den Mittelwert für das BIP pro Kopf von 28338€
+- Verteilung ist für ostdeutsche Landkreise enger um den Mittelwert für das BIP pro Kopf von 28091€
 - Mittelwert und Median für westdeutsche Landkreise liegt deutlich weiter auseinander und zeigt, dass es hier mehr Ausreißer in den Daten gibt
 
 ---
@@ -5982,7 +5938,7 @@ count: false
 
 ```r
 *ggplot(
-# define main data source
+# Datensatz
 * data = schulden_landkreise_anteil
 *) 
 ```
@@ -6000,7 +5956,7 @@ count: false
 
 ```r
 ggplot(
-# define main data source
+# Datensatz
   data = schulden_landkreise_anteil
 ) +
 * geom_sf(
@@ -6025,7 +5981,7 @@ count: false
 
 ```r
 ggplot(
-# define main data source
+# Datensatz
   data = schulden_landkreise_anteil
 ) +
   geom_sf(
@@ -6035,11 +5991,11 @@ ggplot(
     color = "white",
     size = 0.1
   ) +
-# use the Viridis color scale
+# Viridis Farbschema
 * scale_fill_viridis_d(
 *   option = "inferno",
 *   name = "Anteil der Schulden\nam BIP",
-*   alpha = 0.8,  # make fill a bit brighter
+*   alpha = 0.8,  # Deckkraft der Füllung
 *   begin = 0.1,
 *   end = 0.9,
 *   direction = -1,
@@ -6059,7 +6015,7 @@ count: false
 
 ```r
 ggplot(
-# define main data source
+# Datensatz
   data = schulden_landkreise_anteil
 ) +
   geom_sf(
@@ -6069,16 +6025,16 @@ ggplot(
     color = "white",
     size = 0.1
   ) +
-# use the Viridis color scale
+# Viridis Farbschema
   scale_fill_viridis_d(
     option = "inferno",
     name = "Anteil der Schulden\nam BIP",
-    alpha = 0.8,  # make fill a bit brighter
+    alpha = 0.8,  # Deckkraft der Füllung
     begin = 0.1,
     end = 0.9,
     direction = -1,
     guide = guide_legend(reverse = T)) +
-# use thicker white stroke for cantonal borders
+# etwas dickere Linien für Bundeslandgrenzen
 * geom_sf(
 *   data = bundesland,
 *   fill = "transparent",
@@ -6100,7 +6056,7 @@ count: false
 
 ```r
 ggplot(
-# define main data source
+# Datensatz
   data = schulden_landkreise_anteil
 ) +
   geom_sf(
@@ -6110,23 +6066,23 @@ ggplot(
     color = "white",
     size = 0.1
   ) +
-# use the Viridis color scale
+# Viridis Farbschema
   scale_fill_viridis_d(
     option = "inferno",
     name = "Anteil der Schulden\nam BIP",
-    alpha = 0.8,  # make fill a bit brighter
+    alpha = 0.8,  # Deckkraft der Füllung
     begin = 0.1,
     end = 0.9,
     direction = -1,
     guide = guide_legend(reverse = T)) +
-# use thicker white stroke for cantonal borders
+# etwas dickere Linien für Bundeslandgrenzen
   geom_sf(
     data = bundesland,
     fill = "transparent",
     color = "white",
     size = 0.5
   ) +
-# add titles
+# Titel
 * labs(x = NULL,
 *      y = NULL,
 *      title = "Wie verschuldet sind die deutschen Landkreise?",
@@ -6146,7 +6102,7 @@ count: false
 
 ```r
 ggplot(
-# define main data source
+# Datensatz
   data = schulden_landkreise_anteil
 ) +
   geom_sf(
@@ -6156,23 +6112,23 @@ ggplot(
     color = "white",
     size = 0.1
   ) +
-# use the Viridis color scale
+# Viridis Farbschema
   scale_fill_viridis_d(
     option = "inferno",
     name = "Anteil der Schulden\nam BIP",
-    alpha = 0.8,  # make fill a bit brighter
+    alpha = 0.8,  # Deckkraft der Füllung
     begin = 0.1,
     end = 0.9,
     direction = -1,
     guide = guide_legend(reverse = T)) +
-# use thicker white stroke for cantonal borders
+# etwas dickere Linien für Bundeslandgrenzen
   geom_sf(
     data = bundesland,
     fill = "transparent",
     color = "white",
     size = 0.5
   ) +
-# add titles
+# Titel
   labs(x = NULL,
        y = NULL,
        title = "Wie verschuldet sind die deutschen Landkreise?",
@@ -6193,7 +6149,7 @@ count: false
 
 ```r
 ggplot(
-# define main data source
+# Datensatz
   data = schulden_landkreise_anteil
 ) +
   geom_sf(
@@ -6203,23 +6159,23 @@ ggplot(
     color = "white",
     size = 0.1
   ) +
-# use the Viridis color scale
+# Viridis Farbschema
   scale_fill_viridis_d(
     option = "inferno",
     name = "Anteil der Schulden\nam BIP",
-    alpha = 0.8,  # make fill a bit brighter
+    alpha = 0.8,  # Deckkraft der Füllung
     begin = 0.1,
     end = 0.9,
     direction = -1,
     guide = guide_legend(reverse = T)) +
-# use thicker white stroke for cantonal borders
+# etwas dickere Linien für Bundeslandgrenzen
   geom_sf(
     data = bundesland,
     fill = "transparent",
     color = "white",
     size = 0.5
   ) +
-# add titles
+# Titel
   labs(x = NULL,
        y = NULL,
        title = "Wie verschuldet sind die deutschen Landkreise?",
@@ -6761,9 +6717,9 @@ Im ersten Teil der Case Study hatten Sie sich noch die durchschnittlichen Einkom
 - Erstellen Sie eine deskriptive Tabelle, welche das Einkommen für das Jahr 2017 darstellt. Wie ist hier die Verteilung der Einkommen?
   - Beschreiben Sie Mittelwert, Standardabweichung, sowie Median
 - Erstellen Sie ein Liniendiagramm zu der Entwicklung des Einkommensniveaus in den einzelnen Landkreisen seit 2000. Sie können sich hierbei an dem Diagramm zum BIP pro Kopf orientieren.
-  - Hinweis: Mergen Sie zu dem Datensatz "Einkommen" zuerst noch die Information zu "Landkreis_name, Bundesland_name und ost_name" hinzu (siehe auch hierzu [diesen Abschnitt](#bruttoinlandsprodukt_pro_kopf))
+  - Hinweis: Mergen Sie zu dem Datensatz "Einkommen" zuerst noch die Information zu "Landkreis_name, Bundesland_name und ost_name" hinzu (siehe auch hierzu [diesen Abschnitt](#bruttoinlandsprodukt-pro-kopf))
 - Erstellen Sie eine Karte zum Einkommensniveau der einzelnen Landkreise. Sie können sich hierbei an der Karte zur Verschuldung orientieren.
-- Erstellen Sie eine Korrelationstablle zwischen Arbeitslosenquote, Anteil Schulden, BIP pro Kopf und Einkommen. Sie können sich hierbei an der [Tabelle der Korrleationen aus diesem Abschnitt](#interpretation_der_korrelation) orientieren.
+- Erstellen Sie eine Korrelationstablle zwischen Arbeitslosenquote, Anteil Schulden, BIP pro Kopf und Einkommen. Sie können sich hierbei an der [Tabelle der Korrleationen aus diesem Abschnitt](#interpretation-der-korrelation) orientieren.
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

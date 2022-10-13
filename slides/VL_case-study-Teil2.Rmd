@@ -440,16 +440,16 @@ Median: 2081€
 
 ## BIP pro Kopf
 
-Mittelwert: 37086€
+Mittelwert: 36828€
   - Insgesamt recht hoch
   - Starker Wirtschaftsstandort Deutschland
 
-Standardabweichung: 16127€
+Standardabweichung: 16197€
   - Sehr hohe Streuung
   - Deutliche regionale Unterschiede
   - Könnte von einzelnen Landkreisen getrieben werden
  
-Median: 33105€
+Median: 32592€
   - Weiter weg vom Mittelwert
   - Deutet darauf hin das es einzelne Landkreise mit sehr extremen Ausreißern gibt
 
@@ -965,7 +965,7 @@ bip_zeitreihe_namen %>%
 - Logarithmische Skalierung der y-Achse
 - Das Niveau des BIP pro Kopf ist in den ostdeutschen Landkreisen deutlich niedriger als in den westdeutschen. 
 - Stadtkreis Ulm hat ein sehr hohes BIP pro Kopf, auch im Zeitablauf
-- Das BIP Pro Kopf nimmt im Zeitablauf in den ostdeutschen Landkreisen zu, doch erreicht es mit durchschnittlich 28338€ den Wert, welchen die westdeutschen Landkreise durchschnittlich in 2006 hatten!
+- Das BIP Pro Kopf nimmt im Zeitablauf in den ostdeutschen Landkreisen zu, doch erreicht es mit durchschnittlich 28091€ den Wert, welchen die westdeutschen Landkreise durchschnittlich in 2006 hatten!
 - In 2008/2009 gibt es überall einen Einbruch beim BIP pro Kopf, jedoch scheint dieser in den ostdeutschen Bundesländern nicht so stark gewesen zu sein
 
 --
@@ -1070,7 +1070,7 @@ bip_wachstum %>%
 
 **Interpretation**:
 - Es findet keine Anpassung des BIP pro Kopf über die Zeit statt
-- Die Gelder durch den Soli-Ausgleich führen nicht zu der (erhofften) starken Aufholjagt
+- Die Gelder durch den Soli-Ausgleich führen nicht zu der (erhofften) starken Aufholjagd
 - Ostdeutsche Landkreise haben sich stark entwickelt
   - Diese Etwicklung sollte jedoch nicht absolut, sondern relativ zu westdeutschen Landkreisen betrachtet werden
 
@@ -1102,15 +1102,14 @@ Alternative Darstellung der Entwicklung:
 
 ```{r bip3, include=FALSE}
 gesamtdaten %>%
-  filter(bip_pro_kopf<100000) %>%
   group_by(ost_name) %>%
-  summarise(durchschnitt = mean(bip_pro_kopf)) %>%
+  summarise(durchschnitt = mean(bip_pro_kopf, na.rm = T)) %>%
   ungroup() -> mittel
 
 ggplot(gesamtdaten, aes(x = bip_pro_kopf)) +
   geom_histogram(data = filter(gesamtdaten, bip_pro_kopf<100000), binwidth = 1000) +
-  facet_grid(ost_name~.) +
   geom_vline(data = mittel, aes(xintercept = durchschnitt), color = "blue") +
+  facet_grid(ost_name~.) +
   theme_bw() +
   labs(title = "Verteilung des BIP pro Kopf für Ost- und Westdeutschland",
        subtitle = "Beobachtungen auf Landkreisebene in 2017",
@@ -1124,15 +1123,14 @@ ggplot(gesamtdaten, aes(x = bip_pro_kopf)) +
 
 ```{r, echo=FALSE, dpi = 300, out.width='40%'}
 gesamtdaten %>%
-  filter(bip_pro_kopf<100000) %>%
   group_by(ost_name) %>%
-  summarise(durchschnitt = mean(bip_pro_kopf)) %>%
+  summarise(durchschnitt = mean(bip_pro_kopf, na.rm = T)) %>%
   ungroup() -> mittel
 
 ggplot(gesamtdaten, aes(x = bip_pro_kopf)) +
   geom_histogram(data = filter(gesamtdaten, bip_pro_kopf<100000), binwidth = 1000) +
-  facet_grid(ost_name~.) +
   geom_vline(data = mittel, aes(xintercept = durchschnitt), color = "blue") +
+  facet_grid(ost_name~.) +
   theme_bw() +
   labs(title = "Verteilung des BIP pro Kopf für Ost- und Westdeutschland",
        subtitle = "Beobachtungen auf Landkreisebene in 2017",
@@ -1147,7 +1145,7 @@ ggplot(gesamtdaten, aes(x = bip_pro_kopf)) +
 Das Histogramm bestätigen das Bild des Boxplots:
 - Deutliche Unterschiede zwischen ost- und westdeutschend Landkreisen in 2017
 - Deutlich mehr Ausreißer nach oben bei westdeutschen Landkreisen
-- Verteilung ist für ostdeutsche Landkreise enger um den Mittelwert für das BIP pro Kopf von 28338€
+- Verteilung ist für ostdeutsche Landkreise enger um den Mittelwert für das BIP pro Kopf von 28091€
 - Mittelwert und Median für westdeutsche Landkreise liegt deutlich weiter auseinander und zeigt, dass es hier mehr Ausreißer in den Daten gibt
 
 ---
@@ -1188,7 +1186,7 @@ schulden_landkreise_anteil <- left_join(landkreise, gesamtdaten, by="Regionalsch
 
 ```{r schulden1,  include=FALSE}
 ggplot(
-  # define main data source
+  # Datensatz
   data = schulden_landkreise_anteil
 ) +
   geom_sf(
@@ -1198,23 +1196,23 @@ ggplot(
     color = "white",
     size = 0.1
   ) +
-  # use the Viridis color scale
+  # Viridis Farbschema
   scale_fill_viridis_d(
     option = "inferno",
     name = "Anteil der Schulden\nam BIP",
-    alpha = 0.8, # make fill a bit brighter
+    alpha = 0.8, # Deckkraft der Füllung
     begin = 0.1,
     end = 0.9,
     direction = -1,
     guide = guide_legend(reverse = T)) +
-  # use thicker white stroke for cantonal borders
+  # etwas dickere Linien für Bundeslandgrenzen
   geom_sf(
     data = bundesland,
     fill = "transparent",
     color = "white",
     size = 0.5
   ) +
-  # add titles
+  # Titel
   labs(x = NULL,
        y = NULL,
        title = "Wie verschuldet sind die deutschen Landkreise?",
@@ -1262,7 +1260,7 @@ schulden_landkreise <- left_join(landkreise, gesamtdaten, by="Regionalschluessel
   )))
 
 plot_alo_lk <- ggplot(
-  # define main data source
+  # Datensatz
   data = schulden_landkreise
 ) +
   geom_sf(
@@ -1272,23 +1270,23 @@ plot_alo_lk <- ggplot(
     color = "white",
     size = 0.1
   ) +
-  # use the Viridis color scale
+  # Viridis Farbschema
   scale_fill_viridis_d(
     option = "inferno",
     name = "Schulden\npro Kopf in €",
-    alpha = 0.8, # make fill a bit brighter
+    alpha = 0.8, # Deckkraft der Füllung
     begin = 0.1,
     end = 0.9,
     direction = -1,
     guide = guide_legend(reverse = T)) +
-  # use thicker white stroke for cantonal borders
+  # etwas dickere Linien für Bundeslandgrenzen
   geom_sf(
     data = bundesland,
     fill = "transparent",
     color = "white",
     size = 0.5
   ) +
-  # add titles
+  # Titel
   labs(x = NULL,
        y = NULL,
        title = "Arbeitslosigkeit in Deutschland",
@@ -1471,6 +1469,6 @@ Im ersten Teil der Case Study hatten Sie sich noch die durchschnittlichen Einkom
 - Erstellen Sie eine deskriptive Tabelle, welche das Einkommen für das Jahr 2017 darstellt. Wie ist hier die Verteilung der Einkommen?
   - Beschreiben Sie Mittelwert, Standardabweichung, sowie Median
 - Erstellen Sie ein Liniendiagramm zu der Entwicklung des Einkommensniveaus in den einzelnen Landkreisen seit 2000. Sie können sich hierbei an dem Diagramm zum BIP pro Kopf orientieren.
-  - Hinweis: Mergen Sie zu dem Datensatz "Einkommen" zuerst noch die Information zu "Landkreis_name, Bundesland_name und ost_name" hinzu (siehe auch hierzu [diesen Abschnitt](#bruttoinlandsprodukt_pro_kopf))
+  - Hinweis: Mergen Sie zu dem Datensatz "Einkommen" zuerst noch die Information zu "Landkreis_name, Bundesland_name und ost_name" hinzu (siehe auch hierzu [diesen Abschnitt](#bruttoinlandsprodukt-pro-kopf))
 - Erstellen Sie eine Karte zum Einkommensniveau der einzelnen Landkreise. Sie können sich hierbei an der Karte zur Verschuldung orientieren.
-- Erstellen Sie eine Korrelationstablle zwischen Arbeitslosenquote, Anteil Schulden, BIP pro Kopf und Einkommen. Sie können sich hierbei an der [Tabelle der Korrleationen aus diesem Abschnitt](#interpretation_der_korrelation) orientieren.
+- Erstellen Sie eine Korrelationstablle zwischen Arbeitslosenquote, Anteil Schulden, BIP pro Kopf und Einkommen. Sie können sich hierbei an der [Tabelle der Korrleationen aus diesem Abschnitt](#interpretation-der-korrelation) orientieren.

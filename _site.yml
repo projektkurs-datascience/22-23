@@ -12,10 +12,16 @@ navbar:
         href: case-study-index.html
       - text: "Erster Teil der Case-Study"
         href: ./case-study/case_study_germany_1.html
+      - text: "Zweiter Teil der Case-Study"
+        href: ./case-study/case_study_germany_2.html
   - text: RTutor-Problem-Sets
     menu:
       - text: "Problem Set 1"
-        href: https://github.com/projektkurs-datascience/21-22/tree/main/problem-sets/ps1
+        href: https://github.com/projektkurs-datascience/22-23/tree/main/problem-sets/ps1
+      - text: "Problem Set 2"
+        href: https://github.com/projektkurs-datascience/22-23/tree/main/problem-sets/ps2
+      - text: "Problem Set 3"
+        href: https://github.com/projektkurs-datascience/22-23/tree/main/problem-sets/ps3
   - text: Tutorials
     icon: fa-users
     menu:

@@ -25,14 +25,18 @@ Der Termin für die Abgabe der Projektarbeit wird im Kalender auf Moodle angezei
 
 # Zusammenarbeit
 
-Sie sollten die Projekte immer im Team bearbeiten. Hierbei steht es ihnen frei, wie Sie die Aufgaben innerhalb der Gruppe aufteilen. Sie sollten in regelmäßigen Besprechungen, Online-Meetings, wie auch Tutoriumsterminen zusammen an einer Lösung der Projektarbeit arbeiten und alle Schritte ihrer Teammitglieder nachvollziehen können. Bei tiefergehenden Fragen ist ihre erste Anlaufstelle ihr Tutor und das _Diskussionsforum_ auf Moodle. Stellen Sie immer konkrete Fragen mit einem kleinen Beispiel und ihrem Fehlercode damit ihnen schnell geholfen werden kann. Wie Sie möglichst gute Frage stellen können Sie [hier](https://projektkurs-data-science-ulm2122.netlify.app/tutorials/fragen-im-forum) nachlesen.
+Sie sollten die Projekte immer im Team bearbeiten. Hierbei steht es ihnen frei, wie Sie die Aufgaben innerhalb der Gruppe aufteilen. Sie sollten in regelmäßigen Besprechungen, Online-Meetings, wie auch Tutoriumsterminen zusammen an einer Lösung der Projektarbeit arbeiten und alle Schritte ihrer Teammitglieder nachvollziehen können. Bei tiefergehenden Fragen ist ihre erste Anlaufstelle ihr Tutor und das _Diskussionsforum_ auf Moodle. Stellen Sie immer konkrete Fragen mit einem kleinen Beispiel und ihrem Fehlercode damit ihnen schnell geholfen werden kann. Wie Sie möglichst gute Frage stellen können Sie [hier](https://projektkurs-data-science-ulm2223.netlify.app/tutorials/fragen-im-forum) nachlesen.
+
+## Eskalationsmechanismus
+
+Wenn zwischenmenschliche Konflikte innerhalb der Gruppe auftreten, dann versuchen Sie im ersten Schritt diese innerhalb der Gruppe zu klären. Hören Sie aufeinander und auf die Argumente der Gegenseite. Sollten sich die Probleme nicht innerhalb der Gruppe lösen lassen, so sollten Sie den Übungsleiter (Julius Düker) kontaktieren. Dieser wird mit ihnen als Gruppe einen Termin vereinbaren und als Mediator wirken. Bitte beschreiben Sie in diesem Gespräch das Problem und die Schritte die Sie unternommen haben um die zwischenmenschlichen Konflikte zu lösen. Falls auch das Gespräch mit dem Übungsleiter nicht zu einer Verbesserung der Situation führt wird der Dozent (Dr. Alexander Rieber) mit einbezogen.
 
 # Diskussionsforum auf Moodle
 
 Auf Moodle gibt es ein Diskussionsforum, welches von ihren Fragen lebt.
 Meist stellen sich noch andere Studierende/Teams die gleichen Fragen wie Sie, deshalb scheuen Sie sich nicht davor Fragen zu stellen. Wir helfen gerne!
 
-Um ihnen möglichst schnell helfen zu können schauen Sie sich bitte unsere Guidelines an wie gute Fragen gestellt werden können ([Hier sind die Guidelines zu finden](https://projektkurs-data-science-ulm2122.netlify.app/tutorials/fragen-im-forum))
+Um ihnen möglichst schnell helfen zu können schauen Sie sich bitte unsere Guidelines an wie gute Fragen gestellt werden können ([Hier sind die Guidelines zu finden](https://projektkurs-data-science-ulm2223.netlify.app/tutorials/fragen-im-forum))
 
 # Tutorium
 

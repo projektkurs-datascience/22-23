@@ -77,6 +77,7 @@ Die Fragen in der Projektbeschreibung werden Sie in ihrer Beschreibung und der I
   - Was sagt uns das Vorzeichen des Koeffizienten?
   - Können wir hier etwas über die Größe des Effekts sagen?
 
+Bitte achten Sie darauf ihre Antwort klar und präzise zu formulieren. Erklären Sie den Sachverhalt nicht mehrfach und achten Sie auf die Rechtschreibung in ihrer Ausarbeitung.
 
 ## Kommentare in den Code-Chunks zur besseren Lesbarkeit
 

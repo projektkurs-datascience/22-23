@@ -155,6 +155,23 @@ knitr::include_url("slides/sample-vs-population.html")
 - Eine hervorragende Einführung finden Sie im Buch [ModernDive (Kapitel 7)](https://moderndive.com/7-sampling.html)
 - Eine etwas tiefgreifendere Einführung finden Sie in dem Buch [Learning Statistics with R (Kapitel 10)](https://learningstatisticswithr.com/lsr-0.6.pdf)
 
+### 16: Koeffizienten Interpretieren
+
+```{r}
+knitr::include_url("slides/Koeffizienten_Interpretieren.html")
+```
+
+### 16: Kausalität 1
+
+```{r}
+knitr::include_url("slides/causality1.html")
+```
+
+### 17: Directed acyclic graphs
+
+```{r}
+knitr::include_url("slides/DAG_video.html")
+```
 
 ## Vorlesungsfolien der Live-Veranstaltungen {.tabset}
 
@@ -175,3 +192,65 @@ knitr::include_url("slides/VL_case-study-Teil1.html")
 ```{r}
 knitr::include_url("slides/VL_case-study-Teil2.html")
 ```
+
+### 04: Einführung und Begrüßung zum 2. Teil der VL
+
+```{r}
+knitr::include_url("slides/intro_projektkurs_data-science2.html")
+```
+
+### 05: Wahrscheinlichkeiten, Verteilungen und Konfidenzintervalle
+
+```{r}
+knitr::include_url("slides/probability-and-confidence-interval.html")
+```
+
+### 06: Inferenzstatistik (Hypothestest)
+
+```{r}
+knitr::include_url("slides/inference.html")
+```
+
+### 07: Lineare Regression (inkl. Interaktionsterme)
+
+```{r}
+knitr::include_url("slides/linear-regression.html")
+```
+
+- Zur schönen Darstellung der Regressionsergebnisse verwenden wir das Paket _modelsummary_: Arel-Bundock V (2022). modelsummary: Summary Tables and Plots for Statistical Models and Data: Beautiful, Customizable, and Publication-Ready. R package version 0.10.0.9000, https://vincentarelbundock.github.io/modelsummary/. 
+- Ein weiteres Paket zur Darstellung der Regressionsergebnisse ist das Paket _stargazer_: Hlavac, Marek (2018). stargazer: Well-Formatted Regression and Summary Statistics Tables (version 5.2.2).
+
+### 08: Dritter Teil der Case-Study 
+
+```{r}
+knitr::include_url("slides/VL_case-study-Teil3.html")
+```
+
+### 09: Kausalität in den Wirtschaftswissenschaften
+
+```{r}
+knitr::include_url("slides/DAG_slides.html")
+```
+
+- Eine hervorragende Einführung in DAGs finden Sie im Kurs [Program Evaluation](https://evalf20.classes.andrewheiss.com/content/04-content) von Andrew Heiss
+- Eine weitere hervorragende Quelle zur Einführung von DAGs ist das 3. Kapitel in [Causal Inferenece - The Mixtape](https://mixtape.scunning.com/dag.html)
+
+### 10: Randomisiertes Experiment
+
+```{r}
+knitr::include_url("slides/Experiment_slides.html")
+```
+
+- Die Studie, welche wir hier betrachten finden Sie hier: Baranov, Victoria, Sonia Bhalotra, Pietro Biroli, and Joanna Maselko. 2020. "Maternal Depression, Women's Empowerment, and Parental Investment: Evidence from a Randomized Controlled Trial." American Economic Review, 110 (3): 824-59.
+
+### 11: Instrumentalvariablenschätzung
+
+```{r}
+knitr::include_url("slides/instruments.html")
+```
+
+- Eine hervorragende Einführung in die Instrumentalvariablenschätzung liefert das 7. Kapitel in _Causal Inferenece - The Mixtape_: https://mixtape.scunning.com/instrumental-variables.html
+- Eine weitere sehr gute Einführung in die Instrumentalvariablenschätzung liefert Kapitel 5 von [Impact Evaluation in Practice](https://openknowledge.worldbank.org/handle/10986/25030) 
+- Eine hervorragende Einführung in DAGs finden Sie im Kurs [Program Evaluation](https://evalf20.classes.andrewheiss.com/content/11-content/) von Andrew Heiss
+- Zur Instrumentalvariablenschätzung in R verwenden wir das _AER_: Kleiber, Christian, and Achim Zeileis. 2020. AER: Applied Econometrics with R (version 1.2-9). https://CRAN.R-project.org/package=AER.
+- Zur schönen Darstellung der Regressionsergebnisse verwenden wir das Paket _stargazer_: Hlavac, Marek. 2018. stargazer: Well-Formatted Regression and Summary Statistics Tables (version 5.2.2). https://CRAN.R-project.org/package=stargazer.

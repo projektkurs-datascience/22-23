@@ -1,0 +1,140 @@
+---
+title: "Koeffizienten Interpretieren"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["style/css/uni-ulm.css", "style/css/my-fonts.css"]
+    seal: TRUE
+    nature:
+      highlightStyle: atelier-forest-light
+      highlightLanguage: ["r", "yaml", "markdown"]
+      slideNumberFormat: "" 
+      highlightLines: TRUE
+      countIncrementalSlides: false
+      ratio: "16:9"
+    includes:
+      in_header: style/header.html 
+#xaringan::inf_mr() #[Start Preview -> Type into console]
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, results='asis', message=FALSE, warning=FALSE)
+library(tidyverse)
+library(stargazer)
+library(skimr)
+
+pwt <- readRDS("./data/pwt_2014.rds")
+```
+
+## Datenübersicht
+
+Datensatz zum BIP pro Kopf (`bip`) und dem Kapitalstock pro Kopf (`k`) von 133 verschiedenen Ländern weltweit in USD für das Jahr 2014. Daten stammen aus den [Penn World Tables](https://www.rug.nl/ggdc/productivity/pwt/).
+
+- Zudem: Dummy Variable (`dummy_k`), für jedes Land mit:
+
+.tiny[
+```{r, results='markup', render = knitr::normal_print, echo=TRUE}
+pwt <- pwt %>% mutate(dummy_k = ifelse(k>mean(pwt$k),1,0),
+                      dummy_k1 = ifelse(k<=quantile(pwt$k, probs = 0.25),1,0),
+                      dummy_k2 = ifelse(k>quantile(pwt$k, probs = c(0.25)) & k<=quantile(pwt$k, probs = c(0.5)),1,0),
+                      dummy_k3 = ifelse(k>quantile(pwt$k, probs = c(0.5)) & k<=quantile(pwt$k, probs = c(0.75)),1,0),
+                      dummy_k4 = ifelse(k>quantile(pwt$k, probs = c(0.75)),1,0)) %>%
+  select(country, bip, k, dummy_k, dummy_k1, dummy_k2, dummy_k3, dummy_k4)
+skim(pwt) %>% yank("numeric")
+```
+]
+
+---
+
+### Linear-Linear Modell (Standardfall)
+
+ $$y = \beta_0 + \beta_1 * x + u$$
+
+```{r}
+reg1 <- lm(bip ~ k, data=pwt)
+stargazer(type = "html", reg1 ,  single.row = FALSE, header = FALSE)
+```
+
+--
+
+Eine Erhöhung von x um eine Einheit, wird im Durchschnitt mit einer Erhöhung von $y$ um $\beta_1$ Einheiten in Verbindung gebracht.
+
+
+---
+
+### Log-Log Modell (Logarithmierte abhängige und erklärende Variable)
+
+ $$log(y) = \beta_0 + \beta_1 * log(x) + u$$
+
+```{r}
+reg2 <- lm(log(bip) ~ log(k), data=pwt)
+stargazer(type = "html", reg2 ,  single.row = FALSE, header = FALSE)
+```
+
+--
+
+Eine Erhöhung von x um ein Prozent, wird im Durchschnitt mit einer Erhöhung von $y$ um $\beta_1$ Prozent in Verbindung gebracht.
+
+
+---
+
+### Log-Linear Modell (Logarithmierte abhängige Variable)
+
+ $$log(y) = \beta_0 + \beta_1 * x + u$$
+
+```{r}
+reg3 <- lm(log(bip) ~ k, data=pwt)
+stargazer(type = "html", reg3 ,  single.row = FALSE, header = FALSE)
+```
+
+--
+
+Eine Erhöhung von x um eine Einheit, wird im Durchschnitt mit einer Erhöhung von $y$ um $\beta_1 *100$ Prozent in Verbindung gebracht.
+
+---
+
+### Linear-Log Modell (Logarithmierte erklärende Variable)
+
+ $$y = \beta_0 + \beta_1 * log(x) + u$$
+
+```{r}
+reg4 <- lm(bip ~ log(k), data=pwt)
+stargazer(type = "html", reg4 ,  single.row = FALSE, header = FALSE)
+```
+
+--
+
+Eine Erhöhung von x um ein Prozent, wird im Durchschnitt mit einer Erhöhung von $y$ um $\frac {\beta_1}{100}$ Einheiten in Verbindung gebracht.
+
+---
+
+### Dummyvariable als erlärende Variable
+
+ $$y = \beta_0 + \beta_1 * I_x+ u$$
+
+```{r}
+reg5 <- lm(bip ~ dummy_k, data=pwt)
+stargazer(type = "html", reg5 ,  single.row = FALSE, header = FALSE)
+```
+
+--
+
+Alle Beobachtungen bei denen x = 1 ist, wird im Durchschnitt mit einem höherem $y$ von $\beta_1$ Einheiten in Verbindung gebracht.
+
+---
+
+### Mehrere Dummyvariablen als erlärende Variable
+
+ $$y = \beta_0 + \beta_1 * I_{x1} + \beta_2 * I_{x2} + \beta_3 * I_{x3} + u$$
+
+.pull-left[
+```{r}
+reg6 <- lm(bip ~ dummy_k1 + dummy_k2 + dummy_k3, data=pwt)
+stargazer(type = "html", reg6 ,  single.row = FALSE, header = FALSE)
+```
+]
+--
+
+.pull-right[
+Alle Beobachtungen bei denen x1 = 1 ist, wird im Durchschnitt mit einem höherem/niedrigerem $y$ von $\beta_1$ Einheiten über/unter dem Basislevel in Verbindung gebracht.
+]

@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Kausalität in den Wirtschaftswissenschaften</title>
+    <meta charset="utf-8" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <script src="https://use.fontawesome.com/5235085b15.js"></script>
+    <link rel="stylesheet" href="style/css/uni-ulm.css" type="text/css" />
+    <link rel="stylesheet" href="style/css/my-fonts.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Kausalität in den Wirtschaftswissenschaften
+]
+
+---
+
+
+
+
+## Einführung in die Kausalität
+
+.alert[Korrelation ist nicht gleich Kausalität]
+
+--
+
+.alert[Außer, wenn Korrelation gleich Kausalität!]
+
+--
+
+.question[Woher wissen wir, dass _X_ zu _Y_ führt?]
+
+--
+
+_X_ führt zu _Y_, wenn ...
+
+--
+
+wir eingreifen und _X_ verändern, alles andere jedoch gleich lassen und ...
+
+--
+
+_Y_ sich danach verändert.
+
+
+**Achtung:** _Y_ "hört" jedoch nicht unbedingt nur auf _X_. Es gibt potentiell noch andere Einflüsse, die auf _Y_ einwirken.
+
+---
+
+## Beispiele für kausale Aussagen
+
+- Feuerwerkskörper verursachen Lärm, sobald diese angezündet werden
+- Das Krähen des Hahn führt zum Sonnenaufgang
+- Ein Bachelor an der Uni Ulm erhöht ihr späteres Einkommen
+
+--
+
+**Kausalität = Korrelation + zeitliche Abfolge + kein Scheinzusammenhang**
+
+.question[Woher wissen Sie, dass Sie die richtigen Faktoren betrachten (d.h. keinen Scheinzusammenhang)?]
+
+--
+
+.alert[Hier benötigen Sie ein Modell!]
+
+---
+
+## Datengenerierungsprozess
+
+Um zu verstehen, wie wir aus experimentellen Daten oder aus Beobachtungsdaten _kausale_ Zusammenhänge ableiten können müssen wir uns folgenden Fragen widmen:
+
+- Woher stammen unsere Daten (Experiment oder Beobachtungsdaten)?
+- Welcher **Datengenerierungsprozess** hat diese Daten erzeugt?
+- Können wir auf diesen Datengenerierungsprozess einwirken? (insbesondere durch ein Experiment)
+- Gibt es zufällige Elemente in unseren Daten die wir analysieren könnten?
+
+---
+
+## Kausale Graphen (DAGs)
+
+Um uns den Datengenerierungsprozess vor Augen zu führen sollten wir diesen modellieren:
+
+- Hierzu verwenden wir die **directed acyclic graphs (DAGs)**, welche vor allem von Judea Pearl entwickelt wurden
+- In diesen DAGs fließt Kausalität (acyclic) nur in eine Richtung (falls Rückwärtskausalität oder Simultanität vorhanden ist sind andere Modelle besser geeignet)
+- DAGs präsentieren Kausalität als Alternativszenario ("counterfactuals")
+    - Ein kausaler Effekt wird als Vergleich zweier Alternativen definiert: 
+      - Der Zustand der stattgefunden hat mit der Intervention
+      - Der Zustand der nicht stattgefunden hat ohne die Intervention (das "counterfactual")
+
+---
+
+## Wie sehen diese DAGs aus?
+
+.pull-left[
+&lt;img src="DAG_slides_files/figure-html/simple-dag-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+- **Directed**: Jede Node hat einen Pfeil der zu einer anderen Node zeigt
+- **Acyclic**: Pfeile haben nur eine Richtung, sie können nicht zu einer Node zurück
+
+Daher können Sie DAGs folgendermaßen interpretieren:
+- Grafische Repräsentation ihres Modells
+- Jeder Pfeil zeigt eine kausale Verbindung einer Variablen zur nächsten an (Richtung der Kausalität)
+- Dort wo es keine Pfeile zwischen den Variablen gibt vermuten Sie keinen kausalen Zusammenhang (Annahmen ersichtlich)
+]
+
+---
+
+## Wie sehen diese DAGs aus?
+
+.question[Doch woher kommt das DAG?]
+
+--
+- Eine Sehr gute Frage!
+- Es entsteht aus ihren Erkenntnissen aus der Literatur, den eigenen Hypothesen, ökonomische Theorie, ihren eigenen Beobachtungen ...
+
+---
+
+## Zusammenhängende Ansätze zur Kausalität
+
+Zwei unterschiedliche, aber verwandte, Ansätze über Kausalität nachzudenken:
+
+--
+
+.pull-left[
+**Directed Acyclic Graphs (DAGs)**
+
+- Grafische Modelle
+- Kausalität fließt immer in eine Richtung und wird durch Pfeile verdeutlicht
+- Keine Rückwärtskausalität oder Simultanität abbildbar
+- Betrachtet Alternativszenarien
+- Do-Calculus im Hintergrund (Fancy Mathe)
+
+.alert[Verwenden wir in dieser Veranstaltung!]
+
+]
+
+--
+
+.pull-right[
+**Potential Outcomes Modell (auch Rubin Kausalmodel genannt)**
+
+- Betrachtet Alternativszenarien
+- Betrachten von durchschnittlichen Effekten über mehrere Individuuen oder Gruppen (ATE)
+- Unterschied zwischen Gruppen wenn eine Intervention getätigt vs. nicht getätigt wurde
+- Annahmen: Stable Unit Treatment Value Assumption (SUTVA)
+]
+
+--
+
+Insbesondere die DAGs helfen uns den zugrunde liegenden Datengenerierungsprozess zu modellieren.
+
+
+---
+
+## Wie groß war der Effekt einer Intervention?
+
+&lt;img src="./figs/psd-program-effect.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+.tiny[Quelle: Andrew Heiss, Programm evaluation (https://evalf20.classes.andrewheiss.com/content/01-content/)]
+
+.question[Wie _messen_ wir den Effekt einer Intervention?]
+
+--
+
+.pull-left[Mit einem Experiment]
+
+.pull-right[Mit Beobachtungsdaten]
+
+
+---
+
+## Die Auswirkung von Bildung auf das Einkommen
+
+.question[Erhöht ein Jahr mehr Bildung (z.B. durch einen Bachelor an der Uni Ulm) ihr späteres Einkommen?!]
+
+--
+
+&lt;img src="DAG_slides_files/figure-html/edu-earn-simple-1.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Beispielhaftes DAG für unsere Kausalitätsfrage
+
+Mögliche Faktoren, die die Bildungsentscheidung von Personen beeinflussen und deren Einkommen:
+
+- **Schritt Eins:** Mögliche Variablen sammeln
+- **Schritt Zwei:** Vereinfachen
+- **Schritt Drei:** DAG zeichnen
+- **Schritt Vier:** Modell erstellen welches getestet werden kann
+
+---
+
+## Schritt eins: Mögliche Variablen sammeln
+
+Bildung (treatment) `\(\rightarrow\)` Einkommen (outcome)
+
+.question[Welche Variablen spielen möglicherweise noch eine Rolle?]
+
+--
+
+- (Unbeobachtbare) Fähigkeiten
+- Haushaltseinkommen
+- Sozialer Status
+- Bildung der Eltern
+- Schulpflicht
+- Netzwerk
+
+---
+
+## Schritt zwei: Vereinfachen
+
+Bildung (treatment) `\(\rightarrow\)` Einkommen (outcome)
+
+.question[Wie kann ich diese Variablen vereinfachen?]
+
+- (Unbeobachtbare) Fähigkeiten 
+- Haushaltseinkommen
+- Sozialer Status 
+- Bildung der Eltern
+- Schulpflicht
+- Netzwerk
+
+---
+
+## Schritt zwei: Vereinfachen
+
+Bildung (treatment) `\(\rightarrow\)` Einkommen (outcome)
+
+.question[Wie kann ich diese Variablen vereinfachen?]
+
+- (Unbeobachtbare) Fähigkeiten `\(\rightarrow\)` Hintergrund
+- Haushaltseinkommen
+- Sozialer Status `\(\rightarrow\)` Hintergrund
+- Bildung der Eltern
+- Schulpflicht
+- Netzwerk
+
+---
+
+## Schritt drei: DAG zeichnen
+
+.pull-left[
+Hintergrund, Haushaltseinkommen, die Bildung der Eltern und
+Schulpflicht
+
+`\(\rightarrow\)` Determinanten ihrer **Bildung**!
+
+]
+
+.pull-right[
+&lt;img src="DAG_slides_files/figure-html/edu-earn-2-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Schritt drei: DAG zeichnen
+
+.pull-left[
+Haushaltseinkommen und ihr Netzwerk
+
+`\(\rightarrow\)` Determinanten für ihr **Einkommen**!
+
+**Weiterhin:** 
+- Bildung der Eltern ist entscheidend für das Haushaltseinkommen.
+]
+
+.pull-right[
+&lt;img src="DAG_slides_files/figure-html/edu-earn-3-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Schritt drei: DAG zeichnen
+
+.pull-left[
+
+- Ihr Netzwerk wird auch von ihrer Bildungsentscheidung beeinflusst
+- Hintergrund hat sicherlich auch die Bildungsentscheidung ihrer Eltern beeinflusst!
+- Weiterhin ist dieser **Hintergrund nicht beobachtbar** (daher grau) und sollte mit gestrichelten Linien verdeutlicht werden.
+]
+
+.pull-right[
+&lt;img src="DAG_slides_files/figure-html/edu-earn-4-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Schritt vier: Identifikation
+
+.pull-left[
+Nun haben Sie die einzelnen Variablen und deren Zusammenhang aufgezeigt!
+Alle diese Nodes sind miteinander korreliert
+
+.question[Wie können wir nun den Effekt von **B auf Eink** extrahieren?]
+
+.alert[Um den Effekt von **B auf Eink** zu identifizieren müssen Sie diesen von den anderen umgebenden Effekten isolieren!]
+
+]
+
+.pull-right[
+&lt;img src="DAG_slides_files/figure-html/edu-earn-full-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Schritt vier: Identifikation
+
+.pull-left[
+Nun haben Sie die einzelnen Variablen und deren Zusammenhang aufgezeigt!
+Alle diese Nodes sind miteinander korreliert
+
+.question[Wie können wir nun den Effekt von **B auf Eink** extrahieren?]
+
+.alert[Um den Effekt von **B auf Eink** zu identifizieren müssen Sie diesen von den anderen umgebenden Effekten isolieren!]
+
+Eine Möglichkeit wäre es auf die umgebenden Effekte in einer Regression zu "kontrollieren".
+
+.question[Sollten wir nun einfach auf alle Variablen unseres DAGs kontrollieren?]
+]
+
+.pull-right[
+&lt;img src="DAG_slides_files/figure-html/edu-earn-full_teil-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+
+## Welche Arten von Zusammenhang gibt es im DAG?
+
+.pull-left-3[
+
+.center[Confounder]
+
+&lt;img src="DAG_slides_files/figure-html/confounding-dag-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+Hier handelt es sich um einen gemeinsamen Ursprung
+]
+
+.pull-middle-3[
+
+.center[Mediator]
+
+&lt;img src="DAG_slides_files/figure-html/mediation-dag-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+Hier handelt es sich um einen Mittler des Gesamteffekts
+]
+
+.pull-right-3[
+
+.center[Collider]
+
+&lt;img src="DAG_slides_files/figure-html/collision-dag-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+Hier handelt es sich um Selektion / Endogenität
+]
+
+---
+
+
+## Confounder
+
+.pull-left[
+
+&lt;img src="DAG_slides_files/figure-html/confounding1-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+.instructions[**X** führt zu **Y**]
+  - Dies sehen wir am _kausalen_ Pfad X `\(\rightarrow\)` Y
+  
+.instructions[**Z** führt dazu, dass sich sowohl **X** als auch **Y** verändern]
+
+.alert[Wir wollen den _kausalen_ Effekt von X auf Y isolieren.]
+]
+
+---
+
+## Confounder
+
+.pull-left[
+
+&lt;img src="DAG_slides_files/figure-html/confounding1b-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+.instructions[**X** führt zu **Y**]
+  - Dies sehen wir am _kausalen_ Pfad X `\(\rightarrow\)` Y
+  
+.instructions[**Z** führt dazu, dass sich sowohl **X** als auch **Y** verändern]
+
+.alert[Wir wollen den _kausalen_ Effekt von X auf Y isolieren.]
+
+  - Wir sprechen hier davon das **Z** ein _confounder_ des kausalen Zusammenhangs zwischen X `\(\rightarrow\)` Y ist
+  - Der Confounder ist eine dritte Variable, welche sowohl X, als auch Y beeinflusst
+  - Oft lesen Sie auch von der _backdoor_ Variablen **Z**
+  - Der _backdoor_ Pfad X `\(\leftarrow\)` Z `\(\rightarrow\)` Y generiert eine Scheinkorrelation zwischen X und Y
+  - Eine _backdoor_ offen zu lassen generiert Bias da die Beziehung zwischen X und Y nicht isoliert wurde!
+]
+
+---
+
+## Confounder
+
+.pull-left[
+
+&lt;img src="DAG_slides_files/figure-html/confounding2a-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+Pfade zwischen **Spenden** und **Gewinnwahrscheinlichkeit**
+
+Spenden `\(\rightarrow\)` Gewinnwahrscheinlichkeit
+
+Spenden `\(\leftarrow\)` Qualität des/der Kandidaten/in `\(\rightarrow\)` Gewinnwahrscheinlichkeit
+
+.alert[**Qualität des/der Kandidaten/in** ist eine _backdoor_]
+]
+
+--
+
+.center[.instructions[Sie schließen die _backdoor_ indem sie auf **Z kontrollieren**]]
+
+---
+
+## Confounder
+
+.pull-left[
+
+&lt;img src="DAG_slides_files/figure-html/confounding2-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+Pfade zwischen **Bildung** und **Einkommen**
+
+Bildung `\(\rightarrow\)` Einkommen
+
+Bildung `\(\leftarrow\)` Familieneinkommen `\(\rightarrow\)` Einkommen
+
+.alert[**Familieneinkommen** ist eine _backdoor_]
+]
+
+--
+
+.center[.instructions[Sie schließen die _backdoor_ indem sie auf **Z kontrollieren**]]
+
+---
+
+## Türen schließen
+
+.pull-left[
+
+&lt;img src="DAG_slides_files/figure-html/confounding3-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+Dadurch das Sie auf das Familieneinkommen kontrollieren:
+
+- Eliminieren Sie den Effekt des Familieneinkommens auf die Bildung
+- Eliminieren Sie den Effekt des Familieneinkommens auf das spätere Einkommen
+
+.alert[Zusammenhang des verbleibenden Effekts der Bildung auf den verbleibenden Effekt des Einkommens ist unser **kausaler Effekt** von Bildung auf Einkommen.]
+
+`\(\rightarrow\)` Durch die Kontrolle vergleichen wir hier Personen, wie wenn diese das gleiche Familieneinkommen hätten
+]
+
+---
+
+## Kontrollieren innerhalb einer Regression
+
+Eine Möglichkeit auf Variablen zu "kontrollieren" ist mittels einer multiplen linearen Regression:
+
+`$$Einkommen = \beta_0 + \beta_1 * Bildung + \beta_2 * Familieneinkommen + \epsilon$$`
+
+Etwas weitreichendere Methoden (diese wollen wir jedoch nicht näher besprechen):
+
+- Matching
+- Stratifizierung
+- Synthetische Kontrollgruppen
+
+---
+
+## _Backdoor_ Pfade schließen
+
+.pull-left[
+Bildung `\(\rightarrow\)` Einkommen 
+
+Bildung `\(\leftarrow\)` Familieneinkommen `\(\rightarrow\)` Einkommen
+
+Bildung `\(\leftarrow\)` elterliche Bildung `\(\rightarrow\)` Familieneinkommen `\(\rightarrow\)` Einkommen
+
+Bildung `\(\leftarrow\)` Hintergrund `\(\rightarrow\)` elterliche Bildung `\(\rightarrow\)` Familieneinkommen `\(\rightarrow\)` Einkommen
+]
+
+.pull-right[
+&lt;img src="DAG_slides_files/figure-html/edu-earn-full2-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Kontrollieren innerhalb einer Regression
+
+Das Familieneinkommen liegt auf jeder dieser _backdoor_ Pfade
+
+Kontrollieren wir auf das Familieneinkommen, so können wir die jeweiligen _backdoor_ Pfade schließen
+
+.instructions[Durch die Kontrolle auf das Familieneinkommen erfüllen wir das _Backdoor Kriterium_.]
+
+`$$Einkommen = \beta_0 + \beta_1 * Bildung + \beta_2 * Familieneinkommen + \epsilon$$`
+
+.alert[In diesem Fall wäre der Koeffizient von `\(\beta_1\)` kausal zu interpretieren!]
+
+---
+
+## _Backdoor Pfade_ schließen
+
+.pull-left[
+
+.question[Doch was ist, wenn unser DAG nicht komplett war?]
+
+]
+
+.pull-right[
+]
+
+---
+
+## _Backdoor Pfade_ schließen
+
+.pull-left[
+
+.question[Doch was ist, wenn unser DAG nicht komplett war?]
+
+Z.B. könnte der **Hintergrund** einer Person auch einen direkten Effekt auf dessen Einkommen haben:
+
+Bildung `\(\leftarrow\)` Hintergrund `\(\rightarrow\)` Einkommen
+
+.alert[Hier können wir die _Backdoor_ nicht schließen und dürften den Koeffizienten `\(\beta_1\)` **nicht** kausal interpretieren!]
+
+]
+
+.pull-right[
+&lt;img src="DAG_slides_files/figure-html/edu-earn-full3-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Mediator
+
+.pull-left[
+&lt;img src="DAG_slides_files/figure-html/mediation-dag2-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+.instructions[**X** führt zu **Y**]
+  
+.instructions[**X** führt zu **Z**, welches wiederum zu **Y** führt]
+
+.question[Sollten wir für **Z** kontrollieren?]
+]
+
+---
+
+## Mediator
+
+.pull-left[
+&lt;img src="DAG_slides_files/figure-html/mediation-dag3-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+.instructions[**X** führt zu **Y**]
+  
+.instructions[**X** führt zu **Z**, welches wiederum zu **Y** führt]
+
+.question[Sollten wir für **Z** kontrollieren?]
+
+**Nein** `\(\rightarrow\)` Dies würde zu einer Überanpassung des Modells führen!
+
+.alert[Ein Teil des Effekts von **X** auf **Y** würde damit außer Acht gelassen.]
+]
+
+---
+
+## Überanpassung
+
+.pull-left[
+.question[Sollten wir in unserem Modell für Netzwerk kontrollieren?]
+]
+
+.pull-right[
+&lt;img src="DAG_slides_files/figure-html/edu-earn-full4-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Collider
+
+.pull-left[
+&lt;img src="DAG_slides_files/figure-html/collision-dag2-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+.instructions[**X** führt zu **Y**]
+  
+.instructions[**X** führt zu **Z** und **Y** führt zu **Z**]
+
+.question[Sollten wir für **Z** kontrollieren?]
+]
+
+---
+
+## Beispiel zu Collider
+
+.pull-left[
+&lt;img src="DAG_slides_files/figure-html/collision-dag3-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+.instructions[Kritiker bemängeln, dass Google Frauen systematisch schlechter bezahlt.]
+
+Google entgegnet: Wenn wir den Ort, die Dauer, den Jobtitel, das Managementlevel und die Performance mit in die Betrachtung einfließen lassen, dann verdienen Frauen gleich viel wie Männer.
+
+.question[Doch was wenn Diskriminierung durch Auswahl bestimmter beruflicher Bereiche stattfindet?]
+
+Das DAG dazu sehen Sie links!
+
+- F = Frau
+- D = Diskriminierung
+- O = Beruf
+- Y = Einkommen
+- A = Fähigkeiten
+]
+
+---
+
+## Beispiel zu Collider
+
+.pull-left[
+&lt;img src="DAG_slides_files/figure-html/collision-dag4-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+
+- F = Frau
+- D = Diskriminierung
+- O = Beruf
+- Y = Einkommen
+- A = Fähigkeiten
+
+D `\(\rightarrow\)` O `\(\rightarrow\)` Y
+
+D `\(\rightarrow\)` O `\(\leftarrow\)` A `\(\rightarrow\)` Y
+
+.question[Warum ist der Beruf (O) ein Collider?]
+
+]
+
+---
+
+## Beispiel zu Collider
+
+.pull-left[
+&lt;img src="DAG_slides_files/figure-html/collision-dag5-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+
+- F = Frau
+- D = Diskriminierung
+- O = Beruf
+- Y = Einkommen
+- A = Fähigkeiten
+
+D `\(\rightarrow\)` O `\(\rightarrow\)` Y
+
+D `\(\rightarrow\)` O `\(\leftarrow\)` A `\(\rightarrow\)` Y
+
+.question[Warum ist der Beruf (O) ein Collider?]
+
+.alert[Wenn wir auf den Beruf (O) kontrollieren, öffnen wir den zweiten Kanal, da O als Collider fungiert.]
+
+.instructions[Collider blocken immer die _backdoor_, wenn auf den Collider kontrolliert wird, dann öffnen wir die _backdoor_!]
+]
+
+
+---
+
+## Beispiel zu Collider
+
+.alert[Wir wollen uns die Auswirkungen des Collider Bias näher in einer Simulation anschauen:]
+
+
+```r
+#Aus dem Buch Causal Inference: The Mixtape
+#https://colab.research.google.com/github/scunning1975/mixtape_learnr/blob/main/R_ipynb/Directed_Acyclical_Graphs.ipynb
+tb &lt;- tibble(
+  female = ifelse(runif(10000)&gt;=0.5,1,0),
+  ability = rnorm(10000),
+  discrimination = female,
+  occupation = 1 + 2*ability + 0*female - 2*discrimination + rnorm(10000),
+  wage = 1 - 1*discrimination + 1*occupation + 2*ability + rnorm(10000) 
+)
+
+lm_1 &lt;- lm(wage ~ female, tb)
+lm_2 &lt;- lm(wage ~ female + occupation, tb)
+lm_3 &lt;- lm(wage ~ female + occupation + ability, tb)
+
+stargazer(lm_1,lm_2,lm_3, 
+		  type = "html", 
+          column.labels = c("Biased Unconditional", "Biased", "Unbiased Conditional")
+		 )
+```
+---
+## Collider Bias
+
+Dadurch, dass wir im vorherigen Beispiel auf den Beruf (occupation) kontrolliert haben scheint es so, dass Frauen nicht benachteiligt werden.
+
+Annahmen unserer Simulation:
+
+- Wir haben die Fähigkeiten (ability) als Zufallsvariable simuliert, welche unabhängig vom Geschlecht ist! 
+    - `ability = rnorm(10000)`
+- Wir haben eine Diskriminierung simuliert indem wir für "bessere" Jobs höhere Fähigkeiten verlangen, aber weniger Frauen zulassen 
+    - `occupation = 1 + 2*ability + 0*female - 2*discrimination + rnorm(10000)`
+- Wir haben das Gehalt so simuliert, dass es für Frauen niedriger ist (hier als `discrimination` deklariert), aber höher ist, je höher die berufliche Position und die Fähigkeiten
+    - `wage = 1 - 1*discrimination + 1*occupation + 2*ability + rnorm(10000)`
+
+.question[Was ist der tatsächliche direkte Effekt der Diskriminierung auf das Einkommen?]
+
+.question[Welche Kontrollvariablen benötigen Sie um den Collider Bias aufzuheben?]
+
+---
+
+## Simulationsstudie zu Collider
+
+.alert[Wir wollen uns die Auswirkungen des Collider Bias näher in einer Simulation anschauen:]
+
+
+&lt;table style="text-align:center"&gt;&lt;tr&gt;&lt;td colspan="4" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td colspan="3"&gt;&lt;em&gt;Dependent variable:&lt;/em&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td colspan="3" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td colspan="3"&gt;wage&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;Biased Unconditional&lt;/td&gt;&lt;td&gt;Biased&lt;/td&gt;&lt;td&gt;Unbiased Conditional&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(1)&lt;/td&gt;&lt;td&gt;(2)&lt;/td&gt;&lt;td&gt;(3)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="4" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;female&lt;/td&gt;&lt;td&gt;-2.990&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;0.594&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;-1.045&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(0.085)&lt;/td&gt;&lt;td&gt;(0.029)&lt;/td&gt;&lt;td&gt;(0.028)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;occupation&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;1.803&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;0.984&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;(0.006)&lt;/td&gt;&lt;td&gt;(0.010)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;ability&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;2.039&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;(0.022)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;Constant&lt;/td&gt;&lt;td&gt;2.062&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;0.214&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;1.027&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(0.060)&lt;/td&gt;&lt;td&gt;(0.020)&lt;/td&gt;&lt;td&gt;(0.017)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="4" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;Observations&lt;/td&gt;&lt;td&gt;10,000&lt;/td&gt;&lt;td&gt;10,000&lt;/td&gt;&lt;td&gt;10,000&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;R&lt;sup&gt;2&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;0.110&lt;/td&gt;&lt;td&gt;0.912&lt;/td&gt;&lt;td&gt;0.952&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;Adjusted R&lt;sup&gt;2&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;0.109&lt;/td&gt;&lt;td&gt;0.912&lt;/td&gt;&lt;td&gt;0.952&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;Residual Std. Error&lt;/td&gt;&lt;td&gt;4.263 (df = 9998)&lt;/td&gt;&lt;td&gt;1.342 (df = 9997)&lt;/td&gt;&lt;td&gt;0.994 (df = 9996)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;F Statistic&lt;/td&gt;&lt;td&gt;1,229.956&lt;sup&gt;***&lt;/sup&gt; (df = 1; 9998)&lt;/td&gt;&lt;td&gt;51,672.970&lt;sup&gt;***&lt;/sup&gt; (df = 2; 9997)&lt;/td&gt;&lt;td&gt;65,491.070&lt;sup&gt;***&lt;/sup&gt; (df = 3; 9996)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="4" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;em&gt;Note:&lt;/em&gt;&lt;/td&gt;&lt;td colspan="3" style="text-align:right"&gt;&lt;sup&gt;*&lt;/sup&gt;p&lt;0.1; &lt;sup&gt;**&lt;/sup&gt;p&lt;0.05; &lt;sup&gt;***&lt;/sup&gt;p&lt;0.01&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+
+---
+
+## Welche Arten von Zusammenhang gibt es im DAG?
+
+.pull-left-3[
+
+.center[Confounder]
+
+&lt;img src="DAG_slides_files/figure-html/confounding-dag_wrap-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+Hier handelt es sich um einen gemeinsamen Ursprung
+]
+
+.pull-middle-3[
+
+.center[Mediator]
+
+&lt;img src="DAG_slides_files/figure-html/mediation-dag_wrap-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+Hier handelt es sich um einen Mediator
+]
+
+.pull-right-3[
+
+.center[Collider]
+
+&lt;img src="DAG_slides_files/figure-html/collision-dag_wrap-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+Hier handelt es sich um Selektion / Endogenität
+]
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "atelier-forest-light",
+"highlightLanguage": ["r", "yaml", "markdown"],
+"slideNumberFormat": "",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

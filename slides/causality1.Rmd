@@ -1,0 +1,167 @@
+---
+title: "Einführung in die Kausalität"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["style/css/uni-ulm.css", "style/css/my-fonts.css"]
+    seal: TRUE
+    nature:
+      highlightStyle: atelier-forest-light
+      highlightLanguage: ["r", "yaml", "markdown"]
+      slideNumberFormat: "" 
+      highlightLines: TRUE
+      countIncrementalSlides: false
+      ratio: "16:9"
+    includes:
+      in_header: style/header.html 
+#xaringan::inf_mr() #[Start Preview -> Type into console]
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, 
+  comment = NA, dpi = 300,
+  fig.align = "center", out.width = "70%", cache = FALSE)
+library(tidyverse)
+library(knitr)
+library(emo)
+library(extrafont)
+library(png) 
+library(xaringan)
+library(ggdag)
+
+ggplot2::theme_set(theme_minimal())
+
+```
+
+## Einführung in die Kausalität
+
+.alert[Korrelation ist nicht gleich Kausalität]
+
+--
+
+.alert[Außer, wenn Korrelation gleich Kausalität!]
+
+--
+
+.question[Woher wissen wir, dass _X_ zu _Y_ führt?]
+
+--
+
+_X_ führt zu _Y_, wenn ...
+
+--
+
+wir eingreifen und _X_ verändern, alles andere jedoch gleich lassen und ...
+
+--
+
+_Y_ sich danach verändert.
+
+
+**Achtung:** _Y_ "hört" jedoch nicht unbedingt nur auf _X_. Es gibt potentiell noch andere Einflüsse, die auf _Y_ einwirken.
+
+---
+
+## Beispiele für kausale Aussagen
+
+- Feuerwerkskörper verursachen Lärm, sobald diese angezündet werden
+- Das Krähen des Hahn führt zum Sonnenaufgang
+- Ein Bachelor an der Uni Ulm erhöht ihr späteres Einkommen
+
+--
+
+**Kausalität = Korrelation + zeitliche Abfolge + kein Scheinzusammenhang**
+
+.question[Woher wissen Sie, dass Sie die richtigen Faktoren betrachten (d.h. keinen Scheinzusammenhang)?]
+
+--
+
+.alert[Hier benötigen Sie ein Modell -> Etwas was Sie in dieser Vorlesung lernen!]
+
+---
+
+## Datengenerierungsprozess
+
+Um zu verstehen, wie wir aus experimentellen Daten oder aus Beobachtungsdaten _kausale_ Zusammenhänge ableiten können müssen wir uns folgenden Fragen widmen:
+
+- Woher stammen unsere Daten (Experiment oder Beobachtungsdaten)?
+- Welcher **Datengenerierungsprozess** hat diese Daten erzeugt?
+- Können wir auf diesen Datengenerierungsprozess einwirken? (insbesondere durch ein Experiment)
+- Gibt es zufällige Elemente in unseren Daten die wir analysieren könnten?
+
+---
+
+## Kausale Graphen (DAGs)
+
+Um uns den Datengenerierungsprozess vor Augen zu führen sollten wir diesen modellieren:
+
+- Hierzu verwenden wir die **directed acyclic graphs (DAGs)**, welche vor allem von Judea Pearl entwickelt wurden
+- In diesen DAGs fließt Kausalität (acyclic) nur in eine Richtung (falls Rückwärtskausalität oder Simultanität vorhanden ist sind andere Modelle besser geeignet)
+- DAGs präsentieren Kausalität als Alternativszenario ("counterfactuals")
+    - Ein kausaler Effekt wird als Vergleich zweier Alternativen definiert: 
+      - Der Zustand der stattgefunden hat mit der Intervention
+      - Der Zustand der nicht stattgefunden hat ohne die Intervention (das "counterfactual")
+
+---
+
+## Wie groß war der Effekt einer Intervention?
+
+```{r, echo=FALSE}
+include_graphics("./figs/psd-program-effect.png")
+```
+
+.tiny[Quelle: Andrew Heiss, Programm evaluation (https://evalf20.classes.andrewheiss.com/content/01-content/)]
+
+.question[Wie _messen_ wir den Effekt einer Intervention?]
+
+--
+
+.pull-left[Mit einem Experiment]
+
+.pull-right[Mit Beobachtungsdaten]
+
+---
+
+## Wie sehen diese DAGs aus?
+
+.pull-left[
+```{r simple-dag, echo=FALSE, fig.width=4.5, fig.height=3, out.width="100%"}
+dagify(
+  Y ~ X + D,
+  X ~ D,
+  coords = list(x = c(X = 1, Y = 3, D = 2),
+                y = c(X = 1, Y = 1, D = 2))
+) %>% 
+  ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
+  geom_dag_edges() +
+  geom_dag_point(color = "grey80", size = 14) +
+  geom_dag_text(color = "black", size = 5) +
+  theme_dag()
+```
+]
+
+.pull-right[
+- **Directed**: Jede Node hat einen Pfeil der zu einer anderen Node zeigt
+- **Acyclic**: Pfeile haben nur eine Richtung, sie können nicht zu einer Node zurück
+
+Daher können Sie DAGs folgendermaßen interpretieren:
+- Grafische Repräsentation ihres Modells
+- Jeder Pfeil zeigt eine kausale Verbindung einer Variablen zur nächsten an (Richtung der Kausalität)
+- Dort wo es keine Pfeile zwischen den Variablen gibt vermuten Sie keinen kausalen Zusammenhang (Annahmen ersichtlich)
+]
+
+---
+
+## Wie sehen diese DAGs aus?
+
+.question[Doch woher kommt das DAG?]
+
+--
+- Eine Sehr gute Frage!
+- Es entsteht aus ihren Erkenntnissen aus der Literatur, den eigenen Hypothesen, ökonomische Theorie, ihren eigenen Beobachtungen ...
+
+.instructions[In den folgenden Vorlesungseinheiten widmen wir uns den DAGs und wie diese den Datengenerierungsprozess veranschaulichen können.]
+
+
+

@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Willkommen zum 2. Teil des Projektkurs Data Science und Business Analytics</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dr. Alexander Rieber    AlexRieber    alexander.rieber@uni-ulm.de " />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <script src="https://use.fontawesome.com/5235085b15.js"></script>
+    <link rel="stylesheet" href="style/css/uni-ulm.css" type="text/css" />
+    <link rel="stylesheet" href="style/css/my-fonts.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Willkommen zum 2. Teil des Projektkurs Data Science und Business Analytics
+]
+.author[
+### Dr. Alexander Rieber<br> <a href="https://github.com/AlexRieber"><i class="fa fa-github fa-fw"></i>  AlexRieber</a><br> <a href="mailto:alexander.rieber@uni-ulm.de"><i class="fa fa-paper-plane fa-fw"></i>  alexander.rieber@uni-ulm.de</a><br>
+]
+
+---
+
+
+
+
+
+# Mit wem haben Sie es zu tun?
+
+## Ihr Dozent und Übungsleiter
+
+.pull-left[
+&lt;br&gt;&lt;br&gt;
+**Dozent**
+
+Dr. Alexander Rieber
+
+&lt;a href="mailto:alexander.rieber@uni-ulm.de"&gt;&lt;i class="fa fa-paper-plane fa-fw"&gt;&lt;/i&gt;&amp;nbsp; alexander.rieber@uni-ulm.de&lt;/a&gt;&lt;br&gt;
+
+Büro: Helmholtzstraße 18, Raum 1.22
+]
+
+.pull-right[
+&lt;br&gt;&lt;br&gt;
+**Übungsleiter**
+
+Julius Düker
+
+&lt;a href="mailto:julius.dueker@uni-ulm.de"&gt;&lt;i class="fa fa-paper-plane fa-fw"&gt;&lt;/i&gt;&amp;nbsp; julius.dueker@uni-ulm.de&lt;/a&gt;
+
+Büro: Helmholtzstraße 18, Raum 1.10
+]
+
+---
+
+## Ihre Tutoren
+
+.pull-left[
+&lt;br&gt;&lt;br&gt;
+**Tutor**
+
+Oliver Pesch
+
+&lt;a href="mailto:oliver.pesch@uni-ulm.de"&gt;&lt;i class="fa fa-paper-plane fa-fw"&gt;&lt;/i&gt;&amp;nbsp; oliver.pesch@uni-ulm.de&lt;/a&gt;
+
+&lt;br&gt;&lt;br&gt;
+**Tutor**
+
+Christoph Kiesel
+
+&lt;a href="mailto:christoph.kiesl@uni-ulm.de"&gt;&lt;i class="fa fa-paper-plane fa-fw"&gt;&lt;/i&gt;&amp;nbsp; christoph.kiesl@uni-ulm.de&lt;/a&gt;
+]
+
+.pull-right[
+&lt;br&gt;&lt;br&gt;
+**Tutor**
+
+Nils Hönig
+
+&lt;a href="mailto:nils.hoenig@uni-ulm.de"&gt;&lt;i class="fa fa-paper-plane fa-fw"&gt;&lt;/i&gt;&amp;nbsp; nils.hoenig@uni-ulm.de&lt;/a&gt;
+
+&lt;br&gt;&lt;br&gt;
+**Tutor**
+
+Philipp Klotz
+
+&lt;a href="mailto:philipp.klotz@uni-ulm.de"&gt;&lt;i class="fa fa-paper-plane fa-fw"&gt;&lt;/i&gt;&amp;nbsp; philipp.klotz@uni-ulm.de&lt;/a&gt;
+]
+
+---
+class: inverse, center, middle
+
+# Vorlesungsdetails
+
+---
+
+## Aufbau der Veranstaltung
+
+- Interaktive Vorlesung mit Übungsaufgaben
+  - In den ersten 6 Wochen
+  - Mittwochs von 8:15 Uhr - 9:45 Uhr in H20
+  - Freitags von 10:15 Uhr - 11:45 Uhr in H14
+- [[Anonymer Chat](https://quizchat.econ.mathematik.uni-ulm.de/pkds/) in der Veranstaltung (mit Umfragen)]
+- `RTutor` Übungsaufgaben um Inhalte zu vertiefen
+- Ein gemeinsames Projekt mit dem Dozenten
+- Zwei selbstständige Projekte
+- Peer Review der selbstständigen Projekte
+- Probeklausur am 19.05.2023 in der Vorlesung! (Anwesenheitspflicht da Vorleistung)
+
+---
+
+## Wo finden Sie die Kursmaterialien?
+
+.center[.instructions[Unserer Kommunikation mit Ihnen erfolgt über unsere Moodle Seite]]
+
+Auf dieser Moodle Seite finden Sie:
+
+--
+- Vorlesungsplaner per Excel 📆
+
+--
+- Vorlesungsfolien 🗒
+
+--
+- Lehrvideos 📺
+
+--
+- RTutor Problem Sets -&gt; `RTutor`
+
+--
+- Aufgabenstellungen für die einzelnen Projekte 📖
+
+--
+- Forum für Fragen 👨‍🎓 👩‍🎓 ⁉️
+
+--
+- Zoom Räume für die Kombi-Vorlesung ⌚
+
+--
+
+Bis zum 17. Mai werden Vorlesungen in Form von Präsenzvorlesungen, Lehrvideos, Tutorials und RTutor Problem Sets stattfinden.
+Weiterhin wird eine Projektarbeit innerhalb der Vorlesung mit ihnen gemeinsam erarbeitet. (Gibt 10% der Endnote)
+
+--
+.center[.alert[Anschließend gibt es zwei selbstständige Projektarbeiten, welche in die Endnote einfließen werden.]]
+
+---
+
+## Interaktive Vorlesung
+
+- Interaktive Vorlesung mit integrierten Übungsaufgaben
+- Geblockte Vorlesungseinheiten zu Beginn des Semesters
+- Synchrone Lehre, aufgezeichnet und gestreamed via Zoom, dient der praktischen Anwendung aus den Lehrvideos
+  - **Anders als im letzten Semester** werden diese Vorlesungseinheiten hauptsächlich theoretische Inhalte präsentieren
+  - Case-Study wird in der Einheit zur linearen Regression näher beleuchten
+  - Kausale Effekte werden anhand eines Experiments und einer Instrumentalvariablenschätzung aufgezeigt
+- RTutor Problem Sets und Tutorials sollen zum "learning-by-doing" anregen
+- Vorlesungs- und Übungsunterlagen werden zu Beginn der jeweiligen Vorlesungswoche hochgeladen
+
+---
+class: inverse, middle, center
+
+# Was Sie in dieser Vorlesung lernen
+
+---
+
+## Was haben Sie im ersten Teil des Projektkurses gelernt?
+
+--
+
+- (Große) Datenmengen einlesen, bearbeiten und aus verschiedenen Datenquellen zusammenführen
+
+--
+- Mit diversen Problemen rund um die Datenaufbereitung umgehen
+
+--
+- Zusammenarbeit im Team + Versionierung über Github
+
+--
+- Regeln zur Erstellung geeigneter Grafiken und Tabellen um ihre Analyse zu untermauern
+
+--
+- Transparente und reproduzierbare Analysen mit RMarkdown erstellen
+
+--
+- Selbstständig nach Lösungen für Probleme bei empirischen Problemen zu suchen
+
+--
+- (Kritische) Bewertung anderer Gruppen über einen Review Report
+
+--
+
+.center[.alert[Das letzte Semester war eher technisch (programmierlastig) ausgelegt und auf deskriptive Analysen beschränkt.]]
+
+---
+
+## Was werden Sie im zweiten Teil des Projektkurses lernen?
+
+--
+
+- Wahrscheinlichkeitsrechnung (kurz)
+--
+
+- (Multivariate) Lineare Regression
+--
+
+- Interpretation von Schätzern
+--
+
+- Kausale Zusammenhänge aufdecken
+  - In Experimenten
+  - In Beobachtungsdaten
+--
+
+- Konzept der Kausalität in Beobachtungsdaten mittels directed acyclical graphs (DAG)
+
+--
+- Instrumentalvariablenschätzung
+
+--
+
+.center[.alert[Dieses Semester werden Sie ihre ökonometrischen Kenntnisse vertiefen!]]
+
+---
+
+## Ziele für dieses Semester
+
+Nach diesem Semester werden Sie in der Lage sein:
+
+--
+- Regressionstabellen zu lesen und die jeweiligen Schätzer zu interpretieren
+
+--
+- Die (statistische) Signifikanz von Schätzern zu beurteilen
+
+--
+- Hypothesen abzuleiten und eigene Fragenstellungen mittels statistischer Analysen zu beantworten
+
+--
+- Zu verstehen, wann Sie ihre Ergebnisse kausal interpretieren können
+
+---
+
+class: inverse, center, middle
+
+# Übungsaufgaben mit `RTutor`
+
+---
+
+## Wie Sie die Vorlesungsinhalte vertiefen
+
+- Wöchentliche `RTutor` Problem Sets, welche die Unterrichtseinheit aufgreifen und vertiefen
+- _Individuelle_ Abgabe der `RTutor` Problem Sets als **Vorleistung** 
+   - Insgesamt 3 `RTutor` Problem Sets müssen bearbeitet werden
+   - In jedem `RTutor` Problem Set müssen Sie mind. 80% der Gesamtpunkte erreichen
+
+--
+
+Die `RTutor` Problem Sets behandeln vorlesungsbegleitend folgende Inhalte:
+
+- Regressionsanalysen in R
+- Kausalität in Experimenten
+- Kausalität in Beobachtungsdaten
+
+---
+
+class: inverse, center, middle
+
+# Gruppenzusammensetzung
+
+---
+
+## Gruppenzusammensetzung
+
+- Die Gruppen werden zufällig zugeteilt
+- Es werden immer Gruppen von 3 Personen gebildet
+- Für jedes Projekt werden neue Gruppen gebildet
+  - Durch übereinstimmendes Votum aller Gruppenteilnehmer kann die Gruppe bestehen bleiben (gleicher Mechanismus wie im Wintersemester)
+- Die Gruppe bekommt **eine Note** für **alle Gruppenmitglieder**
+  - Teamwork ist angesagt, mit der entsprechenden Koordination im Team
+
+Vor den Gruppenarbeiten werden Tutoriumstermine auf Moodle bekannt gegeben und jede Gruppe wird zu einem dieser Tutoriumstermine zugeteilt
+
+--
+
+Voraussetzung zur Teilnahme am 2. Teil des Projektkurses in diesem SoSe 23:
+- Erster Teil des Projektkurses im WiSe 22/23 bestanden
+
+---
+
+class: inverse, center, middle
+
+# Unterstützungsangebote
+
+---
+
+## Wo bekommen Sie Hilfe?
+
+- Auf Moodle gibt es wieder ein Diskussionforum, scheuen Sie sich nicht dort ihre Fragen zu stellen!
+    - Bitte benutzen Sie dieses Forum, bevor Sie eine Mail an den Tutor, Übungsleiter oder Dozent stellen
+    - Wir haben einige Beispiele aufgearbeitet, wie Sie Fragen stellen können, auf die Sie schnell antworten erhalten. [Das Dokument finden Sie hier](https://projektkurs-data-science-ulm2223.netlify.app/tutorials/fragen-im-forum)
+
+.alert[Insbesondere während der Vorlesungsphase ist das Moodle Forum sehr wichtig um allgemeine Fragen zu klären!]
+
+--
+- Es finden parallel zu den Projektarbeiten Tutorien statt, wobei jede Gruppe **zufällig** zu einem der Tutoren **zugeteilt wird**
+
+---
+
+## Tutorium
+
+- Ab der 6. Vorlesungswoche gibt es ein vorlesungsbegleitendes Tutorium.
+  - Die Termine werden auf der Homepage bekannt gegeben
+- Die Tutorien werden wöchentlich als Live-Tutorien stattfinden, hierfür haben wir Gruppenarbeitsräume reserviert
+- Die Tutoren beantworten auch ihre Fragen auf Moodle
+  - Bitte stellen Sie ihre Fragen im Forum, wenn ihr Problem allgemeiner Natur ist
+
+--
+
+.instructions[Das Tutorium soll hauptsächlich dazu dienen Sie bei ihren individuellen Projektausarbeitungen zu unterstützen!]
+
+---
+class: inverse, center, middle
+
+# Mit welchen Daten bekommen _Sie_ es zu tun?
+
+---
+
+## Case-Study: Statistische Analyse der Verschuldung in Deutschland
+
+--
+
+.pull-left[
+&lt;br&gt;&lt;br&gt;
+In der Case-Study widmen Sie sich der Frage:
+
+.alert[Gibt es einen Zusammenhang zwischen den Verschuldung eines Landkreises und dessen Arbeitslosenquote?]
+
+**Fokus in diesem Semester:** Statistische Analyse mittels linearer Regression
+
+Zur Beantwortung dieser Frage werten Sie u.a. Informationen vom statistischen Bundesamt auf Landkreisebene aus.
+]
+.pull-right[
+&lt;br&gt;&lt;br&gt;
+&lt;img src="figs/verschuldung.png" width="110%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Projekt 4: Bildungsrendite
+
+--
+
+.pull-left[
+&lt;br&gt;&lt;br&gt;
+In diesem Projekt widmen Sie sich der Frage:
+
+.alert[Welche Auswirkung hat Bildung auf das spätere Einkommen?]
+
+Frage nicht trivial, da es mehrere sogenannte Confounder gibt:
+
+- Hintergrund, Motivation, Fähigkeiten
+- **Lösung:** Verwenden von Instrumentalvariablenschätzern
+
+Weiterhin:
+
+- Nutzung eines API um auf die amerikanischen ACS Daten zuzugreifen
+
+]
+
+.pull-right[
+&lt;br&gt;&lt;br&gt;
+&lt;img src="figs/Bildungsrendite.png" width="110%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Projekt 5: Buchbewertungen und deren Effekt auf Verkaufszahlen
+
+--
+
+.pull-left[
+&lt;br&gt;&lt;br&gt;
+In diesem Projekt widmen Sie sich der Frage:
+
+.alert[Haben Bewertungen von Büchern durch die New York Times Einfluss auf deren Verkaufszahlen und Bewertung auf Amazon.com?]
+
+- Zur Beantwortung dieser Frage **scrapen Sie selbstständig** die Webseiten von Amazon.com zu bestimmten Büchern.
+- Sie analysieren ihre Daten deskriptiv.
+- Und werten ihren Datensatz statistisch aus.
+]
+.pull-right[
+&lt;br&gt;&lt;br&gt;
+&lt;img src="figs/amazon.png" width="70%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Projekt 6: Medienzensur in China
+
+--
+
+.pull-left[
+&lt;br&gt;&lt;br&gt;
+In diesem Projekt widmen Sie sich der Frage:
+
+.alert[Welche Auswirkung hat der Zugriff auf unzensierte Medien für chinesischer Bürger:innen? Verändert sich deren politische Einstellung?]
+
+Zur Beantwortung dieser Frage werten Sie einen **bereitgestellten Datensatz** aus einem Feldexperiement in China aus. Dort wurden 1807 Studierende zwischen 2015 - 2017 begleitet und deren Internetnutzung dokumentiert.
+]
+.pull-right[
+&lt;br&gt;&lt;br&gt;
+&lt;img src="figs/medienzensur.jpeg" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+
+## Was Sie in den Projekten lernen
+
+- Analysen auf **echten Daten**
+
+--
+- Nutzung eines API, Webscraping, Analyse von experimentellen Daten
+
+--
+- Deskriptive Analysen mittels Grafiken und Tabellen
+
+--
+- Regressionsanalysen (univariat und multivariat) und Interpretation von Schätzern
+
+--
+- Kausale Zusammenhänge verstehen und diese aufdecken
+
+---
+
+## Was Sie durch Review Reports lernen
+
+- Rekapitulation des Projekts
+
+--
+- Kritische Auseinandersetzung mit der Arbeit von Mitstudierenden
+
+--
+- Erkennen was die andere Gruppe gut/schlecht gemacht hat und daraus für ihre eigene Arbeit Erkenntnisse gewinnen
+
+--
+
+.instructions[Die Review Reports für jedes Projekt sind _individuelle_ Abgaben!]
+
+---
+class: inverse, center, middle
+
+# Wie setzt sich die Note zusammen?
+
+---
+
+## Notengebung
+
+Nach den Vorlesungseinheiten und der Einführung in R gibt es drei Projekte:
+
+--
+- Erstes Projekt: Zusammen mit dem Dozenten: 10 Punkte = 10% der Note
+  - Nur Basiscode (spezielle für die Grafiken) wird geliefert und Sie sollten diesen optimieren
+  - Interpretation der Regression und Instrumentalvariablenschätzer wird in der Vorlesung ausführlich besprochen
+
+--
+- Zweites Projekt: 30 Punkte = 30% der Note
+
+--
+- Drittes Projekt: 30 Punkte = 30% der Note
+
+--
+- Multiple-Choice Abschlussprüfung: 30 Punkte = 30% der Note
+
+--
+
+Es werden immer **Gruppen von drei Personen** geformt, welche die **Projekte zusammen** abgeben.
+Natürlich dürfen alle Teilnehmer Projekte gerne miteinander diskutieren. 
+
+Jedoch muss jede Gruppe eine _individuelle Ausarbeitung_ abgeben. 
+Wenn sich die Lösung einzelner Abschnitte der Projekte (oder das komplette Projekt) zu stark ähnelt, wird dies mit 0 Punkten für das Projekt geahndet (für alle beteiligten Gruppen).
+
+---
+
+## Klausur
+
+**Vorleistung 1:** Die **RTutor Problem Sets** müssen **individuell** bearbeitet und eingereicht werden um für die Projekte und Klausur zugelassen zu werden
+  - Letztes RTutor Problem Set ist am 15. Mai fällig
+  - Mindestens 80% der Punkte **pro Problem Set** müssen erreicht werden um für die Projekte zugelassen zu werden
+  - Mindestens 30% der Punkte in der **Probeklausur am 19.05.2023**
+
+--
+
+**Vorleistung 2:** Die **Peer Reviews** müssen **individuell** bearbeitet und eingereicht werden um für die Klausur zugelassen zu werden
+  - Letzter Review Report ist am 20. Juli fällig
+  - Studenten ranken die Review Reports nach Nützlichkeit:
+    - Bei _mindestens_ einem Projekt muss der Review Report _mindestens_ auf Platz 2 gerankt werden. 
+    - Wenn alle Reports als "nützlich" eingestuft wurden, entscheidet der Dozent über die Zulassung zu Klausur
+
+--
+
+.alert[Die multiple choice Abschlussprüfung beinhaltet Fragen zu den drei Teilprojekten, den Vorlesungsinhalten, der Case-Study (und allen in der Vorlesung besprochenen Materialien) und den `RTutor` Problem Sets.]
+
+---
+
+## Teilen von Code
+
+- Viel ist im Web verfügbar und darf auch gerne verwendet werden
+    - Wenn Sie Code aus dem Internet verwenden, dann müssen Sie die Quelle entsprechend kennzeichnen!
+    - Falls Sie die Quelle nicht zitieren wird dies als Plagiat gewertet und wird mit einer 5.0 für das gesamte Projekt geahndet
+- `RTutor` Problem Sets sind selbstständig auszuführen. Code darf nicht mit anderen geteilt werden!
+
+--
+
+.instructions[Projekte dürfen innerhalb der Gruppe und auch gerne mit anderen Gruppen diskutiert werden, jedoch **darf kein Code** an andere Gruppen **weitergegeben werden!**]
+
+---
+
+## Notengebung der Projekte
+
+- Im **zweiten Projekt** muss neben der schriftlichen Ausarbeitung (70% der Note für das Projekt) auch ein Screencast (30% der Note für das Projekt) gehalten werden
+    - Der Screencast sollte nicht länger als 5 Minuten gehen
+--
+- Im **dritten Projekt** muss neben der schriftlichen Ausarbeitung (70% der Note für das Projekt) auch ein Screencast (30% der Note für das Projekt) gehalten werden
+    - Der Screencast sollte nicht länger als 5 Minuten gehen
+
+--
+
+.instructions[Bitte bereiten Sie den Screencast frühzeitig vor, er gibt 30% der Note!]
+
+---
+
+## Dokumentation und Coding Standard
+
+Sie sollten mit ihren Gruppenpartnern zusammenarbeiten, dafür gilt es einige Prinzipien zu beachten:
+
+- Benutzen Sie immer einfache Textdateien um miteinander zusammen zu arbeiten 
+    - Dateien, welche Sie miteinander bearbeiten sollten mit einem Texteditor zu lesen sein (Notepad ++ / vim / eclipse ...)
+    - Hier eignet sich das in der Vorlesung vorgestellte RMarkdown bestens
+- Strukturieren Sie ihren Code (Kommentare)
+- Begrenzen Sie ihren Code (max. 80 Zeichen pro Zeile)
+- Rücken Sie einzelne Bausteine ein (Alles was zu einer Funktion gehört sollte mit vier Leerzeichen eingerückt werden)
+
+---
+
+## Zeitmanagement    
+
+- Definieren Sie Meilensteine
+    - Bis wann muss was von wem erstellt worden sein?
+
+--
+
+- Bleiben Sie in Kontakt mit ihrem/ihrer Gruppenpartner/in, bspw. über Github oder Moodle, um über ihren Projektfortschritt zu sprechen
+--
+
+- Stellen Sie unbedingt Fragen im Forum auf Moodle!
+    - Hier können Fragen oft sehr schnell beantwortet werden und meist haben mehrere Gruppen die gleiche Frage
+    - Wenn Sie die Antwort auf eine Frage wissen, dann scheuen Sie sich nicht diese in Moodle zu posten!
+
+--
+
+- Nutzen Sie die Möglichkeit des Tutoriums und sprechen Sie dort Schwierigkeiten direkt an
+--
+
+- Kommen Sie bei tiefergehenden Fragen frühzeitig auf den Dozenten zu
+--
+
+- Planen Sie genügend Zeit für die Erstellung und das Halten des Screencast ein
+  - Der Screencast gibt 30% der Projektnote -&gt; Nicht auf die leichte Schulter nehmen!
+
+---
+
+## Github für die Zusammenarbeit
+
+.instructions[
+Wir werden weiterhin unsere [private Organisation auf Github](https://github.com/pkds22-23) nutzen.
+]
+
+Falls Sie ihre Git-Kenntnisse auffrischen wollen können Sie jederzeit auf den [Moodle-Kurs des letzten Semesters](https://moodle.uni-ulm.de/mod/url/view.php?id=628770) zugreifen. Die Unterlagen bleiben dort weiterhin für Sie verfügbar!
+
+---
+
+class: inverse, center, middle
+
+# Recap des 1. Teils der Vorlesung
+
+---
+
+## Recap zu R und dem tidyverse
+
+.question[Welche Pakete verwenden Sie um .csv/.dta/.xlsx Dateien einzulesen?]
+
+--
+
+.question[Was sagt dieses Symbol `%&gt;%`, was ist der Unterschied zu diesem Symbol `|&gt;`?]
+
+--
+
+.question[Wie führen Sie mehrere Datensätze zusammen?]
+
+---
+
+## Recap zu Github
+
+.question[Warum sollte ihr Commit in Github Desktop immer beschrieben werden?]
+
+--
+
+.question[Warum sollten Sie häufig committen?]
+
+---
+
+## Recap zur Visualisierung
+
+.question[Warum sollte ein Balkendiagramm immer bei Null beginnen? Gilt diese Regel für alle Diagramme?]
+
+--
+
+.question[Warum sollten Sie ihre Tabellen nicht als Tibble Output präsentieren?]
+
+---
+
+## Recap der Case-Study
+
+.question[Welches Bild ergibt sich für die Verschuldung in Deutschland? Gibt es regionale Unterschiede?]
+
+--
+
+.question[Sind diese regionalen Unterschiede auch bei anderen Kenngrößen sichtbar?]
+
+---
+
+## Recap Theoretischer Inhalte
+
+.question[Wann können Sie aus einer Stichprobe valide Aussagen zur Grundgesamtheit ziehen?]
+
+--
+
+.question[Welchen Effekt hat die Stichprobengröße auf ihre Stichprobenvarianz?]
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "atelier-forest-light",
+"highlightLanguage": ["r", "yaml", "markdown"],
+"slideNumberFormat": "",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

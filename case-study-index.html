@@ -13,7 +13,7 @@
 
 <title>Vorlesungsbegleitende Case-Study</title>
 
-<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -153,11 +153,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -186,8 +190,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -195,16 +199,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -356,6 +353,9 @@ div.tocify {
     <li>
       <a href="./case-study/case_study_germany_2.html">Zweiter Teil der Case-Study</a>
     </li>
+    <li>
+      <a href="./case-study/case_study_germany_3.html">Dritter Teil der Case-Study</a>
+    </li>
   </ul>
 </li>
 <li class="dropdown">
@@ -373,6 +373,9 @@ div.tocify {
     </li>
     <li>
       <a href="https://github.com/projektkurs-datascience/22-23/tree/main/problem-sets/ps3">Problem Set 3</a>
+    </li>
+    <li>
+      <a href="https://github.com/projektkurs-datascience/22-23/tree/main/problem-sets/ps4">Problem Set 4</a>
     </li>
   </ul>
 </li>
@@ -413,6 +416,9 @@ div.tocify {
 </li>
 <li>
   <a href="https://moodle.uni-ulm.de/course/view.php?id=23708">Moodle WiSe</a>
+</li>
+<li>
+  <a href="https://moodle.uni-ulm.de/course/view.php?id=38272">Moodle SoSe</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -505,10 +511,34 @@ den regionalen Unterschieden innerhalb Deutschlands. Das begleitende 3.
 RTutor Problem Set gibt ihnen einen sehr guten Eindruck davon, wie die
 Unterschiede zwischen den einzelnen Ländern auf europäischer Ebene
 aussehen.</p>
+<hr />
+</div>
+<div id="dritter-teil-der-case-study" class="section level2">
+<h2>Dritter Teil der Case Study</h2>
+<p>Im dritten Teil der Case Study untersuchen Sie mögliche Gründe für
+die regionalen Unterschiede innerhalb Deutschlands. Mit den ihnen zur
+Verfügung stehenden Daten zum BIP und der Verschuldung der einzelnen
+Landkreise wollen Sie die Arbeitslosenquoten in den einzelnen Regionen
+Deutschlands erklären. Ziele des dritten Teils der Case Study:</p>
+<ul>
+<li>Regressionen in R durchführen</li>
+<li>Interpretation von Regressionskoeffizienten</li>
+</ul>
+<p>Sie lernen, wie Sie eine lineare Regression dazu Nutzen können um
+mögliche Zusammenhängen zwischen der Arbeitslosigkeit und anderen
+Faktoren näher zu beleuchten. Jedoch lernen Sie auch die Grenzen der
+lineraren Regression kennen, insbesondere im Hinblick auf die
+Interpetation der Koeffizienten in einer linearen Regression. Ergänzend
+hierzu erhalten Sie im 4. RTutor Problem Set Einblicke in die
+Zusammenhänge verschiedener gesamtwirtschaftlicher Faktoren und der
+Arbeitslosigkeit in den einzelnen Ländern der europäischen Union. Im 5.
+und 6. RTutor Problem Set werden Sie zusätzlich erfahren, welche
+Möglichkeiten wir in den Wirtschaftswissenschaften haben, um kausale
+Schlüsse ziehen zu können.</p>
 </div>
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiVm9ybGVzdW5nc2JlZ2xlaXRlbmRlIENhc2UtU3R1ZHkiCm91dHB1dDogCiAgaHRtbF9kb2N1bWVudDoKICAgIHRoZW1lOiBjb3NtbwogICAgY29kZV9kb3dubG9hZDogdHJ1ZQogICAgdG9jOiB0cnVlCiAgICB0b2NfZmxvYXQ6IHRydWUKLS0tCgpgYGB7ciBzZXR1cCwgaW5jbHVkZSA9IEZBTFNFLCBjYWNoZSA9IEZBTFNFfQprbml0cjo6b3B0c19jaHVuayRzZXQoZXJyb3IgPSBUUlVFLCBjb21tZW50ID0gTkEsIHdhcm5pbmdzID0gRkFMU0UsIGVycm9ycyA9IEZBTFNFLCBtZXNzYWdlcyA9IEZBTFNFLCB0aWR5ID0gRkFMU0UsIGVjaG8gPSBGQUxTRSkKYGBgCgojIFppZWxlIGRlciBDYXNlIFN0dWR5CgpEaWVzZSBDYXNlLVN0dWR5IGJlc3RlaHQgYXVzIG1laHJlcmVuIFRlaWxlbiB1bmQgd2lyZCBTaWUgZHVyY2ggZGllIGtvbXBsZXR0ZSBWb3JsZXN1bmcgYWxzIGtvbmtyZXRlcyBBbnNjaGF1dW5nc29iamVrdCBiZWdsZWl0ZW4uIEhpZXJiZWkgZGllbnQgZGllIENhc2UtU3R1ZHkgaGF1cHRzw6RjaGxpY2ggZGF6dSwgaWhuZW4gYW4gZWluZW0ga29ua3JldGVuIHVuZCB1bWZhbmdyZWljaGVuIEJlaXNwaWVsIGRpZSBLZW5udG5pc3NlIGbDvHIgZWluZSBlcmZvbGdyZWljaGUgUHJvamVrdGFyYmVpdCB6dSB2ZXJtaXR0ZWxuIHVuZCBkaWVzZSBLZW5udG5pc3NlIHp1IHZlcnRpZWZlbi4gTmF0w7xybGljaCBrw7ZubmVuIFNpZSBkaWUgQ2FzZS1TdHVkeSBhdWNoIGFscyBSZWZlcmVueiBoZXJhbnppZWhlbiwgd2VubiBTaWUgaWhyZSBlaWdlbmUgUHJvamVrdGFyYmVpdCBhbmZlcnRpZ2VuLiAKCi0tLQoKIyMgRXJzdGVuIFRlaWwgZGVyIENhc2UgU3R1ZHkKCkltIGVyc3RlbiBUZWlsIGRlciBDYXNlIFN0dWR5IHdlcmRlbiBTaWUgaWhyZSBLZW5udG5pc3NlIGF1cyBkZXIgVm9ybGVzdW5nc2VpbmhlaXQgenVtIERhdGVuaMOkbmRsaW5nLCBkLmguIGFsbGVzIGJ6Z2wuIERhdGVuIGVpbmxlc2VuLCBiZWFyYmVpdGVuIHVuZCBpbiBlaW5lIGdlZWlnbmV0ZSBGb3JtIGJyaW5nZW4sIGRpcmVrdCBhdWYgRGF0ZW4genVyIEFyYmVpdHNsb3NlbnN0YXRpc3RpaywgZGVtIEJJUCB1bmQgZGVyIFZlcnNjaHVsZHVuZyBlaW56ZWxuZXIgTGFuZGtyZWlzZSBiencuIEdlbWVpbmRlbiBhbndlbmRlbi4gWmllbGUgZGVzIGVyc3RlbiBUZWlscyBkZXIgQ2FzZSBTdHVkeToKCi0gWnV2ZXJsw6Rzc2lnIERhdGVucXVlbGxlbiBmw7xyIGVpbmUgRnJhZ2VzdGVsbHVuZyBhdXNmaW5kaW5nIG1hY2hlbiB1bmQgZGllc2UgYXV0b21hdGlzaWVydCBoZXJ1bnRlcmxhZGVuIAotIERhcyB0ZWNobmlzY2hlIFZlcnN0w6RuZG5pcyB3aWUgRGF0ZW4gaW4gUiBlaW5nZWxlc2VuIHVuZCBiZWFyYmVpdGV0IHdlcmRlbiBrw7ZubmVuLiBIaWVyYmVpIGxlc2VuIFNpZSByZWxhdGl2IGZlaW5ncmFudWxhcmUgSW5mb3JtYXRpb25lbiB6dW0gQXJiZWl0c21hcmt0IHVuZCB6dXIgZ2VzYW10d2lydHNjaGFmdGxpY2hlbiBMYWdlIGluIERldXRzY2hsYW5kIGVpbiB1bmQgYmVhcmJlaXRlbiBkaWVzZSBpbiBSCi0gV2lzc2VuLCB3aWUgdmVyc2NoaWVkZW5lIERhdGVuc8OkdHplIG1pdGVpbmFuZGVyIHZlcmtuw7xwZnQgd2VyZGVuIGvDtm5uZW4KCkVyZ8OkbnplbmQgenUgZGVuIHVudGVyc2NoaWVkbGljaGVuIFJlZ2lvbmVuIGlubmVyaGFsYiBEZXV0c2NobGFuZHMgd2VyZGVuIFNpZSBpbSAyLiBSVHV0b3IgUHJvYmxlbSBTZXQgS2VubnphaGxlbiB6dSB2ZXJzY2hpZWRlbmVuIEzDpG5kZXJuIGRlciBldXJvcMOkaXNjaGVuIFVuaW9uIHVudGVyc3VjaGVuIHVuZCBkaWUgcmVnaW9uYWxlbiBVbnRlcnNjaGllZGUgaW5uZXJoYWxiIGRlciBldXJvcMOkaXNjaGVuIFVuaW9uIGVybGViZW4uIFNvd29obCBpbiBkZXIgQ2FzZS1TdHVkeSBhbHMgYXVjaCBpbiBkZW4gUlR1dG9yIFByb2JsZW0gU2V0cyB0cmVmZmVuIFNpZSBhdWYga29ua3JldGUgUHJvYmxlbWUsIGRpZSBTaWUgbWl0IGlocmVuIEtlbm50bmlzc2VuIGF1cyBkZXIgVm9ybGVzdW5nIGzDtnNlbiBzb2xsZW4uCgotLS0KCiMjIFp3ZWl0ZXIgVGVpbCBkZXIgQ2FzZSBTdHVkeQoKSW0gendlaXRlbiBUZWlsIGRlciBDYXNlIFN0dWR5IHdlcmRlbiBTaWUgZGllIGVpbmdlbGVzZW5lbiB1bmQgYXVmZ2VhcmJlaXRldGVuIERhdGVuIGF1cyBUZWlsIDEgZGVza3JpcHRpdiB1bnRlcnN1Y2hlbi4gSGllcmJlaSBlcmhhbHRlbiBTaWUgZWluZW4gRWluZHJ1Y2sgdm9uIGRlbiBEYXRlbiB1bmQga8O2bm5lbiBtw7ZnbGljaGUgWnVzYW1tZW5ow6RuZ2UgZW50ZGVja2VuIGluZGVtIFNpZSB1bnRlcnNjaGllZGxpY2hlIEluZm9ybWF0aW9uZW4gdmlzdWFsaXNpZXJlbiB1bmQgYXVjaCBpbiBUYWJlbGxlbmZvcm0gYXVzd2VydGVuLiBaaWVsZSBkZXMgendlaXRlbiBUZWlscyBkZXIgQ2FzZSBTdHVkeToKCi0gRGF0ZW4gdmlzdWFsaXNpZXJlbiB1bmQgWnVzw6RtbWVuaMOkbmdlIGdyYWZpc2NoIHZlcmFuc2NoYXVsaWNoZW4gCi0gRGVza3JpcHRpdmUgQW5hbHlzZW4gbWl0dGVscyBLb3JyZWxhdGlvbnN0YWJlbGxlbiB1bmQgZGVza3JpcHRpdmVuIFRhYmVsbGVuIGFuZmVydGlnZW4KLSBEYXMgVmVyc3TDpG5kbmlzIHdpZSBTaWUgaWhyZSBJbmZvcm1hdGlvbmVuIHp1IGJlc3RpbW10ZW4gRnJhZ2VzdGVsbHVuZ2VuIG3DtmdsaWNoc3QgZWZmZWt0aXYgYXVmYmVyZWl0ZW4KLSBJbnRlcmFrdGl2ZSBHcmFmaWtlbiBlcnN0ZWxsZW4KClNpZSBlcmhhbHRlbiBkdXJjaCBkZXNrcmlwdGl2ZSBBbmFseXNlbiBlaW5lbiBzZWhyIGd1dGVuIEVpbmRydWNrIHZvbiBkZW4gcmVnaW9uYWxlbiBVbnRlcnNjaGllZGVuIGlubmVyaGFsYiBEZXV0c2NobGFuZHMuIERhcyBiZWdsZWl0ZW5kZSAzLiBSVHV0b3IgUHJvYmxlbSBTZXQgZ2lidCBpaG5lbiBlaW5lbiBzZWhyIGd1dGVuIEVpbmRydWNrIGRhdm9uLCB3aWUgZGllIFVudGVyc2NoaWVkZSB6d2lzY2hlbiBkZW4gZWluemVsbmVuIEzDpG5kZXJuIGF1ZiBldXJvcMOkaXNjaGVyIEViZW5lIGF1c3NlaGVuLiAK</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiVm9ybGVzdW5nc2JlZ2xlaXRlbmRlIENhc2UtU3R1ZHkiCm91dHB1dDogCiAgaHRtbF9kb2N1bWVudDoKICAgIHRoZW1lOiBjb3NtbwogICAgY29kZV9kb3dubG9hZDogdHJ1ZQogICAgdG9jOiB0cnVlCiAgICB0b2NfZmxvYXQ6IHRydWUKLS0tCgpgYGB7ciBzZXR1cCwgaW5jbHVkZSA9IEZBTFNFLCBjYWNoZSA9IEZBTFNFfQprbml0cjo6b3B0c19jaHVuayRzZXQoZXJyb3IgPSBUUlVFLCBjb21tZW50ID0gTkEsIHdhcm5pbmdzID0gRkFMU0UsIGVycm9ycyA9IEZBTFNFLCBtZXNzYWdlcyA9IEZBTFNFLCB0aWR5ID0gRkFMU0UsIGVjaG8gPSBGQUxTRSkKYGBgCgojIFppZWxlIGRlciBDYXNlIFN0dWR5CgpEaWVzZSBDYXNlLVN0dWR5IGJlc3RlaHQgYXVzIG1laHJlcmVuIFRlaWxlbiB1bmQgd2lyZCBTaWUgZHVyY2ggZGllIGtvbXBsZXR0ZSBWb3JsZXN1bmcgYWxzIGtvbmtyZXRlcyBBbnNjaGF1dW5nc29iamVrdCBiZWdsZWl0ZW4uIEhpZXJiZWkgZGllbnQgZGllIENhc2UtU3R1ZHkgaGF1cHRzw6RjaGxpY2ggZGF6dSwgaWhuZW4gYW4gZWluZW0ga29ua3JldGVuIHVuZCB1bWZhbmdyZWljaGVuIEJlaXNwaWVsIGRpZSBLZW5udG5pc3NlIGbDvHIgZWluZSBlcmZvbGdyZWljaGUgUHJvamVrdGFyYmVpdCB6dSB2ZXJtaXR0ZWxuIHVuZCBkaWVzZSBLZW5udG5pc3NlIHp1IHZlcnRpZWZlbi4gTmF0w7xybGljaCBrw7ZubmVuIFNpZSBkaWUgQ2FzZS1TdHVkeSBhdWNoIGFscyBSZWZlcmVueiBoZXJhbnppZWhlbiwgd2VubiBTaWUgaWhyZSBlaWdlbmUgUHJvamVrdGFyYmVpdCBhbmZlcnRpZ2VuLiAKCi0tLQoKIyMgRXJzdGVuIFRlaWwgZGVyIENhc2UgU3R1ZHkKCkltIGVyc3RlbiBUZWlsIGRlciBDYXNlIFN0dWR5IHdlcmRlbiBTaWUgaWhyZSBLZW5udG5pc3NlIGF1cyBkZXIgVm9ybGVzdW5nc2VpbmhlaXQgenVtIERhdGVuaMOkbmRsaW5nLCBkLmguIGFsbGVzIGJ6Z2wuIERhdGVuIGVpbmxlc2VuLCBiZWFyYmVpdGVuIHVuZCBpbiBlaW5lIGdlZWlnbmV0ZSBGb3JtIGJyaW5nZW4sIGRpcmVrdCBhdWYgRGF0ZW4genVyIEFyYmVpdHNsb3NlbnN0YXRpc3RpaywgZGVtIEJJUCB1bmQgZGVyIFZlcnNjaHVsZHVuZyBlaW56ZWxuZXIgTGFuZGtyZWlzZSBiencuIEdlbWVpbmRlbiBhbndlbmRlbi4gWmllbGUgZGVzIGVyc3RlbiBUZWlscyBkZXIgQ2FzZSBTdHVkeToKCi0gWnV2ZXJsw6Rzc2lnIERhdGVucXVlbGxlbiBmw7xyIGVpbmUgRnJhZ2VzdGVsbHVuZyBhdXNmaW5kaW5nIG1hY2hlbiB1bmQgZGllc2UgYXV0b21hdGlzaWVydCBoZXJ1bnRlcmxhZGVuIAotIERhcyB0ZWNobmlzY2hlIFZlcnN0w6RuZG5pcyB3aWUgRGF0ZW4gaW4gUiBlaW5nZWxlc2VuIHVuZCBiZWFyYmVpdGV0IHdlcmRlbiBrw7ZubmVuLiBIaWVyYmVpIGxlc2VuIFNpZSByZWxhdGl2IGZlaW5ncmFudWxhcmUgSW5mb3JtYXRpb25lbiB6dW0gQXJiZWl0c21hcmt0IHVuZCB6dXIgZ2VzYW10d2lydHNjaGFmdGxpY2hlbiBMYWdlIGluIERldXRzY2hsYW5kIGVpbiB1bmQgYmVhcmJlaXRlbiBkaWVzZSBpbiBSCi0gV2lzc2VuLCB3aWUgdmVyc2NoaWVkZW5lIERhdGVuc8OkdHplIG1pdGVpbmFuZGVyIHZlcmtuw7xwZnQgd2VyZGVuIGvDtm5uZW4KCkVyZ8OkbnplbmQgenUgZGVuIHVudGVyc2NoaWVkbGljaGVuIFJlZ2lvbmVuIGlubmVyaGFsYiBEZXV0c2NobGFuZHMgd2VyZGVuIFNpZSBpbSAyLiBSVHV0b3IgUHJvYmxlbSBTZXQgS2VubnphaGxlbiB6dSB2ZXJzY2hpZWRlbmVuIEzDpG5kZXJuIGRlciBldXJvcMOkaXNjaGVuIFVuaW9uIHVudGVyc3VjaGVuIHVuZCBkaWUgcmVnaW9uYWxlbiBVbnRlcnNjaGllZGUgaW5uZXJoYWxiIGRlciBldXJvcMOkaXNjaGVuIFVuaW9uIGVybGViZW4uIFNvd29obCBpbiBkZXIgQ2FzZS1TdHVkeSBhbHMgYXVjaCBpbiBkZW4gUlR1dG9yIFByb2JsZW0gU2V0cyB0cmVmZmVuIFNpZSBhdWYga29ua3JldGUgUHJvYmxlbWUsIGRpZSBTaWUgbWl0IGlocmVuIEtlbm50bmlzc2VuIGF1cyBkZXIgVm9ybGVzdW5nIGzDtnNlbiBzb2xsZW4uCgotLS0KCiMjIFp3ZWl0ZXIgVGVpbCBkZXIgQ2FzZSBTdHVkeQoKSW0gendlaXRlbiBUZWlsIGRlciBDYXNlIFN0dWR5IHdlcmRlbiBTaWUgZGllIGVpbmdlbGVzZW5lbiB1bmQgYXVmZ2VhcmJlaXRldGVuIERhdGVuIGF1cyBUZWlsIDEgZGVza3JpcHRpdiB1bnRlcnN1Y2hlbi4gSGllcmJlaSBlcmhhbHRlbiBTaWUgZWluZW4gRWluZHJ1Y2sgdm9uIGRlbiBEYXRlbiB1bmQga8O2bm5lbiBtw7ZnbGljaGUgWnVzYW1tZW5ow6RuZ2UgZW50ZGVja2VuIGluZGVtIFNpZSB1bnRlcnNjaGllZGxpY2hlIEluZm9ybWF0aW9uZW4gdmlzdWFsaXNpZXJlbiB1bmQgYXVjaCBpbiBUYWJlbGxlbmZvcm0gYXVzd2VydGVuLiBaaWVsZSBkZXMgendlaXRlbiBUZWlscyBkZXIgQ2FzZSBTdHVkeToKCi0gRGF0ZW4gdmlzdWFsaXNpZXJlbiB1bmQgWnVzw6RtbWVuaMOkbmdlIGdyYWZpc2NoIHZlcmFuc2NoYXVsaWNoZW4gCi0gRGVza3JpcHRpdmUgQW5hbHlzZW4gbWl0dGVscyBLb3JyZWxhdGlvbnN0YWJlbGxlbiB1bmQgZGVza3JpcHRpdmVuIFRhYmVsbGVuIGFuZmVydGlnZW4KLSBEYXMgVmVyc3TDpG5kbmlzIHdpZSBTaWUgaWhyZSBJbmZvcm1hdGlvbmVuIHp1IGJlc3RpbW10ZW4gRnJhZ2VzdGVsbHVuZ2VuIG3DtmdsaWNoc3QgZWZmZWt0aXYgYXVmYmVyZWl0ZW4KLSBJbnRlcmFrdGl2ZSBHcmFmaWtlbiBlcnN0ZWxsZW4KClNpZSBlcmhhbHRlbiBkdXJjaCBkZXNrcmlwdGl2ZSBBbmFseXNlbiBlaW5lbiBzZWhyIGd1dGVuIEVpbmRydWNrIHZvbiBkZW4gcmVnaW9uYWxlbiBVbnRlcnNjaGllZGVuIGlubmVyaGFsYiBEZXV0c2NobGFuZHMuIERhcyBiZWdsZWl0ZW5kZSAzLiBSVHV0b3IgUHJvYmxlbSBTZXQgZ2lidCBpaG5lbiBlaW5lbiBzZWhyIGd1dGVuIEVpbmRydWNrIGRhdm9uLCB3aWUgZGllIFVudGVyc2NoaWVkZSB6d2lzY2hlbiBkZW4gZWluemVsbmVuIEzDpG5kZXJuIGF1ZiBldXJvcMOkaXNjaGVyIEViZW5lIGF1c3NlaGVuLiAKCi0tLQoKIyMgRHJpdHRlciBUZWlsIGRlciBDYXNlIFN0dWR5CgpJbSBkcml0dGVuIFRlaWwgZGVyIENhc2UgU3R1ZHkgdW50ZXJzdWNoZW4gU2llIG3DtmdsaWNoZSBHcsO8bmRlIGbDvHIgZGllIHJlZ2lvbmFsZW4gVW50ZXJzY2hpZWRlIGlubmVyaGFsYiBEZXV0c2NobGFuZHMuIE1pdCBkZW4gaWhuZW4genVyIFZlcmbDvGd1bmcgc3RlaGVuZGVuIERhdGVuIHp1bSBCSVAgdW5kIGRlciBWZXJzY2h1bGR1bmcgZGVyIGVpbnplbG5lbiBMYW5ka3JlaXNlIHdvbGxlbiBTaWUgZGllIEFyYmVpdHNsb3NlbnF1b3RlbiBpbiBkZW4gZWluemVsbmVuIFJlZ2lvbmVuIERldXRzY2hsYW5kcyBlcmtsw6RyZW4uIFppZWxlIGRlcyBkcml0dGVuIFRlaWxzIGRlciBDYXNlIFN0dWR5OgoKLSBSZWdyZXNzaW9uZW4gaW4gUiBkdXJjaGbDvGhyZW4KLSBJbnRlcnByZXRhdGlvbiB2b24gUmVncmVzc2lvbnNrb2VmZml6aWVudGVuCgpTaWUgbGVybmVuLCB3aWUgU2llIGVpbmUgbGluZWFyZSBSZWdyZXNzaW9uIGRhenUgTnV0emVuIGvDtm5uZW4gdW0gbcO2Z2xpY2hlIFp1c2FtbWVuaMOkbmdlbiB6d2lzY2hlbiBkZXIgQXJiZWl0c2xvc2lna2VpdCB1bmQgYW5kZXJlbiBGYWt0b3JlbiBuw6RoZXIgenUgYmVsZXVjaHRlbi4gSmVkb2NoIGxlcm5lbiBTaWUgYXVjaCBkaWUgR3JlbnplbiBkZXIgbGluZXJhcmVuIFJlZ3Jlc3Npb24ga2VubmVuLCBpbnNiZXNvbmRlcmUgaW0gSGluYmxpY2sgYXVmIGRpZSBJbnRlcnBldGF0aW9uIGRlciBLb2VmZml6aWVudGVuIGluIGVpbmVyIGxpbmVhcmVuIFJlZ3Jlc3Npb24uIEVyZ8OkbnplbmQgaGllcnp1IGVyaGFsdGVuIFNpZSBpbSA0LiBSVHV0b3IgUHJvYmxlbSBTZXQgRWluYmxpY2tlIGluIGRpZSBadXNhbW1lbmjDpG5nZSB2ZXJzY2hpZWRlbmVyIGdlc2FtdHdpcnRzY2hhZnRsaWNoZXIgRmFrdG9yZW4gdW5kIGRlciBBcmJlaXRzbG9zaWdrZWl0IGluIGRlbiBlaW56ZWxuZW4gTMOkbmRlcm4gZGVyIGV1cm9ww6Rpc2NoZW4gVW5pb24uIEltIDUuIHVuZCA2LiBSVHV0b3IgUHJvYmxlbSBTZXQgd2VyZGVuIFNpZSB6dXPDpHR6bGljaCBlcmZhaHJlbiwgd2VsY2hlIE3DtmdsaWNoa2VpdGVuIHdpciBpbiBkZW4gV2lydHNjaGFmdHN3aXNzZW5zY2hhZnRlbiBoYWJlbiwgdW0ga2F1c2FsZSBTY2hsw7xzc2UgemllaGVuIHp1IGvDtm5uZW4uCg==</div>
 
 
 </div>

@@ -13,7 +13,7 @@
 
 <title>Folien für Lehrvideos und Live-Veranstaltungen</title>
 
-<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -143,11 +143,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -176,8 +180,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -185,16 +189,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -270,6 +267,9 @@ $(document).ready(function () {
     <li>
       <a href="./case-study/case_study_germany_2.html">Zweiter Teil der Case-Study</a>
     </li>
+    <li>
+      <a href="./case-study/case_study_germany_3.html">Dritter Teil der Case-Study</a>
+    </li>
   </ul>
 </li>
 <li class="dropdown">
@@ -287,6 +287,9 @@ $(document).ready(function () {
     </li>
     <li>
       <a href="https://github.com/projektkurs-datascience/22-23/tree/main/problem-sets/ps3">Problem Set 3</a>
+    </li>
+    <li>
+      <a href="https://github.com/projektkurs-datascience/22-23/tree/main/problem-sets/ps4">Problem Set 4</a>
     </li>
   </ul>
 </li>
@@ -327,6 +330,9 @@ $(document).ready(function () {
 </li>
 <li>
   <a href="https://moodle.uni-ulm.de/course/view.php?id=23708">Moodle WiSe</a>
+</li>
+<li>
+  <a href="https://moodle.uni-ulm.de/course/view.php?id=38272">Moodle SoSe</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -546,6 +552,21 @@ href="https://learningstatisticswithr.com/lsr-0.6.pdf">Learning
 Statistics with R (Kapitel 10)</a></li>
 </ul>
 </div>
+<div id="koeffizienten-interpretieren" class="section level3">
+<h3>16: Koeffizienten Interpretieren</h3>
+<iframe src="slides/Koeffizienten_Interpretieren.html" width="672" height="400px" data-external="1">
+</iframe>
+</div>
+<div id="kausalität-1" class="section level3">
+<h3>16: Kausalität 1</h3>
+<iframe src="slides/causality1.html" width="672" height="400px" data-external="1">
+</iframe>
+</div>
+<div id="directed-acyclic-graphs" class="section level3">
+<h3>17: Directed acyclic graphs</h3>
+<iframe src="slides/DAG_video.html" width="672" height="400px" data-external="1">
+</iframe>
+</div>
 </div>
 <div id="vorlesungsfolien-der-live-veranstaltungen"
 class="section level2 tabset">
@@ -564,6 +585,100 @@ class="section level2 tabset">
 <h3>03: Zweiter Teil der Case-Study</h3>
 <iframe src="slides/VL_case-study-Teil2.html" width="672" height="400px" data-external="1">
 </iframe>
+</div>
+<div id="einführung-und-begrüßung-zum-2.-teil-der-vl"
+class="section level3">
+<h3>04: Einführung und Begrüßung zum 2. Teil der VL</h3>
+<iframe src="slides/intro_projektkurs_data-science2.html" width="672" height="400px" data-external="1">
+</iframe>
+</div>
+<div id="wahrscheinlichkeiten-verteilungen-und-konfidenzintervalle"
+class="section level3">
+<h3>05: Wahrscheinlichkeiten, Verteilungen und Konfidenzintervalle</h3>
+<iframe src="slides/probability-and-confidence-interval.html" width="672" height="400px" data-external="1">
+</iframe>
+</div>
+<div id="inferenzstatistik-hypothestest" class="section level3">
+<h3>06: Inferenzstatistik (Hypothestest)</h3>
+<iframe src="slides/inference.html" width="672" height="400px" data-external="1">
+</iframe>
+</div>
+<div id="lineare-regression-inkl.-interaktionsterme"
+class="section level3">
+<h3>07: Lineare Regression (inkl. Interaktionsterme)</h3>
+<iframe src="slides/linear-regression.html" width="672" height="400px" data-external="1">
+</iframe>
+<ul>
+<li>Zur schönen Darstellung der Regressionsergebnisse verwenden wir das
+Paket <em>modelsummary</em>: Arel-Bundock V (2022). modelsummary:
+Summary Tables and Plots for Statistical Models and Data: Beautiful,
+Customizable, and Publication-Ready. R package version 0.10.0.9000, <a
+href="https://vincentarelbundock.github.io/modelsummary/"
+class="uri">https://vincentarelbundock.github.io/modelsummary/</a>.</li>
+<li>Ein weiteres Paket zur Darstellung der Regressionsergebnisse ist das
+Paket <em>stargazer</em>: Hlavac, Marek (2018). stargazer:
+Well-Formatted Regression and Summary Statistics Tables (version
+5.2.2).</li>
+</ul>
+</div>
+<div id="dritter-teil-der-case-study" class="section level3">
+<h3>08: Dritter Teil der Case-Study</h3>
+<iframe src="slides/VL_case-study-Teil3.html" width="672" height="400px" data-external="1">
+</iframe>
+</div>
+<div id="kausalität-in-den-wirtschaftswissenschaften"
+class="section level3">
+<h3>09: Kausalität in den Wirtschaftswissenschaften</h3>
+<iframe src="slides/DAG_slides.html" width="672" height="400px" data-external="1">
+</iframe>
+<ul>
+<li>Eine hervorragende Einführung in DAGs finden Sie im Kurs <a
+href="https://evalf20.classes.andrewheiss.com/content/04-content">Program
+Evaluation</a> von Andrew Heiss</li>
+<li>Eine weitere hervorragende Quelle zur Einführung von DAGs ist das 3.
+Kapitel in <a href="https://mixtape.scunning.com/dag.html">Causal
+Inferenece - The Mixtape</a></li>
+</ul>
+</div>
+<div id="randomisiertes-experiment" class="section level3">
+<h3>10: Randomisiertes Experiment</h3>
+<iframe src="slides/Experiment_slides.html" width="672" height="400px" data-external="1">
+</iframe>
+<ul>
+<li>Die Studie, welche wir hier betrachten finden Sie hier: Baranov,
+Victoria, Sonia Bhalotra, Pietro Biroli, and Joanna Maselko. 2020.
+“Maternal Depression, Women’s Empowerment, and Parental Investment:
+Evidence from a Randomized Controlled Trial.” American Economic Review,
+110 (3): 824-59.</li>
+</ul>
+</div>
+<div id="instrumentalvariablenschätzung" class="section level3">
+<h3>11: Instrumentalvariablenschätzung</h3>
+<iframe src="slides/instruments.html" width="672" height="400px" data-external="1">
+</iframe>
+<ul>
+<li>Eine hervorragende Einführung in die Instrumentalvariablenschätzung
+liefert das 7. Kapitel in <em>Causal Inferenece - The Mixtape</em>: <a
+href="https://mixtape.scunning.com/instrumental-variables.html"
+class="uri">https://mixtape.scunning.com/instrumental-variables.html</a></li>
+<li>Eine weitere sehr gute Einführung in die
+Instrumentalvariablenschätzung liefert Kapitel 5 von <a
+href="https://openknowledge.worldbank.org/handle/10986/25030">Impact
+Evaluation in Practice</a></li>
+<li>Eine hervorragende Einführung in DAGs finden Sie im Kurs <a
+href="https://evalf20.classes.andrewheiss.com/content/11-content/">Program
+Evaluation</a> von Andrew Heiss</li>
+<li>Zur Instrumentalvariablenschätzung in R verwenden wir das
+<em>AER</em>: Kleiber, Christian, and Achim Zeileis. 2020. AER: Applied
+Econometrics with R (version 1.2-9). <a
+href="https://CRAN.R-project.org/package=AER"
+class="uri">https://CRAN.R-project.org/package=AER</a>.</li>
+<li>Zur schönen Darstellung der Regressionsergebnisse verwenden wir das
+Paket <em>stargazer</em>: Hlavac, Marek. 2018. stargazer: Well-Formatted
+Regression and Summary Statistics Tables (version 5.2.2). <a
+href="https://CRAN.R-project.org/package=stargazer"
+class="uri">https://CRAN.R-project.org/package=stargazer</a>.</li>
+</ul>
 </div>
 </div>
 

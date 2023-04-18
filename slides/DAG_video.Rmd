@@ -1,0 +1,520 @@
+---
+title: "Directed acyclic graphs (DAG)"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["style/css/uni-ulm.css", "style/css/my-fonts.css"]
+    seal: TRUE
+    nature:
+      highlightStyle: atelier-forest-light
+      highlightLanguage: ["r", "yaml", "markdown"]
+      slideNumberFormat: "" 
+      highlightLines: TRUE
+      countIncrementalSlides: false
+      ratio: "16:9"
+    includes:
+      in_header: style/header.html 
+#xaringan::inf_mr() #[Start Preview -> Type into console]
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, 
+  comment = NA, dpi = 300,
+  fig.align = "center", out.width = "70%", cache = FALSE)
+library(tidyverse)
+library(knitr)
+library(xaringan)
+library(ggdag)
+library(stargazer)
+
+ggplot2::theme_set(theme_minimal())
+
+```
+
+## Einführung
+
+Ein Ansatz um über Kausalität nachzudenken:
+
+--
+
+**Directed Acyclic Graphs (DAGs)**
+
+- Grafische Modelle
+- Kausalität fließt immer in eine Richtung und wird durch Pfeile verdeutlicht
+- Keine Rückwärtskausalität oder Simultanität abbildbar
+- Betrachtet Alternativszenarien
+- Do-Calculus im Hintergrund (Fancy Mathe)
+
+.alert[Verwenden wir in dieser Veranstaltung!]
+
+--
+
+DAGs helfen uns insbesondere den zugrunde liegenden Datengenerierungsprozess zu modellieren.
+
+---
+
+## Welche Arten von Zusammenhang gibt es im DAG?
+
+.pull-left-3[
+
+.center[Confounder]
+
+```{r confounding-dag, echo=FALSE, fig.width=4.5, fig.height=3.35, out.width="100%"}
+dagify(
+  Y ~ X + Z,
+  X ~ Z,
+  coords = list(x = c(X = 1, Y = 3, Z = 2),
+                y = c(X = 1, Y = 1, Z = 2))
+) %>% 
+  ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
+  geom_dag_edges() +
+  geom_dag_point(color = "grey80", size = 17) +
+  geom_dag_text(color = "black", size = 5) +
+  theme_dag()
+```
+
+Hier handelt es sich um einen gemeinsamen Ursprung
+]
+
+.pull-middle-3[
+
+.center[Mediator]
+
+```{r mediation-dag, echo=FALSE, fig.width=4.5, fig.height=3.35, out.width="100%"}
+dagify(
+  Y ~ X + Z,
+  Z ~ X,
+  coords = list(x = c(X = 1, Y = 3, Z = 2),
+                y = c(X = 1, Y = 1, Z = 2))
+) %>% 
+  ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
+  geom_dag_edges() +
+  geom_dag_point(color = "grey80", size = 17) +
+  geom_dag_text(color = "black", size = 5) +
+  theme_dag()
+```
+
+Hier handelt es sich um einen Mittler des Gesamteffekts
+]
+
+.pull-right-3[
+
+.center[Collider]
+
+```{r collision-dag, echo=FALSE, fig.width=4.5, fig.height=3.35, out.width="100%"}
+dagify(
+  Y ~ X,
+  Z ~ Y,
+  Z ~ X,
+  coords = list(x = c(X = 1, Y = 3, Z = 2),
+                y = c(X = 1, Y = 1, Z = 2))
+) %>% 
+  ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
+  geom_dag_edges() +
+  geom_dag_point(color = "grey80", size = 17) +
+  geom_dag_text(color = "black", size = 5) +
+  theme_dag()
+```
+
+Hier handelt es sich um Selektion / Endogenität
+]
+
+---
+
+## Confounder
+
+.pull-left[
+
+```{r confounding1, echo=FALSE, fig.width=4.5, fig.height=3.35, out.width="100%"}
+dagify(
+  Y ~ X + Z,
+  X ~ Z,
+  coords = list(x = c(X = 1, Y = 3, Z = 2),
+                y = c(X = 1, Y = 1, Z = 2))
+) %>% 
+  ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
+  geom_dag_edges() +
+  geom_dag_point(color = "grey80", size = 17) +
+  geom_dag_text(color = "black", size = 5) +
+  theme_dag()
+```
+]
+
+.pull-right[
+.instructions[**X** führt zu **Y**]
+  - Dies sehen wir am _kausalen_ Pfad X $\rightarrow$ Y
+  
+.instructions[**Z** führt dazu, dass sich sowohl **X** als auch **Y** verändern]
+
+.alert[Wir wollen den _kausalen_ Effekt von X auf Y isolieren.]
+]
+
+---
+
+## Confounder
+
+.pull-left[
+
+```{r confounding1b, echo=FALSE, fig.width=4.5, fig.height=3.35, out.width="100%"}
+dagify(
+  Y ~ X + Z,
+  X ~ Z,
+  coords = list(x = c(X = 1, Y = 3, Z = 2),
+                y = c(X = 1, Y = 1, Z = 2))
+) %>% 
+  ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
+  geom_dag_edges() +
+  geom_dag_point(color = "grey80", size = 17) +
+  geom_dag_text(color = "black", size = 5) +
+  theme_dag()
+```
+]
+
+.pull-right[
+.instructions[**X** führt zu **Y**]
+  - Dies sehen wir am _kausalen_ Pfad X $\rightarrow$ Y
+  
+.instructions[**Z** führt dazu, dass sich sowohl **X** als auch **Y** verändern]
+
+.alert[Wir wollen den _kausalen_ Effekt von X auf Y isolieren.]
+
+  - Wir sprechen hier davon das **Z** ein _confounder_ des kausalen Zusammenhangs zwischen X $\rightarrow$ Y ist
+  - Der Confounder ist eine dritte Variable, welche sowohl X, als auch Y beeinflusst
+  - Oft lesen Sie auch von der _backdoor_ Variablen **Z**
+  - Der _backdoor_ Pfad X $\leftarrow$ Z $\rightarrow$ Y generiert eine Scheinkorrelation zwischen X und Y
+  - Eine _backdoor_ offen zu lassen generiert Bias da die Beziehung zwischen X und Y nicht isoliert wurde!
+]
+
+---
+
+## Confounder
+
+.pull-left[
+
+```{r confounding2, echo=FALSE, fig.width=4.5, fig.height=3.35, out.width="100%"}
+dagify(
+  Y ~ X + Z,
+  X ~ Z,
+  coords = list(x = c(X = 1, Y = 3, Z = 2),
+                y = c(X = 1, Y = 1, Z = 2)),
+  exposure = "X",
+  outcome = "Y",
+  labels = c("X" = "Spenden", "Y" = "Gewinnwahrscheinlichkeit",
+             "Z" = "Qualität des/der Kandidaten/in")
+) %>% 
+  tidy_dagitty() %>% 
+  node_status() %>% 
+  ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
+  geom_dag_edges() +
+  geom_dag_point(aes(color = status), size = 15) +
+  geom_dag_text(color = "white", size = 5) +
+  geom_dag_label_repel(aes(label = label), nudge_y = c(0.25, -0.25, 0.25)) +
+  scale_color_manual(values = c("#FF4136", "#0074D9"),
+                     na.value = "#7FDBFF") +
+  guides(color = FALSE) +
+  theme_dag()
+```
+]
+
+.pull-right[
+Pfade zwischen **Spenden** und **Gewinnwahrscheinlichkeit**
+
+Spenden $\rightarrow$ Gewinnwahrscheinlichkeit
+
+Spenden $\leftarrow$ Qualität des/der Kandidaten/in $\rightarrow$ Gewinnwahrscheinlichkeit
+
+.alert[**Qualität des/der Kandidaten/in** ist eine _backdoor_]
+]
+
+--
+
+.center[.instructions[Sie schließen die _backdoor_ indem sie auf **Z kontrollieren**]]
+
+---
+
+## Türen schließen
+
+.pull-left[
+
+```{r confounding3, echo=FALSE, fig.width=4.5, fig.height=3.35, out.width="100%"}
+dagify(
+  Y ~ X + Z,
+  X ~ Z,
+  coords = list(x = c(X = 1, Y = 3, Z = 2),
+                y = c(X = 1, Y = 1, Z = 2)),
+  exposure = "X",
+  outcome = "Y",
+  labels = c("X" = "Spenden", "Y" = "Gewinnwahrscheinlichkeit",
+             "Z" = "Qualität des/der Kandidaten/in")
+) %>% 
+  tidy_dagitty() %>% 
+  node_status() %>% 
+  ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
+  geom_dag_edges() +
+  geom_dag_point(aes(color = status), size = 15) +
+  geom_dag_text(color = "white", size = 5) +
+  geom_dag_label_repel(aes(label = label), nudge_y = c(0.25, -0.25, 0.25)) +
+  scale_color_manual(values = c("#FF4136", "#0074D9"),
+                     na.value = "darkgreen") +
+  guides(color = FALSE) +
+  theme_dag()
+```
+]
+
+.pull-right[
+Dadurch das Sie auf die Qualität des/der Kandidaten/in kontrollieren:
+
+- Eliminieren Sie den Effekt der Qualität des/der Kandidaten/in auf die Spenden
+- Eliminieren Sie den Effekt der Qualität des/der Kandidaten/in auf die Gewinnwahrscheinlichkeit
+
+.alert[Zusammenhang des verbleibenden Effekts der Spenden auf den verbleibenden Effekt der Gewinnwahrscheinlichkeit ist unser **kausaler Effekt** von Spenden auf Gewinnwahrscheinlichkeit.]
+
+$\rightarrow$ Durch die Kontrolle vergleichen wir hier Kandidaten, wie wenn diese die gleiche Qualität hätten
+]
+
+---
+
+## Kontrollieren innerhalb einer Regression
+
+Eine Möglichkeit auf Variablen zu "kontrollieren" ist mittels einer multiplen linearen Regression:
+
+$$Gewinnwahrscheinlichkeit = \beta_0 + \beta_1 * Spenden + \beta_2 * Qualität + \epsilon$$
+
+Etwas weitreichendere Methoden (diese wollen wir jedoch nicht näher besprechen):
+
+- Matching
+- Stratifizierung
+- Synthetische Kontrollgruppen
+
+---
+
+## Mediator
+
+.pull-left[
+```{r mediation-dag2, echo=FALSE, fig.width=4.5, fig.height=3.35, out.width="100%"}
+dagify(
+  Y ~ X + Z,
+  Z ~ X,
+  coords = list(x = c(X = 1, Y = 3, Z = 2),
+                y = c(X = 1, Y = 1, Z = 2))
+) %>% 
+  ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
+  geom_dag_edges() +
+  geom_dag_point(color = "grey80", size = 17) +
+  geom_dag_text(color = "black", size = 5) +
+  theme_dag()
+```
+]
+
+.pull-right[
+.instructions[**X** führt zu **Y**]
+  
+.instructions[**X** führt zu **Z**, welches wiederum zu **Y** führt]
+
+.question[Sollten wir für **Z** kontrollieren?]
+]
+
+---
+
+## Mediator
+
+.pull-left[
+```{r mediation-dag3, echo=FALSE, fig.width=4.5, fig.height=3.35, out.width="100%"}
+dagify(
+  Y ~ X + Z,
+  Z ~ X,
+  coords = list(x = c(X = 1, Y = 3, Z = 2),
+                y = c(X = 1, Y = 1, Z = 2))
+) %>% 
+  ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
+  geom_dag_edges() +
+  geom_dag_point(color = "grey80", size = 17) +
+  geom_dag_text(color = "black", size = 5) +
+  theme_dag()
+```
+]
+
+.pull-right[
+.instructions[**X** führt zu **Y**]
+  
+.instructions[**X** führt zu **Z**, welches wiederum zu **Y** führt]
+
+.question[Sollten wir für **Z** kontrollieren?]
+
+**Nein** $\rightarrow$ Dies würde zu einer Überanpassung des Modells führen!
+
+.alert[Ein Teil des Effekts von **X** auf **Y** würde damit außer Acht gelassen.]
+]
+
+---
+
+## Collider
+
+.pull-left[
+```{r collision-dag2, echo=FALSE, fig.width=4.5, fig.height=3.35, out.width="100%"}
+dagify(
+  Y ~ X,
+  Z ~ Y,
+  Z ~ X,
+  coords = list(x = c(X = 1, Y = 3, Z = 2),
+                y = c(X = 1, Y = 1, Z = 2))
+) %>% 
+  ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
+  geom_dag_edges() +
+  geom_dag_point(color = "grey80", size = 17) +
+  geom_dag_text(color = "black", size = 5) +
+  theme_dag()
+```
+]
+
+.pull-right[
+.instructions[**X** führt zu **Y**]
+  
+.instructions[**X** führt zu **Z**]
+
+.instructions[**Y** führt zu **Z**]
+
+.question[Sollten wir für **Z** kontrollieren?]
+]
+
+---
+
+## Beispiel zu Collidern
+
+.pull-left[
+
+```{r collider3, echo=FALSE, fig.width=4.5, fig.height=3.35, out.width="100%"}
+dagify(
+  Y ~ X,
+  Z ~ X,
+  Z ~ Y,
+  coords = list(x = c(X = 1, Y = 3, Z = 2),
+                y = c(X = 1, Y = 1, Z = 2)),
+  exposure = "X",
+  outcome = "Y",
+  labels = c("X" = "Größe", "Y" = "Punkte pro Spiel",
+             "Z" = "Spielt in der NBA")
+) %>% 
+  tidy_dagitty() %>% 
+  node_status() %>% 
+  ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
+  geom_dag_edges() +
+  geom_dag_point(aes(color = status), size = 15) +
+  geom_dag_text(color = "white", size = 5) +
+  geom_dag_label_repel(aes(label = label), nudge_y = c(0.25, 0.25,-0.25)) +
+  scale_color_manual(values = c("#FF4136", "#0074D9"),
+                     na.value = "darkgreen") +
+  guides(color = FALSE) +
+  theme_dag()
+```
+]
+
+.pull-right[
+
+Größe $\rightarrow$ Punkte pro Spiel
+
+Größe $\rightarrow$ Spielt in der NBA $\leftarrow$ Punkte pro Spiel
+
+.question[Warum ist die Variable "Spielt in der NBA" ein Collider?]
+]
+
+---
+
+## Beispiel zu Collidern
+
+.pull-left[
+
+```{r collider4, echo=FALSE, fig.width=4.5, fig.height=3.35, out.width="100%"}
+dagify(
+  Y ~ X,
+  Z ~ X,
+  Z ~ Y,
+  coords = list(x = c(X = 1, Y = 3, Z = 2),
+                y = c(X = 1, Y = 1, Z = 2)),
+  exposure = "X",
+  outcome = "Y",
+  labels = c("X" = "Größe", "Y" = "Punkte pro Spiel",
+             "Z" = "Spielt in der NBA")
+) %>% 
+  tidy_dagitty() %>% 
+  node_status() %>% 
+  ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
+  geom_dag_edges() +
+  geom_dag_point(aes(color = status), size = 15) +
+  geom_dag_text(color = "white", size = 5) +
+  geom_dag_label_repel(aes(label = label), nudge_y = c(0.25, 0.25,-0.25)) +
+  scale_color_manual(values = c("#FF4136", "#0074D9"),
+                     na.value = "darkgreen") +
+  guides(color = FALSE) +
+  theme_dag()
+```
+]
+
+.pull-right[
+
+Größe $\rightarrow$ Punkte pro Spiel
+
+Größe $\rightarrow$ Spielt in der NBA $\leftarrow$ Punkte pro Spiel
+
+.question[Warum ist die Variable "Spielt in der NBA" ein Collider?]
+
+.alert[Wenn wir auf darauf kontrollieren, dass die Person in der NBA spielt, öffnen wir den zweiten Kanal, da "Spielt in der NBA" als Collider fungiert.]
+
+.instructions[Collider blocken immer die _backdoor_, wenn auf den Collider kontrolliert wird, dann öffnen wir die _backdoor_!]
+]
+
+---
+
+## Beispiel zu Collidern
+
+.alert[In der Gesamtbevölkerung gibt es vermutlich schon einen Zusammenhang zwischen der Körpergröße und den Punkten pro Spiel im Basketball.]
+
+.instructions[Im Datensatz betrachten wir jedoch nur Spieler, die in der NBA spielen und damit sowohl groß sind, als auch gut Basketball spielen können!]
+
+```{r bulls, echo=FALSE, fig.width=6, fig.height=3.3, out.width="50%"}
+#Example from Andrew Heiss: https://evalf20.classes.andrewheiss.com/content/04-content/
+basketball <- read.csv(text = 'PointsPerGame,HeightInches
+                          20.8,75
+                          17.6,81
+                          12.7,78
+                          10.9,76
+                          10.7,83
+                          10.1,75
+                          9,81
+                          8.8,82
+                          8.8,84
+                          8.7,81
+                          5.5,75
+                          5.5,73
+                          3.9,81
+                          2.3,84
+                          2.1,81
+                          1.8,77
+                          1,74
+                          0.5,80')
+ggplot(basketball, aes(x = HeightInches, y = PointsPerGame)) +
+  geom_point() +
+  geom_smooth() +
+  labs(x = "Height in Inches",
+       y = "Points Per Game",
+       title = "Chicago Bulls 2009-10")
+# Data from Scott Andrews at StatCrunch
+```
+
+--
+
+- Collider können tatsächliche kausale Effekte verdecken
+- Collider können scheinbar kausale Effekte erzeugen
+
+---
+
+## Überlegungen zu den DAGs
+
+.alert["Big data" hilft nicht um kausale Fragestellungen zu beantworten!]
+
+- Um kausale Fragestellungen beantworten zu können müssen wir den Datengenerierungsprozess verstehen
+    - Woher stammen unsere Daten und welche Effekte hat es auf bestimmte Variablen zu kontrollieren?
+- Wir müssen die institutionellen Gegebenheiten kennen um glaubwürdige Identifikationsstrategien entwickeln zu können
+
+.instructions[DAGs können uns hier sehr gute Dienste erweisen.]

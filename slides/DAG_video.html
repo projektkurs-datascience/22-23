@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Directed acyclic graphs (DAG)</title>
+    <meta charset="utf-8" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <script src="https://use.fontawesome.com/5235085b15.js"></script>
+    <link rel="stylesheet" href="style/css/uni-ulm.css" type="text/css" />
+    <link rel="stylesheet" href="style/css/my-fonts.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Directed acyclic graphs (DAG)
+]
+
+---
+
+
+
+
+## Einführung
+
+Ein Ansatz um über Kausalität nachzudenken:
+
+--
+
+**Directed Acyclic Graphs (DAGs)**
+
+- Grafische Modelle
+- Kausalität fließt immer in eine Richtung und wird durch Pfeile verdeutlicht
+- Keine Rückwärtskausalität oder Simultanität abbildbar
+- Betrachtet Alternativszenarien
+- Do-Calculus im Hintergrund (Fancy Mathe)
+
+.alert[Verwenden wir in dieser Veranstaltung!]
+
+--
+
+DAGs helfen uns insbesondere den zugrunde liegenden Datengenerierungsprozess zu modellieren.
+
+---
+
+## Welche Arten von Zusammenhang gibt es im DAG?
+
+.pull-left-3[
+
+.center[Confounder]
+
+&lt;img src="DAG_video_files/figure-html/confounding-dag-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+Hier handelt es sich um einen gemeinsamen Ursprung
+]
+
+.pull-middle-3[
+
+.center[Mediator]
+
+&lt;img src="DAG_video_files/figure-html/mediation-dag-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+Hier handelt es sich um einen Mittler des Gesamteffekts
+]
+
+.pull-right-3[
+
+.center[Collider]
+
+&lt;img src="DAG_video_files/figure-html/collision-dag-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+Hier handelt es sich um Selektion / Endogenität
+]
+
+---
+
+## Confounder
+
+.pull-left[
+
+&lt;img src="DAG_video_files/figure-html/confounding1-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+.instructions[**X** führt zu **Y**]
+  - Dies sehen wir am _kausalen_ Pfad X `\(\rightarrow\)` Y
+  
+.instructions[**Z** führt dazu, dass sich sowohl **X** als auch **Y** verändern]
+
+.alert[Wir wollen den _kausalen_ Effekt von X auf Y isolieren.]
+]
+
+---
+
+## Confounder
+
+.pull-left[
+
+&lt;img src="DAG_video_files/figure-html/confounding1b-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+.instructions[**X** führt zu **Y**]
+  - Dies sehen wir am _kausalen_ Pfad X `\(\rightarrow\)` Y
+  
+.instructions[**Z** führt dazu, dass sich sowohl **X** als auch **Y** verändern]
+
+.alert[Wir wollen den _kausalen_ Effekt von X auf Y isolieren.]
+
+  - Wir sprechen hier davon das **Z** ein _confounder_ des kausalen Zusammenhangs zwischen X `\(\rightarrow\)` Y ist
+  - Der Confounder ist eine dritte Variable, welche sowohl X, als auch Y beeinflusst
+  - Oft lesen Sie auch von der _backdoor_ Variablen **Z**
+  - Der _backdoor_ Pfad X `\(\leftarrow\)` Z `\(\rightarrow\)` Y generiert eine Scheinkorrelation zwischen X und Y
+  - Eine _backdoor_ offen zu lassen generiert Bias da die Beziehung zwischen X und Y nicht isoliert wurde!
+]
+
+---
+
+## Confounder
+
+.pull-left[
+
+&lt;img src="DAG_video_files/figure-html/confounding2-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+Pfade zwischen **Spenden** und **Gewinnwahrscheinlichkeit**
+
+Spenden `\(\rightarrow\)` Gewinnwahrscheinlichkeit
+
+Spenden `\(\leftarrow\)` Qualität des/der Kandidaten/in `\(\rightarrow\)` Gewinnwahrscheinlichkeit
+
+.alert[**Qualität des/der Kandidaten/in** ist eine _backdoor_]
+]
+
+--
+
+.center[.instructions[Sie schließen die _backdoor_ indem sie auf **Z kontrollieren**]]
+
+---
+
+## Türen schließen
+
+.pull-left[
+
+&lt;img src="DAG_video_files/figure-html/confounding3-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+Dadurch das Sie auf die Qualität des/der Kandidaten/in kontrollieren:
+
+- Eliminieren Sie den Effekt der Qualität des/der Kandidaten/in auf die Spenden
+- Eliminieren Sie den Effekt der Qualität des/der Kandidaten/in auf die Gewinnwahrscheinlichkeit
+
+.alert[Zusammenhang des verbleibenden Effekts der Spenden auf den verbleibenden Effekt der Gewinnwahrscheinlichkeit ist unser **kausaler Effekt** von Spenden auf Gewinnwahrscheinlichkeit.]
+
+`\(\rightarrow\)` Durch die Kontrolle vergleichen wir hier Kandidaten, wie wenn diese die gleiche Qualität hätten
+]
+
+---
+
+## Kontrollieren innerhalb einer Regression
+
+Eine Möglichkeit auf Variablen zu "kontrollieren" ist mittels einer multiplen linearen Regression:
+
+`$$Gewinnwahrscheinlichkeit = \beta_0 + \beta_1 * Spenden + \beta_2 * Qualität + \epsilon$$`
+
+Etwas weitreichendere Methoden (diese wollen wir jedoch nicht näher besprechen):
+
+- Matching
+- Stratifizierung
+- Synthetische Kontrollgruppen
+
+---
+
+## Mediator
+
+.pull-left[
+&lt;img src="DAG_video_files/figure-html/mediation-dag2-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+.instructions[**X** führt zu **Y**]
+  
+.instructions[**X** führt zu **Z**, welches wiederum zu **Y** führt]
+
+.question[Sollten wir für **Z** kontrollieren?]
+]
+
+---
+
+## Mediator
+
+.pull-left[
+&lt;img src="DAG_video_files/figure-html/mediation-dag3-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+.instructions[**X** führt zu **Y**]
+  
+.instructions[**X** führt zu **Z**, welches wiederum zu **Y** führt]
+
+.question[Sollten wir für **Z** kontrollieren?]
+
+**Nein** `\(\rightarrow\)` Dies würde zu einer Überanpassung des Modells führen!
+
+.alert[Ein Teil des Effekts von **X** auf **Y** würde damit außer Acht gelassen.]
+]
+
+---
+
+## Collider
+
+.pull-left[
+&lt;img src="DAG_video_files/figure-html/collision-dag2-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+.instructions[**X** führt zu **Y**]
+  
+.instructions[**X** führt zu **Z**]
+
+.instructions[**Y** führt zu **Z**]
+
+.question[Sollten wir für **Z** kontrollieren?]
+]
+
+---
+
+## Beispiel zu Collidern
+
+.pull-left[
+
+&lt;img src="DAG_video_files/figure-html/collider3-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+
+Größe `\(\rightarrow\)` Punkte pro Spiel
+
+Größe `\(\rightarrow\)` Spielt in der NBA `\(\leftarrow\)` Punkte pro Spiel
+
+.question[Warum ist die Variable "Spielt in der NBA" ein Collider?]
+]
+
+---
+
+## Beispiel zu Collidern
+
+.pull-left[
+
+&lt;img src="DAG_video_files/figure-html/collider4-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+
+Größe `\(\rightarrow\)` Punkte pro Spiel
+
+Größe `\(\rightarrow\)` Spielt in der NBA `\(\leftarrow\)` Punkte pro Spiel
+
+.question[Warum ist die Variable "Spielt in der NBA" ein Collider?]
+
+.alert[Wenn wir auf darauf kontrollieren, dass die Person in der NBA spielt, öffnen wir den zweiten Kanal, da "Spielt in der NBA" als Collider fungiert.]
+
+.instructions[Collider blocken immer die _backdoor_, wenn auf den Collider kontrolliert wird, dann öffnen wir die _backdoor_!]
+]
+
+---
+
+## Beispiel zu Collidern
+
+.alert[In der Gesamtbevölkerung gibt es vermutlich schon einen Zusammenhang zwischen der Körpergröße und den Punkten pro Spiel im Basketball.]
+
+.instructions[Im Datensatz betrachten wir jedoch nur Spieler, die in der NBA spielen und damit sowohl groß sind, als auch gut Basketball spielen können!]
+
+&lt;img src="DAG_video_files/figure-html/bulls-1.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+--
+
+- Collider können tatsächliche kausale Effekte verdecken
+- Collider können scheinbar kausale Effekte erzeugen
+
+---
+
+## Überlegungen zu den DAGs
+
+.alert["Big data" hilft nicht um kausale Fragestellungen zu beantworten!]
+
+- Um kausale Fragestellungen beantworten zu können müssen wir den Datengenerierungsprozess verstehen
+    - Woher stammen unsere Daten und welche Effekte hat es auf bestimmte Variablen zu kontrollieren?
+- Wir müssen die institutionellen Gegebenheiten kennen um glaubwürdige Identifikationsstrategien entwickeln zu können
+
+.instructions[DAGs können uns hier sehr gute Dienste erweisen.]
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "atelier-forest-light",
+"highlightLanguage": ["r", "yaml", "markdown"],
+"slideNumberFormat": "",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

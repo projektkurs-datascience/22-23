@@ -1,0 +1,220 @@
+---
+title: "Case Study für Deutschland"
+output: 
+  html_document:
+    theme: cosmo
+    code_download: true
+    code_folding: hide
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning = FALSE)
+```
+
+### Dritter Teil der Case Study
+
+Im dritten Teil der Case Study untersuchen Sie mögliche Gründe für die regionalen Unterschiede innerhalb Deutschlands. Mit den ihnen zur Verfügung stehenden Daten zum BIP und der Verschuldung der einzelnen Landkreise wollen Sie die Arbeitslosenquoten in den einzelnen Regionen Deutschlands erklären. Ziele des dritten Teils der Case Study:
+
+- Regressionen in R durchführen
+- Interpretation von Regressionskoeffizienten
+- Interpretation von Interaktionstermen
+
+Sie lernen, wie Sie eine lineare Regression dazu Nutzen können um mögliche Zusammenhängen zwischen der Arbeitslosigkeit und anderen Faktoren näher zu beleuchten. Jedoch lernen Sie auch die Grenzen der linearen Regression kennen, insbesondere im Hinblick auf die Interpretation der Koeffizienten der Regression. Ergänzend hierzu erhalten Sie im 4. RTutor Problem Set Einblicke in die Zusammenhänge verschiedener gesamtwirtschaftlicher Faktoren und der Arbeitslosigkeit in den einzelnen Ländern der europäischen Union. Im 5. RTutor Problem Set werden Sie zusätzlich erfahren, welche Möglichkeiten wir in den Wirtschaftswissenschaften haben, um kausale Schlüsse ziehen zu können und im 6. RTutor Problem Set beschäftigen Sie sich mit den Möglichkeiten kausale Schlüsse aus Experimenten oder Beobachtungsdaten zu ziehen.
+
+
+# Daten und Pakete laden
+
+Nachdem wir uns im ersten Teil der Case Study alle Daten aus verschiedenen Datenquellen zusammengetragen und in R eingelesen haben, wurden diese im zweiten Teil visualisiert und über die Korrelation deren Zusammenhang betrachtet. In diesem dritten und letzten Teil der Case-Study wollen wir den Zusammenhang verschiedener Variablen mittels Regressionsanalysen untersuchen.
+
+Hierzu laden wir uns die in Teil 1 erstellten Datensätze und die in Teil 2 gemachten Anpassungen:
+
+```{r, message=FALSE}
+library(tidyverse)
+library(skimr)
+library(stargazer)
+library(corrr)
+```
+
+```{r}
+# Daten einlesen
+bip_zeitreihe <- readRDS("data/bip_zeitreihe.rds")
+gesamtdaten <- readRDS("data/gesamtdaten.rds")
+
+# Zuerst wollen wir die Arbeitslosenquote, einen Dummy für Ostdeutschland und die Verschuldung im Verhältnis zum BIP pro Landkreisberechnen
+gesamtdaten <- gesamtdaten %>%
+  mutate(alo_quote = (total_alo / (erw+total_alo))*100,
+         ost = as.factor(ifelse(bundesland_name %in% c("Brandenburg", "Mecklenburg-Vorpommern", "Sachsen", "Sachsen-Anhalt", "Thüringen"), 1, 0)),
+         ost_name = ifelse(ost == 1, "Ostdeutschland", "Westdeutschland"),
+         anteil_schulden = (Schulden_gesamt / bip)*100)
+```
+
+Im zweiten Teil der Case-Study haben wir uns mit der Korrelation eine bivariate deskriptive Statistik angeschaut um den Zusammenhang einzelner Variablen miteinander zu veranschaulichen.
+Jedoch sind die Hauptanalysen, die in einer empirischen Ausarbeitung getätigt werden, keine Korrelationsmatrizen sondern Regressionstabellen. Dies liegt daran, dass Regressionskoeffizienten, anders als Korrelationen eine quantitative Interpretation zulassen. Weiterhin sind die Schätzer in der linearen Regression konsistent und unbiased + wir können den Zusammenhang zwischen mehreren Variablen betrachten. Für den Schätzer in der linearen Regression gilt BLUE (best linear unbiased estimator), was für die Korrelation nicht gilt.
+
+In diesem dritten Teil der Case-Study wollen wir uns deshalb mit der linearen Regression beschäftigen.
+
+Zuerst berechnen wir uns die Variable `bip_wachstum`, wie im zweiten Teil der Case Study, und mergen diese zu unseren `gesamtdaten` für das Jahr 2017.
+
+```{r}
+bip_wachstum <- bip_zeitreihe %>%
+  filter( nchar(Regionalschluessel) == 5) %>%
+  group_by(Regionalschluessel) %>%
+  arrange(Jahr) %>%
+  mutate( bip_wachstum = 100*(bip - lag(bip)) / bip ) %>%
+  ungroup() %>%
+  filter( Jahr == 2017 ) %>%
+  select(Regionalschluessel, bip_wachstum, Jahr)
+
+gesamtdaten <- left_join(gesamtdaten, bip_wachstum, by = "Regionalschluessel")
+```
+
+# Einfache lineare Regression
+
+In diesem Kapitel werden wir uns mit der (einfachen) linearen Regression beschäftigen. 
+Durch die lineare Regression können wir mit der Methode der kleinsten Quadrate den Zusammenhang zweier Variablen in einer einzelnen Zahl zusammenfassen und interpretieren. Das Modell für unsere Regression kennen wir aus der Vorlesung:
+
+$$ 
+y_i = \beta_0 + \beta_1 x_i + \varepsilon_i, \, i=1,\dots,N 
+$$
+
+Wobei $y$ die abhängige und $x$ die unabhängige Variable ist (auch erklärende Variable genannt).
+
+## Arbeitslosigkeit auf BIP-Wachstum regressieren
+
+Wir wollen nun die Arbeitslosenquote auf die Wachstumsrate des BIP regressieren:
+
+```{r, message = FALSE, warnign = FALSE,results='asis'}
+bip <- lm(alo_quote ~ bip_wachstum, data = gesamtdaten)
+
+stargazer(bip, 
+          type = "html", header = FALSE, digits = 2,
+          title = "Arbeitslosigkeit auf BIP-Wachstum",
+          dep.var.labels=c("Alo-quote"),
+          covariate.labels="BIP-Wachstum"
+          )
+```
+
+Zuerst betrachten wir die Anzahl an Beobachtungen in der Regression. Wir haben hier 399 Beobachtungen, jedoch wissen wir, dass es in Deutschland insgesamt 401 Landkreise und kreisfreie Städte gibt. Da wir allerdings für Berlin und Hamburg keine Information zu den Arbeitslosenquoten haben werden diese zwei kreisfreien Städte in unserer Regression nicht berücksichtigt.
+
+Das "R2" (R²) gibt an, wie hoch der Anteil der Varianz in unseren Daten ist, welchen wir durch unser Modell erklären können. Ein R² von 0.01 sagt uns, das die Varianz der Residuen 1% der Varianz unserer Responsevariable (hier der Arbeitslosenquote) ausmacht. Dies gilt jedoch immer auf der Grundlage unserer Daten, unseres Modells und unserer Annahmen. Das Problem mit dem R² ist nun, dass wir dieses allein durch die Hinzunahme von weiteren erklärenden Variablen in unser Modell erhöhen könnten (rein technisch bedingt). Daher sollten wir uns eher auf das "Adjusted R2" konzentrieren. Hier wird das R² um die Anzahl an Variablen in unserem Modell bereinigt. Ich würde Sie jedoch bitten sich nicht auf das R² oder adjusted R² zu fixieren! Bitte messen Sie diesem keine zu große Bedeutung bei, insbesondere wenn Sie einen _kausalen_ Zusammenhang zwischen den Variablen aufdecken möchten. Das R² ist eines von vielen Gütemaßen, kann jedoch nur unter bestimmten Voraussetzungen zum Vergleich mehrer Modelle herangezogen werden: Die Modelle müssen auf den gleichen Daten angewendet werden und unter den gleichen Annahmen. Bei Zeitreihenanalysen werden wir tendenziell sehr hohe Werte für das R² erhalten, bei Querschnitts- und Paneldaten niedrigere. 
+Wenn Sie sich in ihren Analysen auf die _kausale_ Interpretation eines Schätzers konzentrieren, dann ist das R² und auch das adjusted R² vollkommen irrelevant. Bedenken Sie, dass Sie in diesem Fall nicht die Variation in $y_i$ erklären wollen (was das R² tut), sondern den kausalen Zusammenhang einer Variablen.
+Wenn Sie sich jedoch im Bereich der Vorhersage bewegen, dann ist es durchaus wichtig, wie viel der Variation in $y_i$ sie erklären können. D.h. hier ist das R² deutlich wichtiger und ihm sollte dann auch mehr Bedeutung zugemessen werden.
+
+Interessanter ist es nun den geschätzten Koeffizient zum `BIP-Wachstum` zu interpretieren. Dies können wir wie folgt formulieren:
+
+> Eine um 1 Prozentpunkt höheres BIP Wachstum korrespondiert im Durchschnitt mit einer um 0,09 Prozentpunkte niedrigeren Arbeitslosenquote.
+
+Weiterhin erhalten wir einen Wert für die Konstante in unserem Modell. Die Konstante kann folgendermaßen interpretiert werden:
+
+> Die erwartete Arbeitslosenquote bei einem Wachstum von 0% liegt im Durchschnitt bei 5,68 Prozent.
+
+Allerdings müssen wir bei der Interpretation der Koeffizienten auch immer deren Signifikanz berücksichtigen. Der Koeffizient von `BIP-Wachstum` ist signifikant auf dem 10%-Niveau. Dies können wir sehr schnell an dem Stern hinter dem Koeffizienten sehen. Weiterhin können wir uns die t-Statistik berechnen und darüber die Signifikanz ablesen (Koeffizient / Standardfehler = (-0.09)/0.05 = -1.8). Damit können wir sagen, dass das BIP Wachstum ein (schwach) signifikanter Faktor zur Erklärung der Arbeitslosenquote in einem Landkreis ist. Vermutlich ist es allerdings nicht der einzige wichtge Faktor, wie wir an dem R² von 0.01 sehen. Landkreise in denen sich bspw. im Jahr 2016 neue Unternehmen ansiedeln werden im Jahr 2017 tendenziell ein Wachstum des BIP verzeichnen, allein durch die zusätzlich produzierten Güter und Dienstleistungen in diesem neuen Unternehmen. Jedoch braucht das Unternehmen auch Mitarbeiter, welche sie aus dem Landkreis (und auch anderswo her) rekrutieren kann. Daher würden wir tendenziell erwarten, dass ein höheres BIP Wachstum mit einer niedrigeren Arbeitslosenquote korrespondiert.
+
+## Arbeitslosigkeit auf öffentliche Verschuldung regressieren
+
+Im nächsten Schritt wollen wir anschauen ob die öffentlichen Schulden ihren Teil zur Erklärung der Arbeitslosenquote beitragen können, und wie hoch dieser Teil ist.
+
+```{r, message=FALSE, warning=FALSE,results='asis'}
+schulden <- lm(alo_quote ~ anteil_schulden, data=gesamtdaten)
+
+stargazer(schulden, 
+          type = "html", header = FALSE, digits = 2,
+          title = "Arbeitslosigkeit auf Anteil der Schulden pro Landkreis",
+          dep.var.labels=c("Alo-quote"),
+          covariate.labels="Anteil der Schulden"
+          )
+```
+
+In dieser Regression haben wir nur noch 397 Beobachtungen. Dies liegt daran, dass in unserem Datensatz für Berlin, Hamburg, Bremen und Bremerhaven keine Information zu den Schulden vorliegen und diese deshalb in die Regression nicht aufgenommen werden können. Das adjusted R² ist mit 0.35 schon deutlich höher als bei der Regression mit dem BIP Wachstum. Dies lässt vermuten das die öffentlichen Schulden ein wichtiger Faktor zur Erklärung der Arbeitslosenquote sind, mit einem deutlich größeren Einfluss als das BIP Wachstum.
+
+Die Interpretation der Schätzer könnte wie folgt lauten:
+
+> Eine um 1 Prozentpunkt höhere Verschuldung korrespondiert im Durchschnitt mit einer um 0,25 Prozentpunkte höheren Arbeitslosenquote
+
+Die Interpretation der Konstante wäre dann wie folgt:
+
+> Für einen Landkreis ohne Verschuldung wäre die erwartete Arbeitslosenquote im Durchschnitt bei 3,37 Prozent.
+
+Auch dies ist nachvollziehbar, da ein stark verschuldeter öffentlicher Haushalt in strukturschwachen Landkreisen weniger Gewerbeeinnahmen hat und daher auch weniger Unternehmen vorhanden sind in denen Arbeitnehmer angestellt sein könnten. Daher würden wir auch erwarten das eine höhere Verschuldung mit einer höheren Arbeitslosenquote korrespondiert.
+
+Wir haben uns bisher nur einfachen linearen Regressionen gewidmet, jedoch können wir in die Regression auch mehrere erklärende Variablen aufnehmen. In diesem Fall sprechen wir dann von einer multiplen linearen Regression.
+
+# Multiple lineare Regression
+
+Wir haben im vorherigen Abschnitt gesehen, dass sowohl das BIP Wachstum als auch die öffentliche Verschuldung wichtige Faktoren zur Erklärung der Arbeitslosenquote in den einzelnen Landkreisen sind. In diesem Abschnitt wollen wir beide Variablen zusammen in die Regression aufnehmen. Das Modell für unsere Regression kennen wir aus der Vorlesung:
+
+$$ 
+y_i = \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + ... + \beta_K x_{iK} + \varepsilon_i, \, i=1,\dots,N 
+$$
+
+Durch die multiple lineare Regression können wir den Effekt einer unabhängigen Variablen auf die abhängige Variable untersuchen und zusätzlich auf den Effekt anderer Variablen **kontrollieren**. Konkret bedeutet dies in unserem Fall:
+Wir vermuten nach den univariaten Regressionen, dass die öffentliche Verschuldung der Hauptfaktor für die Arbeitslosenquote in den Landkreisen darstellt, sind uns jedoch nicht sicher, ob nicht auch noch das BIP Wachstum einen erheblichen Anteil zur Erklärung beitragen könnte. In der multiplen linearen Regression können wir nun beide Variablen aufnehmen und so den Effekt der öffentlichen Schulden auf die Arbeitslosenquote, kontrolliert auf das BIP Wachstum, untersuchen.
+
+```{r, message=FALSE, warning=FALSE,results='asis'}
+multi <- lm(alo_quote ~ anteil_schulden + bip_wachstum, data=gesamtdaten)
+
+stargazer(multi,
+          type = "html", header = FALSE, digits = 2,
+          title = "Arbeitslosigkeit auf Anteil Schulden und BIP-Wachstum",
+          dep.var.labels=c("Alo-quote"),
+          covariate.labels=c("Anteil der Schulden", "BIP-Wachstum")
+          )
+```
+
+Hier sehen wir bereits, dass der größte Teil der Varianz in unserem Modell durch die öffentlichen Schulden erklärt wird (siehe Regression vorheriger Abschnitt mit dem adjusted R² von 0.35). Weiterhin bleibt der Schätzer für die Verschuldung signifikant auf dem 1%-Niveau und in seiner Höhe gleich (vorherige univariate Regression war der Schätzer auch bei 0.25). D.h. auch kontrolliert auf das BIP Wachstum ist die öffentliche Verschuldung ein signifikanter Faktor zur Erklärung der Arbeitslosenquote in den einzelnen Landkreisen.
+Jedoch ist das BIP Wachstum in dieser Regression nicht mehr signifikant und in seiner Höhe auch deutlich kleiner als bei der univariaten Regression aus dem vorherigen Abschnitt (vorher -0.09). 
+
+Dies legt nahe, dass die Verschuldung des öffentlichen Haushalts besser zur Erklärung der Arbeitslosenquote in den einzelnen Landkreisen dient als das BIP Wachstum.
+
+# Sample Splits und Interaktionsmodell
+
+Im letzten Abschnitt wollen wir uns noch mit dem Interaktionsmodell beschäftigen.
+
+Wir hatten in der deskriptiven Analyse schon herausgefunden, dass es deutliche Unterschiede zwischen Ost- und Westdeutschland gibt, was Arbeitslosenquote, Verschuldung und auch BIP anbelangt. Nun wäre es interessant zu wissen, ob der Zusammenhang zwischen dem Anteil der öffentlichen Verschuldung am BIP und der Arbeitslosenquote sowohl für ostdeutsche als auch westdeutsche Landkreise gilt.
+
+In einem ersten Schritt haben wir hierzu die Dummyvariable `Ostdeutschland` der Regression hinzugefügt. Da es vielfältige Einflüsse geben könnte, warum ost- und westdeutsche Landkreise unterschiedlich sein könnten wollen wir durch eine Dummyvariable `Ostdeutschland` darauf kontrollieren. Der Vorteil einer solchen Dummyvariablen ist, dass hiermit alle beobachtbaren und unbeobachtbaren Unterschiede zwischen ost- und westdeutschen Landkreisen Rechnung getragen werden kann. 
+
+```{r, message=FALSE, warning=FALSE,results='asis'}
+
+schulden <- lm(alo_quote ~ anteil_schulden + ost, data=gesamtdaten)
+ost <- lm(alo_quote ~ anteil_schulden, data=filter(gesamtdaten, ost==1))
+west <- lm(alo_quote ~ anteil_schulden, data=filter(gesamtdaten, ost==0))
+interaktion <- lm(alo_quote ~ anteil_schulden*ost, data=gesamtdaten)
+
+stargazer(schulden, interaktion, west, ost, 
+          type = "html", header = FALSE, digits = 2,
+          title = "Arbeitslosigkeit mit Interaktionstermen",
+          dep.var.labels=c("Alo-quote"),
+          covariate.labels=c("Anteil Schulden", "Ostdeutschland", "Anteil Schulden * Ostdeutschland")
+          )
+```
+
+Die Variable ist in unserer Tabelle als `Ostdeutschland` enthalten, d.h. der Schätzer, den wir hier erhalten, gilt für alle Beobachtungen in denen der Wert der Variable 1 ist. Die Fälle in denen die Variable 0 ist werden als Basislevel herangezogen. Konkret bedeutet der Schätzer, dass es in Ostdeutschland eine durchschnittlich um 2.04 Prozentpunkte höhere Arbeitslosenquote gibt als in Westdeutschland. Der Schätzer ist signifikant auf dem 1%-Signifikanzniveau. Durch die Hinzunahme der Dummyvariable `Ostdeutschland` können wir die Varianz innerhalb der Arbeitslosenquote in Deutschland besser erklären als in der Regression ohne `Ostdeutschland`, was sich an dem erhöhten adjusted R² zeigt (zuvor 0.35, nun 0.46). Der Koeffizient für die öffentliche Verschuldung verändert sich nur marginal von 0.25 auf 0.22 und bleibt auf dem 1%-Signifikanzniveau signifikant.
+
+Nun trifft diese erste Regression jedoch nicht den Punkt, welchen wir eigentlich untersuchen wollten: Wir wollten wissen, ob der Zusammenhang zwischen der öffentlichen Verschuldung und der Arbeitslosenquote für alle ostdeutschen und westdeutschen Landkreise gleichermaßen gilt. Hier reicht es nicht aus darauf zu kontrollieren ob ein Landkreis als ost- oder westdeutsch klassifiziert wird. Zur Beantwortung unserer Frage müssen wir die Variable `Ostdeutschland` mit der Variablen `Anteil Schulden` _interagieren_. Erst dann erhalten wir einen Schätzer für die öffentliche Verschuldung in Ost- und Westdeutschland. Diese können wir miteinander vergleichen und so beantworten, ob der Zusammenhang zwischen der Verschuldung und der Arbeitslosigkeit in Ost- und Westdeutschland gleich stark ist.
+
+Um besser zu veranschaulichen was die Regression mit der interagierten Variable genau macht, bzw. wie diese zu interpretieren ist, haben wir zusätzlich einen sogenannten "Sample Split" gemacht. D.h. wir haben in Spalte 3 und 4 der obigen Tabelle unsere Stichprobe nach ost- und westdeutschen Landkreisen aufgeteilt und wenden unser Modell zum einen nur auf die westdeutschen Landkreise an (Spalte 3) und zum anderen nur auf die ostdeutschen Landkreise (Spalte 4). 
+
+**Analysieren wir Spalte 3 und 4:**
+
+Dafür beginnen wir mit der Konstanten: Diese ist für die Westdeutschen bei 3.12 (Spalte 3), was dem Wert der Konstanten aus unserem Interaktionsmodell (Spalte 2) entspricht. Bei den Ostdeutschen liegt diese bei 6,95 (Spalte 4), d.h. die durchschnittliche Arbeitslosenquote für einen unverschuldeten ostdeutschen Landkreis liegt deutlich höher als bei einem westdeutschen (3.12 Prozent vs. 6.95 Prozent).
+
+Können wir dies auch aus unserem Interaktionsmodell (Spalte 2) ablesen? **Ja!**
+In unserem Interaktionsmodell (Spalte 2) erhalten wir genau die gleiche Arbeitslosenquote wie im Sample Split für Ostdeutschland: Hierfür müssen wir die Dummy Variable `Ostdeutschland` und die Konstante aufaddieren: `Ostdeutschland + Constant` = `3.82 + 3.12` = `6.94`!
+
+Gleiches gilt auch für die jeweiligen Schätzer von `Anteil Schulden` und dessen Interaktion mit `Ostdeutschland`. Der Schätzer für die öffentlichen Schulden liegt bei 0.23, sowohl im Interaktionsmodell (Spalte 2) als auch in der Regression rein nur für westdeutsche Landkreise (Spalte 3). Dies bedeutet für alle westdeutschen Landkreise gibt es einen signifikanten Zusammenhang zwischen der öffentlichen Verschuldung und der Arbeitslosenquote. Bei den ostdeutschen Landkreisen ist dieser Zusammenhang deutlich kleiner und insignifikant (Spalte 4). Auch in unserem Interaktionsmodell können wir sehen, dass der Einfluss der öffentlichen Verschuldung für ostdeutsche Landkreise signifkant kleiner ist als für westdeutsche (um -0.18 Prozentpunkte, der Koeffizient von `Anteil Schulden * Ostdeutschland`).
+Wenn wir uns den Zusammenhang für alle ostdeutschen Landkreise berechnen möchten, dann ergibt sich dieser als `Anteil Schulden + Anteil Schulden * Ostdeutschland` = `0.23 + (-0.18)` = `0.05`. Durch Rundungsfehler können hier kleinere Abweichungen zwischen dem Koeffizienten aus dem Interaktionsmodell (Spalte 2) und dem Sample Split (Spalte 4) entstehen.
+
+Vorteil des Interaktionsmodells gegenüber dem Sample Split: Durch das Interaktionsmodell nutzen wir **eine** Regression und verwenden den kompletten Datensatz, dadurch hat unsere Regression mehr Power um Effekte zu detektieren. Wenn wir einen Sample Split durchführen und unsere Stichprobe dadurch sehr klein wird (76 Beobachtungen ist schon recht wenig), dann ist es schwerer signifikante Ergebnisse zu finden, auch wenn diese eventuell vorhanden sind.
+
+# Zum Abschluss noch ein paar Worte zur Kausalität 
+
+Wie Sie in der Veranstaltung gelernt haben haben wir es in den Wirtschaftswissenschaften oft mit Beobachtungsdaten zu tun. Das ist auch bei unserer Analyse der Arbeitslosigkeit in Deutschland der Fall!
+Die in dieser Case Study vorgestellten Ergebnisse sind daher leider auch nicht kausal interpretierbar! Wir müssen dies auch bei der Interpretation der Schätzer immer berücksichtigen. Es gibt sehr viele andere Faktoren, welche die Arbeitslosenquote beeinflussen können und die wir in unserer Analyse aktuell nicht berücksichtigt haben. Beispielsweise könnte es sein, dass Städte mit Universitäten Innovationszentren sind und viele konkurrenzfähige Unternehmen hervorbringen, welche viele Arbeitskräfte anheuern. Wenn die Arbeitslosenquote dadurch getrieben würde, so haben wir dies nicht in unserer Analyse berücksichtigt und ziehen dadurch falsche Schlüsse über den eigentlichen Treiber der Arbeitslosenquote.
+
+Um tatsächliche kausale Effekte messen zu können müssten wir entweder ein kontrolliert randomisiertes Experiment durchführen, oder ein natürliches Experiment nutzen (z.B. eine nicht antizipierte Gesetzesänderung o.ä.). Sie könnten sich potentiell kreative Möglichkeiten überlegen, durch welche wir kausale Schlüsse auf der Basis unserer Daten ziehen könnten. Um den Rahmen dieser Case-Study nicht zu sprengen wollen wir uns jedoch im weiteren Verlauf mit anderen Datensätzen beschäftigen um ihnen aufzuzeigen, welche "natürlichen Experimente" hier in Frage kommen könnten. 
+
+Insgesamt gibt uns diese Case Study schon einen tiefen Einblick in die regionalen Unterschiede innerhalb Deutschlands und sie deckt wichtige Faktoren auf, welche mit der Arbeitslosenquote zusammenhängen.
+Ihr Cousin in Spanien hatte recht mit der Aussage, dass die Arbeitslosenquote in Deutschland deutlich geringer ist als in Spanien, auch über die verschiedenen Regionen in Deutschland hinweg. Jedoch haben Sie in dieser Case Study einige Determinanten der Arbeitslosenquote kennen gelernt und können nun untersuchen, ob diese Determinanten, wie die öffentliche Verschuldung oder das BIP-Wachstum auch einen großen Teil der Arbeitslosenquote in Spanien erklären können.

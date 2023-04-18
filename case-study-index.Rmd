@@ -40,3 +40,14 @@ Im zweiten Teil der Case Study werden Sie die eingelesenen und aufgearbeiteten D
 - Interaktive Grafiken erstellen
 
 Sie erhalten durch deskriptive Analysen einen sehr guten Eindruck von den regionalen Unterschieden innerhalb Deutschlands. Das begleitende 3. RTutor Problem Set gibt ihnen einen sehr guten Eindruck davon, wie die Unterschiede zwischen den einzelnen Ländern auf europäischer Ebene aussehen. 
+
+---
+
+## Dritter Teil der Case Study
+
+Im dritten Teil der Case Study untersuchen Sie mögliche Gründe für die regionalen Unterschiede innerhalb Deutschlands. Mit den ihnen zur Verfügung stehenden Daten zum BIP und der Verschuldung der einzelnen Landkreise wollen Sie die Arbeitslosenquoten in den einzelnen Regionen Deutschlands erklären. Ziele des dritten Teils der Case Study:
+
+- Regressionen in R durchführen
+- Interpretation von Regressionskoeffizienten
+
+Sie lernen, wie Sie eine lineare Regression dazu Nutzen können um mögliche Zusammenhängen zwischen der Arbeitslosigkeit und anderen Faktoren näher zu beleuchten. Jedoch lernen Sie auch die Grenzen der lineraren Regression kennen, insbesondere im Hinblick auf die Interpetation der Koeffizienten in einer linearen Regression. Ergänzend hierzu erhalten Sie im 4. RTutor Problem Set Einblicke in die Zusammenhänge verschiedener gesamtwirtschaftlicher Faktoren und der Arbeitslosigkeit in den einzelnen Ländern der europäischen Union. Im 5. und 6. RTutor Problem Set werden Sie zusätzlich erfahren, welche Möglichkeiten wir in den Wirtschaftswissenschaften haben, um kausale Schlüsse ziehen zu können.

@@ -33,8 +33,9 @@ Hierzu laden wir uns die in Teil 1 erstellten Datensätze und die in Teil 2 gema
 ```{r, message=FALSE}
 library(tidyverse)
 library(skimr)
-library(stargazer)
+library(modelsummary)
 library(corrr)
+library(kableExtra)
 ```
 
 ```{r}
@@ -88,12 +89,14 @@ Wir wollen nun die Arbeitslosenquote auf die Wachstumsrate des BIP regressieren:
 ```{r, message = FALSE, warnign = FALSE,results='asis'}
 bip <- lm(alo_quote ~ bip_wachstum, data = gesamtdaten)
 
-stargazer(bip, 
-          type = "html", header = FALSE, digits = 2,
+modelsummary(bip, 
+          type = "html",
+          fmt = fmt_decimal(digits = 2),
           title = "Arbeitslosigkeit auf BIP-Wachstum",
-          dep.var.labels=c("Alo-quote"),
-          covariate.labels="BIP-Wachstum"
-          )
+          gof_omit = 'DF|Deviance|Log.Lik.|F|RMSE|AIC|BIC',
+          coef_rename = c("bip_wachstum" = "BIP-Wachstum", "(Intercept)" = "Konstante")
+          ) %>%
+  add_header_above(c(" " = 1,"Alo-quote" = 1))
 ```
 
 Zuerst betrachten wir die Anzahl an Beobachtungen in der Regression. Wir haben hier 399 Beobachtungen, jedoch wissen wir, dass es in Deutschland insgesamt 401 Landkreise und kreisfreie Städte gibt. Da wir allerdings für Berlin und Hamburg keine Information zu den Arbeitslosenquoten haben werden diese zwei kreisfreien Städte in unserer Regression nicht berücksichtigt.
@@ -119,12 +122,14 @@ Im nächsten Schritt wollen wir anschauen ob die öffentlichen Schulden ihren Te
 ```{r, message=FALSE, warning=FALSE,results='asis'}
 schulden <- lm(alo_quote ~ anteil_schulden, data=gesamtdaten)
 
-stargazer(schulden, 
-          type = "html", header = FALSE, digits = 2,
+modelsummary(schulden, 
+          type = "html",
+          fmt = fmt_decimal(digits = 2),
           title = "Arbeitslosigkeit auf Anteil der Schulden pro Landkreis",
-          dep.var.labels=c("Alo-quote"),
-          covariate.labels="Anteil der Schulden"
-          )
+          gof_omit = 'DF|Deviance|Log.Lik.|F|RMSE|AIC|BIC',
+          coef_rename = c("anteil_schulden" = "Anteil der Schulden", "(Intercept)" = "Konstante")
+          ) %>%
+  add_header_above(c(" " = 1,"Alo-quote" = 1))
 ```
 
 In dieser Regression haben wir nur noch 397 Beobachtungen. Dies liegt daran, dass in unserem Datensatz für Berlin, Hamburg, Bremen und Bremerhaven keine Information zu den Schulden vorliegen und diese deshalb in die Regression nicht aufgenommen werden können. Das adjusted R² ist mit 0.35 schon deutlich höher als bei der Regression mit dem BIP Wachstum. Dies lässt vermuten das die öffentlichen Schulden ein wichtiger Faktor zur Erklärung der Arbeitslosenquote sind, mit einem deutlich größeren Einfluss als das BIP Wachstum.
@@ -155,12 +160,15 @@ Wir vermuten nach den univariaten Regressionen, dass die öffentliche Verschuldu
 ```{r, message=FALSE, warning=FALSE,results='asis'}
 multi <- lm(alo_quote ~ anteil_schulden + bip_wachstum, data=gesamtdaten)
 
-stargazer(multi,
-          type = "html", header = FALSE, digits = 2,
+modelsummary(multi, 
+          type = "html", 
+          fmt = fmt_decimal(digits = 2),
           title = "Arbeitslosigkeit auf Anteil Schulden und BIP-Wachstum",
-          dep.var.labels=c("Alo-quote"),
-          covariate.labels=c("Anteil der Schulden", "BIP-Wachstum")
-          )
+          gof_omit = 'DF|Deviance|Log.Lik.|F|RMSE|AIC|BIC',
+          coef_rename = c("anteil_schulden" = "Anteil der Schulden", "bip_wachstum" = "BIP-Wachstum", "(Intercept)" = "Konstante")
+          ) %>%
+  add_header_above(c(" " = 1,"Alo-quote" = 1))
+
 ```
 
 Hier sehen wir bereits, dass der größte Teil der Varianz in unserem Modell durch die öffentlichen Schulden erklärt wird (siehe Regression vorheriger Abschnitt mit dem adjusted R² von 0.35). Weiterhin bleibt der Schätzer für die Verschuldung signifikant auf dem 1%-Niveau und in seiner Höhe gleich (vorherige univariate Regression war der Schätzer auch bei 0.25). D.h. auch kontrolliert auf das BIP Wachstum ist die öffentliche Verschuldung ein signifikanter Faktor zur Erklärung der Arbeitslosenquote in den einzelnen Landkreisen.
@@ -183,12 +191,15 @@ ost <- lm(alo_quote ~ anteil_schulden, data=filter(gesamtdaten, ost==1))
 west <- lm(alo_quote ~ anteil_schulden, data=filter(gesamtdaten, ost==0))
 interaktion <- lm(alo_quote ~ anteil_schulden*ost, data=gesamtdaten)
 
-stargazer(schulden, interaktion, west, ost, 
-          type = "html", header = FALSE, digits = 2,
+modelsummary(list(schulden, interaktion, west, ost), 
+          type = "html", 
+          fmt = fmt_decimal(digits = 2),
           title = "Arbeitslosigkeit mit Interaktionstermen",
-          dep.var.labels=c("Alo-quote"),
-          covariate.labels=c("Anteil Schulden", "Ostdeutschland", "Anteil Schulden * Ostdeutschland")
-          )
+          gof_omit = 'DF|Deviance|Log.Lik.|F|RMSE|AIC|BIC',
+          coef_rename = c("anteil_schulden" = "Anteil der Schulden", "ost1" = "Ostdeutschland", "(Intercept)" = "Konstante")
+          ) %>%
+  add_header_above(c(" " = 1,"Alo-quote" = 4))
+
 ```
 
 Die Variable ist in unserer Tabelle als `Ostdeutschland` enthalten, d.h. der Schätzer, den wir hier erhalten, gilt für alle Beobachtungen in denen der Wert der Variable 1 ist. Die Fälle in denen die Variable 0 ist werden als Basislevel herangezogen. Konkret bedeutet der Schätzer, dass es in Ostdeutschland eine durchschnittlich um 2.04 Prozentpunkte höhere Arbeitslosenquote gibt als in Westdeutschland. Der Schätzer ist signifikant auf dem 1%-Signifikanzniveau. Durch die Hinzunahme der Dummyvariable `Ostdeutschland` können wir die Varianz innerhalb der Arbeitslosenquote in Deutschland besser erklären als in der Regression ohne `Ostdeutschland`, was sich an dem erhöhten adjusted R² zeigt (zuvor 0.35, nun 0.46). Der Koeffizient für die öffentliche Verschuldung verändert sich nur marginal von 0.25 auf 0.22 und bleibt auf dem 1%-Signifikanzniveau signifikant.

@@ -522,14 +522,21 @@ reg_dep1y_long <- lm(depressed_1y ~ treat + age_baseline + age_baseline_sq + emp
 reg_dep7y <- lm(depressed ~ treat, data = filter(thp, attrit2 == 0 & THP_sample == 1))
 reg_dep7y_long <- lm(depressed ~ treat + age_baseline + age_baseline_sq + employed_mo_baseline + mo_emp + grandmother_baseline + MIL + wealth_baseline + edu_lvl_mo_1 + edu_lvl_mo_2 + edu_lvl_mo_3 + edu_mo_baseline + edu_fa_baseline + kids_no + first_child + hamd_baseline + mspss_baseline + month_int + month_int_sq + doi0 + intervr_1 + intervr_2 + intervr_3 +intervr_4 + intervr_5 + intervr_6 + intervr_7 + intervr_8 + intervr_9, data = filter(thp, attrit2 == 0 & THP_sample == 1))
 
-stargazer(reg_dep6m, reg_dep6m_long, reg_dep1y, reg_dep1y_long, reg_dep7y, reg_dep7y_long, 
+rows <- tribble(~term,          ~reg_dep6m,  ~reg_dep6m_long, ~reg_dep1y, ~reg_dep1y_long, ~reg_dep7y, ~reg_dep7y_long,
+                "Kontrollvariablen", "Nein", "Ja", "Nein", "Ja", "Nein", "Ja")
+
+attr(rows, 'position') <- c(3)
+
+modelsummary(list(reg_dep6m, reg_dep6m_long, reg_dep1y, reg_dep1y_long, reg_dep7y, reg_dep7y_long), 
           type = "html",
           covariate.labels = c("Treatment"),
           keep = "treat",
-          dep.var.caption  = "Depressionen",
+          add_rows = rows,
+          stars = c('*' = .1, '**' = 0.05, '***' = .01),
+          gof_omit = 'DF|Deviance|RMSE|AIC|BIC|Log.Lik',
           add.lines = list(c("Kontrollvariablen", "Nein", "Ja", "Nein", "Ja", "Nein", "Ja")),
-          dep.var.labels   = c("Nach 6 Monaten", "Nach 1 Jahr", "Nach 7 Jahren"),
-          title = "Depression bei Müttern, mit und ohne Kontrollvariablen")
+          title = "Depression bei Müttern, mit und ohne Kontrollvariablen") %>%
+          add_header_above(c(" " = 1,"Nach 6 Monaten" = 2, "Nach 1 Jahr" = 2, "Nach 7 Jahren" = 2))
 ```
 
 ---
@@ -552,20 +559,21 @@ rows <- tribble(~term,          ~reg_dep6m,  ~reg_dep6m_long, ~reg_dep1y, ~reg_d
 
 attr(rows, 'position') <- c(3)
 
-modelsummary( list(reg_dep6m, reg_dep6m_long, reg_dep1y, reg_dep1y_long, reg_dep7y, reg_dep7y_long),
+modelsummary(list(reg_dep6m, reg_dep6m_long, reg_dep1y, reg_dep1y_long, reg_dep7y, reg_dep7y_long), 
           type = "html",
-          keep = "treat",
-          gof_omit = 'DF|Deviance|RMSE|AIC|BIC|Log.Lik',
           coef_rename = c("treat" = "Treatment"),
-          dep.var.caption  = "Depressionen",
+          keep = "treat",
           add_rows = rows,
-          dep.var.labels   = c("Nach 6 Monaten", "Nach 1 Jahr", "Nach 7 Jahren"),
-          title = "Depression bei Müttern, mit und ohne Kontrollvariablen")
+          stars = c('*' = .1, '**' = 0.05, '***' = .01),
+          gof_omit = 'DF|Deviance|RMSE|AIC|BIC|Log.Lik|F',
+          title = "Depression bei Müttern, mit und ohne Kontrollvariablen") %>%
+          add_header_above(c(" " = 1,"Nach 6 Monaten" = 2, "Nach 1 Jahr" = 2, "Nach 7 Jahren" = 2))
 ```
 
 ---
 
-.pull-left[
+### Gegenüberstellung der durchschnittlichen Differenzen
+
 ```{r, echo = F}
 dep1 %>%
   bind_rows(dep2) %>%
@@ -578,20 +586,20 @@ dep1 %>%
   kable_paper(full_width = F)  %>%
   add_header_above(c(" ", "Anteil an Depressionen" = 3))
 ```
-]
 
-.pull-right[
-```{r, echo=F, results='asis'}
-stargazer(reg_dep6m, reg_dep1y, reg_dep7y, type = "html",
-          covariate.labels = c("Treatment"),
+--- 
+
+```{r, echo=F, results='asis', out.width='70%'}
+modelsummary(list(reg_dep6m, reg_dep6m_long, reg_dep1y, reg_dep1y_long, reg_dep7y, reg_dep7y_long), 
+          type = "html",
+          coef_rename = c("treat" = "Treatment"),
           keep = "treat",
-          dep.var.caption  = "Depressionen",
-          add.lines = list(c("Kontrollvariablen", "Nein", "Nein", "Nein")),
-          dep.var.labels   = c("Nach 6 Monaten", "Nach 1 Jahr", "Nach 7 Jahren"),
-          title = "Depression bei Müttern ohne Kontrollvariablen")
+          add_rows = rows,
+          stars = c('*' = .1, '**' = 0.05, '***' = .01),
+          gof_omit = 'DF|Deviance|RMSE|AIC|BIC|Log.Lik|F',
+          title = "Depression bei Müttern, mit und ohne Kontrollvariablen") %>%
+          add_header_above(c(" " = 1,"Nach 6 Monaten" = 2, "Nach 1 Jahr" = 2, "Nach 7 Jahren" = 2))
 ```
-
-]
 
 ---
 
@@ -749,7 +757,7 @@ Für unser Experiment:
 
 ```{r, echo=FALSE}
 #baseline sample
-seven.years <- thp %>% 
+total <- thp %>% 
   filter(attrit2 == 0 & THP_sample == 1) %>%
   select( treat, depressed_1y, age_baseline, kids_no, first_child, employed_mo_baseline, MIL, maternalgma, edu_fa_baseline, employed_fa_baseline ) %>%
   pivot_longer(cols = -treat, names_to = "variable", values_to = "value") %>%
@@ -760,11 +768,10 @@ seven.years <- thp %>%
           Mean_Kontrolle = round(estimate1, 2),
           Differenz = -round(estimate, 2),
           Signifikanz = round(p.value,2)) %>%
-  select(Mean_Treatment, Mean_Kontrolle, Differenz, Signifikanz) -> total
+  select(Mean_Treatment, Mean_Kontrolle, Differenz, Signifikanz) %>%
+  mutate( Name = c("Stiefoma im Haus", "Alter der Mutter", "Depressiv (1 Jahr)", "Bildung des Vaters", "Vater beschäftigt", "Mutter beschäftigt", "Erstes Kind", "Anzahl der Kinder", "Oma im Haus"))
 
-rownames(total) <- c("Alter der Mutter", "Depressiv (1 Jahr)", "Bildung des Vaters", "Vater beschäftigt", "Mutter beschäftigt", "Erstes Kind", "Anzahl der Kinder", "Oma im Haus", "Stiefoma im Haus")
-
-total %>%
+column_to_rownames(total, var = "Name") %>% 
   kbl(col.names = c("Treatment", "Kontrolle","Differenz","p-Wert"), digits = 2, format = "html", 
       caption = "Balancing Tabelle für die Grundcharakteristika") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive")) %>%

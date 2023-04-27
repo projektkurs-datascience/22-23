@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Kausale Effekte auf Basis von Beobachtungsdaten schätzen</title>
+    <meta charset="utf-8" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <script src="libs/kePrint/kePrint.js"></script>
+    <link href="libs/lightable/lightable.css" rel="stylesheet" />
+    <script src="https://use.fontawesome.com/5235085b15.js"></script>
+    <link rel="stylesheet" href="style/css/uni-ulm.css" type="text/css" />
+    <link rel="stylesheet" href="style/css/my-fonts.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Kausale Effekte auf Basis von Beobachtungsdaten schätzen
+]
+
+---
+
+
+
+
+## Organisatorisches
+
+- Dienstag den 16.05.2023 wird das 4. Projekt (des Gesamtkurses) für jede Gruppe auf Github hochgeladen
+- Mittwoch den 17.05.2023 wird das 4. Projekt besprochen (Vorstellung und Interpretationen)
+- Freitag den 19.05.2023 gibt es die Probeklausur im Hörsaal H14 ab 10:15 Uhr. Teil der Vorleistung, mind. 30% der Punkte müssen bestanden werden! 
+- Bearbeitungszeit des 4. Projekts: Bis 23.05.2023
+- Ab KW 21 finden die Tutorien statt
+- Mittwoch 24.05.2023 wird das 5. Projekt vorgestellt
+- Bearbeitungszeit für das 5. Projekt: Bis 13.06.2023
+
+---
+
+## Recap zum Experiment
+
+**Interne und Externe Validität:**
+
+- Insbesondere an der internen Validität interessiert
+  - Im Experiment ist könnte besonders Attrition ein Problem werden
+  - Die Meisten Probleme der internen Validität können durch die Randomisierung im Experiment behoben werden
+
+**Das Experiment konzeptionell:**
+- Wie können in Experimenten _kausale_ Ergebnisse gewonnen werden
+  - Vergleich von zwei Gruppen
+  - Ausreichend die Mittelwerte zu vergleichen `\(\rightarrow\)` gleicher Effekt wie in einer Regression
+  - Bei korrekter Randomisierung muss auf nichts kontrolliert werden (Pfeile zur endogenen Variable wurden gelöscht)
+
+---
+
+## Recap zum Experiment
+
+**Das Experiment konzeptionell:**
+- Erstellen einer Balancing Tabelle um die Randomisierung zu überprüfen
+  - Gruppen sollten nicht signifikant unterschiedlich voneinander sein (außer im Treatment)
+  - Insbesondere hilfreich bei Feldexperimenten und langen Experimenten in denen Attrition Problem sein kann
+- Koeffizienten einen Regression können auch visuell dargestellt werden
+
+**Das Experiment inhaltlich:**
+- Eine psychologische Betreuung bei Wochenbettdepression hat einen signifikanten Effekt auf die Heilungswahrscheinlichkeit der Depressionen
+- Wir sehen auch langfristig positive Effekte der psychologischen Betreuung (obwohl diese nur einmalig um die Geburt angewendet wurde)
+- Die ökonomische Teilhabe der Frauen erhöhen sich durch die Behandlung signifikant
+
+.instructions[In der nun folgenden Vorlesungseinheit wollen wir _kausale_ Schlüsse aus Beobachtungsdaten ziehen!]
+
+---
+
+## Führt mehr Bildung zu höherem Einkommen?
+
+&lt;img src="instruments_files/figure-html/dag_basic-1.png" width="40%" style="display: block; margin: auto;" /&gt;
+
+--
+
+.center[Wir können dies mit folgender Gleichung darstellen:]
+
+.center[
+`$$\color{#0074D9}{\text{Einkommen}_i} = \beta_0 + \beta_1 \color{darkorange}{\text{Bildung}_i} + \varepsilon_i$$`
+]
+
+--
+
+.center[.question[Repräsentiert in dieser Regression β&lt;sub&gt;1&lt;/sub&gt; den _kausalen_ Effekt von Bildung auf Einkommen?]]
+
+--
+
+.center[.alert[Nein!]]
+
+.pull-left[
+- Ommitted variable Bias
+- Offene _Backdoors_
+]
+
+.pull-right[
+- **Endogenität**
+]
+
+---
+
+## Exogene und endogene Variablen
+
+.pull-left[
+**Exogene Variablen:**
+- Die erklärenden Variablen sind unabhängig von anderen Größen im Modell
+- In einem DAG wäre dies eine Variable in die keine Pfeile führen
+]
+
+.pull-right[
+&lt;img src="instruments_files/figure-html/dag_exogen-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+.alert[Bildung ist hier _exogen_: Keine Pfeile führen _zur_ Bildung!]
+]
+
+---
+
+## Exogene und endogene Variablen
+
+.pull-left[
+**Endogene Variablen:**
+- Die erklärenden Variablen werden von anderen Größen im Modell (mit)bestimmt
+- In einem DAG wäre dies eine Variable in die Pfeile führen
+]
+
+.pull-right[
+&lt;img src="instruments_files/figure-html/dag_endogen-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+.alert[Bildung ist hier _endogen_:&lt;br&gt;Die Fähigkeiten (H) → Bildung (B)!]
+]
+
+---
+
+## Exogenität
+
+Um den _kausalen_ Effekt von Bildung zu extrahieren müsste diese exogen sein. 
+
+Exogene Bildung bedeutet: Die Entscheidung für mehr Bildung sollte zufällig getroffen werden (oder zumindest nicht mit den ausgelassenen Variablen korreliert sein).
+
+--
+
+.pull-left[
+&lt;img src="instruments_files/figure-html/dag_endogen2-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+Im DAG ist die Bildung abhängig von der (unbeobachtbaren) Variable "Fähigkeiten":
+
+- Bildung ist _nicht_ exogen
+
+.question[Was tun?]
+]
+
+---
+
+## Exogenität
+
+Um den _kausalen_ Effekt von Bildung zu extrahieren müsste diese exogen sein. 
+
+Exogene Bildung bedeutet: Die Entscheidung für mehr Bildung sollte zufällig getroffen werden (oder zumindest nicht mit den ausgelassenen Variablen korreliert sein).
+
+.pull-left[
+&lt;img src="instruments_files/figure-html/dag_endogen3-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+Im DAG ist die Bildung abhängig von der (unbeobachtbaren) Variable "Fähigkeiten":
+
+- Bildung ist _nicht_ exogen
+
+.question[Was tun?]
+]
+
+In der Theorie: Für die _backdoor_ **Fähigkeiten kontrollieren**!
+
+`$$Einkommen_i = \beta_0 + \beta_1 * Bildung_i + \beta_2 * Fähigkeiten_i + \varepsilon_i$$`
+
+---
+
+## Exogenität
+
+.alert[Leider sind die Fähigkeiten für uns nicht beobachtbar, somit können wir die _backdoor_ nicht schließen!]
+
+.pull-left[
+&lt;img src="instruments_files/figure-html/dag_endogen_iv-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+`$$\color{#0074D9}{\text{Einkommen}_i} = \beta_0 + \beta_1 \color{darkorange}{\text{Bildung}_i} + \beta_2 \color{red}{\text{Fähigkeiten}_i} + \varepsilon_i$$`
+]
+
+---
+
+## Exogenität
+
+.alert[Leider sind die Fähigkeiten für uns nicht beobachtbar, somit können wir die _backdoor_ nicht schließen!]
+
+.pull-left[
+&lt;img src="instruments_files/figure-html/dag_endogen_iv2-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+`$$\color{#0074D9}{\text{Einkommen}_i} = \beta_0 + \beta_1 \color{darkorange}{\text{Bildung}_i} + \beta_2 \color{red}{\text{Fähigkeiten}_i} + \varepsilon_i$$`
+
+.instructions[Da die _backdoor_ nicht geschlossen ist wandert der Einfluss der **Fähigkeiten in den Fehlerterm**:]
+
+Der Fehlerterm besteht nun aus:
+
+`\(\color{red}{\eta_i} = \beta_2 \color{red}{\text{Fähigkeiten}_i} + \varepsilon_i\)` 
+
+und damit ist die Bildung mit dem Fehlerterm `\(\color{red}{\eta_i}\)` korreliert:
+
+`$$\color{#0074D9}{\text{Einkommen}_i} = \beta_0 + \beta_1 \color{darkorange}{\text{Bildung}_i} + \color{red}{\eta_i}$$`
+]
+
+--
+
+.center[.question[Wie können wir in diesem Fall den Einfluss der Bildung konsistent schätzen?]]
+
+---
+
+class: inverse, middle, center
+
+# Instrumentalvariablenschätzung
+
+---
+
+## Instrumentalvariablenschätzung
+
+.center[.question[Was ist ein Instrument?]]
+
+&lt;img src="instruments_files/figure-html/dag_iv_basic-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+## Prinzip der Instrumentalvariablenschätzung
+
+&lt;img src="instruments_files/figure-html/dag_iv_explain-1.png" width="25%" style="display: block; margin: auto;" /&gt;
+
+**Hintergrund:** `X` sollte exogen sein um _kausal_ interpretiert werden zu können
+
+**Ziel der Instrumentalvariablen:** Exogene Variation von `X` finden, welche dann _kausal_ interpretiert werden kann
+
+Sie können sich dies vorstellen als Gegenteil davon auf eine Variable zu kontrollieren:
+- Wir erklären `X` und `Y` mit der Variablen `Z`, aber anstatt uns auf den Teil zu konzentrieren, welcher nicht durch `Z` erklärt werden kann, nehmen wir **nur den Anteil der durch `Z` erklärt wird**!
+- Anstatt zu sagen "du bist auf einer _backdoor_, ich schließe dich" sagen wir "du hast keine _backdoor_! Ich will, dass mein `X` genau so sein soll wie du! Ich nehme nur den Part von `X`, welcher von dir erklärt wird!"
+- Dadurch nutzen wir nur noch die exogene Variation in `X`, welche durch `Z` erklärt wird
+
+---
+
+## Prinzip der Instrumentalvariablenschätzung
+
+**Folge:**
+- Wir nutzen nicht mehr die komplette Information unseres Datensatzes, sondern nur noch einen Teil, d.h. wir benötigen mehr Beobachtungen um Effekte messen zu können
+- Diese ungenauere Schätzung des Effekts drückt sich in der Regression als größerer Standardfehler des Schätzers aus
+
+**Schwierigkeiten:**
+- Es kann sehr schwer sein zu argumentieren, warum ein Instrument keine _backdoor_ hat
+- In wenigen Fällen haben wir tatsächlich randomisierte Instrumente
+- Manchmal müssen wir zusätzliche Kontrollvariablen aufnehmen um Instrumente zu rechtfertigen
+- Instrumentalvariablen müssen sauber ökonomisch begründet sein/werden
+- Instrumentalvariablen sind auf den ersten Blick oft seltsam und ergeben erst durch den Kontext Sinn
+
+---
+
+## Was macht ein Instrument aus?
+
+**Relevanz**:
+- Die Instrumentalvariable muss mit der/den endogenen Variable/n korreliert sein.
+
+**Ausschließlichkeit**:
+- Die Instrumentalvariable beeinflusst die exogene Variable nicht direkt, sondern **ausschließlich** über die endogene Variable
+
+**Exogenität**:
+- Die Instrumentalvariable ist nicht mit den ausgelassenen Variablen (omitted variables) korreliert
+
+---
+
+## Instrumentalvariablenschätzung (Beispiel)
+
+.center[.question[Was wäre ein mögliches Instrument für den Effekt der Bildung auf das Einkommen]]
+
+&lt;img src="instruments_files/figure-html/dag_iv-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Was macht ein Instrument aus?
+
+&lt;img src="instruments_files/figure-html/dag_iv2-1.png" width="25%" style="display: block; margin: auto;" /&gt;
+
+.pull-left[
+.instructions[Bedingungen für ein valides Instrument:]
+
+**Relevanz**:
+- Die Instrumentalvariable muss mit der/den endogenen Variable/n korreliert sein.
+- Z `\(\rightarrow\)` B; Cor(Z, B) `\(\neq\)` 0
+
+**Ausschließlichkeit**:
+- Die Instrumentalvariable beeinflusst die exogene Variable nicht direkt, sondern **ausschließlich** über die endogene Variable
+- Z `\(\rightarrow\)` B `\(\rightarrow\)` Eink; Z `\(\nrightarrow\)` Eink; Cor(Z, Eink|B) = 0
+]
+
+--
+.pull-right[
+
+.question[Wie können wir die Bedingungen testen?]
+
+**Relevanz**:
+- Kann mittels F-Test getestet werden
+
+**Ausschließlichkeit**:
+- Bei einem Instrument: Nur argumentativ, kann nicht getestet werden!
+- Bei mehreren Instrumenten: Kann mittels Sargan-Hansen-Test getestet werden (allerdings ist dieser nicht besonders zuverlässig).
+]
+
+
+---
+
+## Was macht ein Instrument aus?
+
+&lt;img src="instruments_files/figure-html/dag_iv3-1.png" width="25%" style="display: block; margin: auto;" /&gt;
+
+.pull-left[
+.instructions[Bedingungen für ein valides Instrument:]
+
+**Exogenität**:
+- Die Instrumentalvariable ist nicht mit den ausgelassenen Variablen (omitted variables) korreliert
+- Das bedeutet: Die Instrumentalvariable ist nicht mit dem Fehlerterm korreliert
+- H `\(\nrightarrow\)` Z; Cor(Z, H) = 0
+]
+
+--
+
+.pull-right[
+
+.question[Wie können wir die Bedingungen testen?]
+
+**Exogenität**:
+- Kann nicht getestet werden. Argumentativ auf ökonomischer Basis.
+]
+
+---
+
+## Instrumentalvariablenschätzung
+
+&lt;img src="instruments_files/figure-html/dag_iv_card-1.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+--
+
+**Relevanz**: Durch die Nähe zur Universität kann Bildung zu niedrigeren Kosten erworben werden, d.h. es ist wahrscheinlicher, dass diese Personen mehr in Bildung investieren ✔️
+
+--
+
+**Ausschließlichkeit**: Die Nähe zur Universität hat keinen direkten Einfluss auf das Einkommen ✔️
+
+--
+
+**Exogenität**: Individuelle Fähigkeiten sind nicht abhängig von der Nähe zu einer Universität ✔️
+
+--
+
+.alert[Ausschließlichkeit und Exogenität sind sehr schwer zu zeigen/argumentieren!]
+
+.instructions[Am Besten sind hier tatsächlich randomisierte Zuteilungen als Instrument zu nehmen.]
+
+---
+
+## Instrumentalvariablenschätzung - empirische Analyse
+
+Im folgenden wollen wir die Nähe des Wohnorts zur einer Universität als Instrumentalvariable verwenden. Hierfür nutzen wir die Daten von Card (1995), welche im `wooldridge` Paket in R verfügbar sind:
+
+Card, David. 1995. “Aspects of Labour Economics: Essays in Honour of John Vanderkamp.” In. University of Toronto Press.
+
+[NBER Working Papier finden Sie hier](https://www.nber.org/papers/w4483)
+
+--
+
+Insbesondere nutzen wir folgende Variablen:
+
+Variablenname | Erklärung
+---|---
+lwage |	Jährliches Einkommen (logarithmiert)
+educ | Bildungsjahre
+nearc4 | Lebt nahe einer Universität (=1) oder weiter entfernt (=0)
+
+Die Daten stammen aus einer Umfrage in den USA im Jahr 1976 mit 3010 Männern.
+
+---
+
+## Testen der Relevanz
+
+.instructions[Zuerst sollten wir testen ob unser Instrument relevant ist.]
+
+Konkret: Hat das Instrument einen Einfluss auf die endogene Variable ( Z `\(\rightarrow\)` B )
+
+--
+
+.tiny[
+
+```
+# A tibble: 2 × 5
+  term        estimate std.error statistic  p.value
+  &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+1 (Intercept)   12.7      0.0856    148.   0       
+2 nearc4         0.829    0.104       7.99 1.84e-15
+```
+]
+
+.alert[Wir sehen einen signifkanten Effekt von der Entfernung zur Hochschule ( _nearc4_ ) auf die Bildung ( _educ_ ) → **Relevant**]
+
+.instructions[Weiterhin sollten wir prüfen, ob das Instrument valide ist, dies prüfen wir mit der F-Statistik.]
+
+--
+
+.tiny[
+
+```r
+glance(first_stage_basic)
+```
+
+```
+# A tibble: 1 × 12
+  r.squared adj.r.squared sigma statistic  p.value    df logLik    AIC    BIC
+      &lt;dbl&gt;         &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
+1    0.0208        0.0205  2.65      63.9 1.84e-15     1 -7203. 14411. 14429.
+# ℹ 3 more variables: deviance &lt;dbl&gt;, df.residual &lt;int&gt;, nobs &lt;int&gt;
+```
+]
+
+Die F-Statistik ( `statistic` ) in unserem Modell liegt bei 63,9.
+
+.alert[Die F-Statistik in der _First-Stage_ sollten größer als 10 sein. Als Faustregel gilt: Bei Werten unter 10 haben wir es mit einem _schwachen_ Instrument zu tun.]
+
+---
+
+## Ausschließlichkeit und Exogenität
+
+Beeinflusst die Nähe zur Universität das Einkommen **ausschließlich** über die Bildung?
+
+Oder gibt es außerdem einen direkten Effekt der "Nähe zur Universität" auf das Einkommen?
+
+.question[Was wären die potentiellen Kanäle von Z -&gt; Eink?]
+
+--
+
+- Wie steht es bspw. um die regionalen Gegebenheiten? 
+  - Eine dünn besiedelte Region hat weniger Universitäten, aber auch weniger potentielle Arbeitgeber und dadurch potentiell geringere Einkommen
+
+--
+
+Wir können die Exogenitätsannahme unserer Instrumentalvariable abschwächen, indem wir zusätzliche Kontrollvariablen in unser Modell aufnehmen
+- Dadurch ist unsere Exogenitätsannahme der Instrumentalvariable _bedingt_ auf die Kontrollvariablen
+
+---
+
+## Ausschließlichkeit und Exogenität
+
+Wir nehmen die folgenden Kontrollvariablen mit in unser Modell auf:
+
+Variablenname | Erklärung
+---|---
+smsa | Lebt in einer dicht besiedelten Region (=1) oder nicht (=0)
+exper | Erfahrung
+expersq | Erfahrung²
+south | Lebt im Süden der USA (=1), oder nicht (=0)
+
+`$$Einkommen_i = \beta_0 + \beta_1 Bildung_i + \beta_2 X_{Kontrollvariablen_i} + \eta_i$$`
+---
+
+## Ausschließlichkeit und Exogenität
+
+Relevanz der Instrumentalvariable _bedingt_ auf die Kontrollvariablen:
+
+.pull-left[
+
+```r
+first_stage_c &lt;- lm(educ ~ nearc4 + smsa + exper + expersq + south, data = card)
+
+tidy(first_stage_c)
+```
+
+```
+# A tibble: 6 × 5
+  term         estimate std.error statistic  p.value
+  &lt;chr&gt;           &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+1 (Intercept) 16.7        0.180      92.7   0       
+2 nearc4       0.346      0.0842      4.11  4.15e- 5
+3 smsa         0.364      0.0866      4.21  2.69e- 5
+4 exper       -0.426      0.0344    -12.4   1.92e-34
+5 expersq      0.000977   0.00168     0.580 5.62e- 1
+6 south       -0.583      0.0764     -7.63  3.20e-14
+```
+]
+
+.pull-right[
+
+```r
+glance(first_stage_c)
+```
+
+```
+# A tibble: 1 × 12
+  r.squared adj.r.squared sigma statistic p.value    df logLik    AIC    BIC
+      &lt;dbl&gt;         &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
+1     0.452         0.452  1.98      496.       0     5 -6328. 12670. 12712.
+# ℹ 3 more variables: deviance &lt;dbl&gt;, df.residual &lt;int&gt;, nobs &lt;int&gt;
+```
+
+.alert[Hier erhalten wir eine F-Statistik von 496!]
+Diese F-Statistik ist jedoch nicht ganz korrekt. Hier empfiehlt es sich immer auf den "Weak instruments" Test zu achten (wir gehen etwas später darauf ein).
+]
+
+---
+
+## Two-stage least squares (2SLS) (händisch)
+
+**Ziel:** Den _exogenen Teil_ der Bildung finden mit Hilfe des Instruments und diesen _exogenen Teil_ für die Schätzung nutzen:
+
+.pull-left[
+.center[**First stage**]
+
+`\(\hat{Bildung_i} = \gamma_0 + \gamma_1 * Nähe.zur.Uni_i +\)`
+`\(\gamma_2 * X_{Kontrollvariablen_i} + \nu_i\)`
+
+`\(\hat{Bildung}\)` ist der exogene Part der Bildung, unabhängig von den Fähigkeiten (und anderen Einflussgrößen)!
+]
+
+.pull-right[
+.center[**Second stage**]
+
+`\(Einkommen = \beta_0 + \beta_1 * \hat{Bildung_i} +\)`
+`\(\beta_2 * X_{Kontrollvariablen_i} + \varepsilon_i\)`
+]
+
+--
+
+Erinnern Sie sich noch an unsere Berechnung der **Relevanz** des Instruments ( `first_stage_c` )? 
+
+
+```r
+first_stage_c &lt;- lm(educ ~ nearc4 + smsa + exper + expersq + south, data = card)
+```
+
+Das ist die Regression, welche wir hier **First stage** nennen!
+
+.question[Wie berechnen wir die **Second stage**?]
+
+---
+
+## Two-stage least squares (2SLS) (händisch)
+
+.instructions[Wir nutzen die gefitteten Werte aus unserer **first stage** und fügen diese als **bildung_hat** unserem Datensatz `card` hinzu:]
+
+
+```r
+first_stage_c &lt;- lm(educ ~ nearc4 + smsa + exper + expersq + south, data = card)
+
+card &lt;- card %&gt;% 
+  mutate(bildung_hat = first_stage_c$fitted.values)
+
+card %&gt;%
+  select(educ, nearc4, smsa, exper, south, bildung_hat) %&gt;%
+  head()
+```
+
+```
+  educ nearc4 smsa exper south bildung_hat
+1    7      0    1    16     0    10.48202
+2   12      0    1     9     0    13.29188
+3   12      0    1    16     0    10.48202
+4   11      1    1    10     0    13.23025
+5   12      1    1    16     0    10.82766
+6   12      1    1     8     0    14.04675
+```
+
+---
+
+## Two-stage least squares (2SLS) (händisch)
+
+Anschließend berechnen wir die **second stage** mit diesen gefitteten Werten für jede Person ( `\(\hat{Bildung_i}\)` ):
+
+
+```r
+second_stage &lt;- lm(lwage ~ bildung_hat + smsa + exper + expersq + south, data = card)
+tidy(second_stage)
+```
+
+```
+# A tibble: 6 × 5
+  term        estimate std.error statistic  p.value
+  &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+1 (Intercept)  3.70     0.858         4.32 1.63e- 5
+2 bildung_hat  0.135    0.0508        2.66 7.78e- 3
+3 smsa         0.125    0.0298        4.20 2.75e- 5
+4 exper        0.107    0.0228        4.68 3.01e- 6
+5 expersq     -0.00226  0.000355     -6.35 2.45e-10
+6 south       -0.141    0.0360       -3.92 9.06e- 5
+```
+
+---
+
+## Two-stage least squares (2SLS) (automatisch)
+
+In R gibt es im Paket `AER` die Möglichkeit eine solche 2SLS automatisch durchzuführen
+
+.pull-left[
+**Vorteil**:
+- Schneller als von Hand
+- Die Standardfehler werden direkt korrigiert!
+- Umfangreiche Diagnostik nach der Regression
+]
+
+.pull-right[
+**Syntax:**
+
+`ivreg(Y ~ 2nd stage | first stage, data)`
+
+
+```r
+iv_2sls &lt;- ivreg(lwage ~ educ + smsa + exper + expersq + south | 
+                          nearc4 + smsa + exper + expersq + south ,
+                        data = card)
+tidy(iv_2sls)
+```
+
+```
+# A tibble: 6 × 5
+  term        estimate std.error statistic  p.value
+  &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+1 (Intercept)  3.70     0.821         4.51 6.70e- 6
+2 educ         0.135    0.0487        2.78 5.42e- 3
+3 smsa         0.125    0.0285        4.39 1.18e- 5
+4 exper        0.107    0.0218        4.89 1.06e- 6
+5 expersq     -0.00226  0.000340     -6.64 3.76e-11
+6 south       -0.141    0.0344       -4.10 4.31e- 5
+```
+]
+---
+
+## Two-stage least squares (2SLS) (händisch)
+
+.center[.question[Erhalten wir unterschiedliche Werte für die Regression mittels OLS vs. IV (händisch/automatisch)?]]
+
+--
+
+.pull-left[
+&lt;table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;"&gt;
+&lt;caption&gt;Log(Einkommen) auf Bildung regressiert&lt;/caption&gt;
+ &lt;thead&gt;
+&lt;tr&gt;
+&lt;th style="empty-cells: hide;border-bottom:hidden;" colspan="1"&gt;&lt;/th&gt;
+&lt;th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="1"&gt;&lt;div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; "&gt;OLS&lt;/div&gt;&lt;/th&gt;
+&lt;th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="1"&gt;&lt;div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; "&gt;2SLS&lt;br&gt;händisch&lt;/div&gt;&lt;/th&gt;
+&lt;th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="1"&gt;&lt;div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; "&gt;2SLS&lt;br&gt;automatisch&lt;/div&gt;&lt;/th&gt;
+&lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt;  (1) &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt;   (2) &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt;   (3) &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Bildung &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.082 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.135 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.003) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.049) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Bildung_Dach &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.135 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; (0.051) &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Num.Obs. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3010 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3010 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3010 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; R2 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.263 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.132 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.205 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; R2 Adj. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.262 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.130 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.204 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+]
+
+.pull-right[
+- Die Bildung hat einen deutlich stärkeren Einfluss auf das Einkommen mit der IV Regression
+    - In der OLS Regression steigt das Einkommen um 7,1% für jedes zusätzliche Jahr an Schulbildung
+    - In der 2SLS Regression hat die Bildung einen deutlich höheren Einfluss! (13,5%)
+- Dieses Ergebnis überrascht:
+    - Die Fähigkeiten einer Person sollten ihr Einkommen positiv beeinflussen
+    - Die Fähigkeiten einer Person sollten ihre Bildungsentscheidung positiv beeinflussen
+    - Problem der ausgelassenen Variablen (omitted variable bias), d.h. Endogenität!
+]
+
+---
+
+## OLS vs. IV
+
+.alert[Eigentlich würden wir erwarten, dass der Effekt der Bildung auf das Einkommen **kleiner** ist, wenn wir auf die Fähigkeiten kontrollieren.]
+
+.question[Warum erhalten wir größere anstatt kleinere Werte für die Bildung im IV?]
+
+--
+
+**Messfehler**:
+- Eventuell wird die Bildung nicht richtig erfasst (falsche Angaben der Personen)
+- Dadurch wird der Effekt der Bildung in der OLS Regression unterschätzt
+- Persönliche Einschätzung: Eher unwahrscheinlich
+
+---
+
+## OLS vs. IV
+
+.question[Für welche Personen ist es relevant das eine Universität nahe dem Wohnort liegt um in mehr Bildung zu investieren?]
+
+Manche Schüler werden immer zur Uni gehen, egal ob gerade eine in der Nähe ist, andere werden nie gehen, auch wenn eine Uni da wäre. 
+Jedoch könnte auch eine Gruppe von Schülern vorhanden sein, welche nur zur Uni gehen, wenn sie in der Nähe einer Uni wohnen. 
+
+.question[Welche Schüler sind dies?]
+
+--
+- Schüler die zuhause wohnen, dadurch pendeln können und keine Miete zahlen müssen!
+
+Es könnte gut sein, dass der Effekt von Bildung auf Einkommen für diese Personengruppe anders ist, als für die Gesamtpopulation. 
+
+Wenn dem so ist, dann messen wir nicht den allgemeinen Effekt der Bildung auf das Einkommen (den Average Treatment Effect (ATE)), sondern nur den Effekt der Bildung für diese Gruppe (den Local Average Treatment Effect (LATE)).
+
+---
+
+## Schwache Instrumente ( _weak instruments_ )
+
+.question[Was passiert, wenn ein Instrument nicht (oder nur marginal) relevant ist?]
+
+.pull-left[
+- **Relevanz** unserer Instrumente testen
+- Mittels `ivreg` direkt möglich. (diagnostics = TRUE)
+
+.instructions[Wir führen ein zweites Instrument `nearc2` ein (in der Nähe ist ein 2-Jahres College)]
+
+- F-Statistik (gemeinsame Signifikanz der Instrumente) in der _first-stage_ ist mit 8,8 unter 10
+- Besser das schwächste Instrument wieder zu entfernen
+]
+
+.pull-right[
+.tiny[
+
+```r
+weak_iv &lt;- ivreg(lwage ~ educ + smsa + exper + expersq + south | 
+                          nearc4 + nearc2 + smsa + exper + expersq + south ,
+                        data = card)
+
+summary(weak_iv, diagnostics = T)
+```
+
+```
+
+Call:
+ivreg(formula = lwage ~ educ + smsa + exper + expersq + south | 
+    nearc4 + nearc2 + smsa + exper + expersq + south, data = card)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-1.95566 -0.24783  0.02474  0.26737  1.46939 
+
+Coefficients:
+              Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  3.4675334  0.8199110   4.229 2.42e-05 ***
+educ         0.1494138  0.0485931   3.075 0.002125 ** 
+smsa         0.1182924  0.0286581   4.128 3.76e-05 ***
+exper        0.1127343  0.0218558   5.158 2.66e-07 ***
+expersq     -0.0022691  0.0003468  -6.543 7.07e-11 ***
+south       -0.1320361  0.0345091  -3.826 0.000133 ***
+
+Diagnostic tests:
+                  df1  df2 statistic  p-value    
+Weak instruments    2 3003     8.811 0.000153 ***
+Wu-Hausman          1 3003     2.206 0.137556    
+Sargan              1   NA     1.820 0.177328    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.4044 on 3004 degrees of freedom
+Multiple R-Squared: 0.171,	Adjusted R-squared: 0.1696 
+Wald test: 95.98 on 5 and 3004 DF,  p-value: &lt; 2.2e-16 
+```
+]
+]
+
+.alert[Durch schwache Instrumente geht die F-Statistik der _first stage_ gegen Null und der Bias von 2SLS wird größer (nähert sich dem OLS Bias an)!]
+
+**Lösung:** Suchen Sie sich andere Instrumente!
+
+---
+
+## Vorgehensweise bei der Instrumentalvariablenschätzung
+
+Sie sollten sich folgende Fragen stellen:
+
+- Ist das Instrument relevant?
+  - Instrument mit der Intervention korreliert; _first-stage_ F-Statistik (bzw. "weak instruments test") &gt; 10
+- Erfüllt das Instrument das Ausschließlichkeitskriterium
+  - Das Instrument beeinflusst das Ergebnis **ausschließlich** durch die Intervention
+- Ist das Instrument exogen?
+  - Keine Pfeile zum Instrument im DAG
+- Anwenden von 2-stage least squares (2SLS)
+  - Nutzen des R-Pakets ivreg()
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "atelier-forest-light",
+"highlightLanguage": ["r", "yaml", "markdown"],
+"slideNumberFormat": "",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

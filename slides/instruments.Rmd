@@ -1,0 +1,989 @@
+---
+title: "Kausale Effekte auf Basis von Beobachtungsdaten schätzen"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["style/css/uni-ulm.css", "style/css/my-fonts.css"]
+    seal: TRUE
+    nature:
+      highlightStyle: atelier-forest-light
+      highlightLanguage: ["r", "yaml", "markdown"]
+      slideNumberFormat: "" 
+      highlightLines: TRUE
+      countIncrementalSlides: false
+      ratio: "16:9"
+    includes:
+      in_header: style/header.html 
+#xaringan::inf_mr() #[Start Preview -> Type into console]
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, 
+  comment = NA, dpi = 300,
+  fig.align = "center", out.width = "70%", cache = FALSE)
+library(tidyverse)
+library(knitr)
+library(xaringan)
+library(ggdag)
+library(modelsummary)
+library(wooldridge)
+library(broom)
+library(AER)
+library(kableExtra)
+
+ggplot2::theme_set(theme_minimal())
+
+```
+
+## Organisatorisches
+
+- Dienstag den 16.05.2023 wird das 4. Projekt (des Gesamtkurses) für jede Gruppe auf Github hochgeladen
+- Mittwoch den 17.05.2023 wird das 4. Projekt besprochen (Vorstellung und Interpretationen)
+- Freitag den 19.05.2023 gibt es die Probeklausur im Hörsaal H14 ab 10:15 Uhr. Teil der Vorleistung, mind. 30% der Punkte müssen bestanden werden! 
+- Bearbeitungszeit des 4. Projekts: Bis 23.05.2023
+- Ab KW 21 finden die Tutorien statt
+- Mittwoch 24.05.2023 wird das 5. Projekt vorgestellt
+- Bearbeitungszeit für das 5. Projekt: Bis 13.06.2023
+
+---
+
+## Recap zum Experiment
+
+**Interne und Externe Validität:**
+
+- Insbesondere an der internen Validität interessiert
+  - Im Experiment ist könnte besonders Attrition ein Problem werden
+  - Die Meisten Probleme der internen Validität können durch die Randomisierung im Experiment behoben werden
+
+**Das Experiment konzeptionell:**
+- Wie können in Experimenten _kausale_ Ergebnisse gewonnen werden
+  - Vergleich von zwei Gruppen
+  - Ausreichend die Mittelwerte zu vergleichen $\rightarrow$ gleicher Effekt wie in einer Regression
+  - Bei korrekter Randomisierung muss auf nichts kontrolliert werden (Pfeile zur endogenen Variable wurden gelöscht)
+
+---
+
+## Recap zum Experiment
+
+**Das Experiment konzeptionell:**
+- Erstellen einer Balancing Tabelle um die Randomisierung zu überprüfen
+  - Gruppen sollten nicht signifikant unterschiedlich voneinander sein (außer im Treatment)
+  - Insbesondere hilfreich bei Feldexperimenten und langen Experimenten in denen Attrition Problem sein kann
+- Koeffizienten einen Regression können auch visuell dargestellt werden
+
+**Das Experiment inhaltlich:**
+- Eine psychologische Betreuung bei Wochenbettdepression hat einen signifikanten Effekt auf die Heilungswahrscheinlichkeit der Depressionen
+- Wir sehen auch langfristig positive Effekte der psychologischen Betreuung (obwohl diese nur einmalig um die Geburt angewendet wurde)
+- Die ökonomische Teilhabe der Frauen erhöhen sich durch die Behandlung signifikant
+
+.instructions[In der nun folgenden Vorlesungseinheit wollen wir _kausale_ Schlüsse aus Beobachtungsdaten ziehen!]
+
+---
+
+## Führt mehr Bildung zu höherem Einkommen?
+
+```{r dag_basic, echo=FALSE, fig.width=7, fig.height=3, out.width="40%"}
+#Idea from: https://github.com/andrewheiss/evalf20.classes.andrewheiss.com/blob/master/static/slides/01-slides.Rmd
+edu_earn_coords <- list(x = c(B = 3, Eink = 4, Alter = 2, H = 1, 
+                              FamEink = 2, BE = 1, Pflicht = 2, Netzwerk = 3),
+                        y = c(B = 2, Eink = 2, Alter = 3, H = 1, 
+                              FamEink = 3, BE = 3, Pflicht = 2, Netzwerk = 1))
+dagify(
+  Eink ~ B,
+  exposure = "B",
+  outcome = "Eink",
+  coords = edu_earn_coords) %>% 
+  tidy_dagitty() %>% 
+  node_status() %>% 
+  ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
+  geom_dag_edges(start_cap = ggraph::circle(3, "lines"),
+                 end_cap = ggraph::circle(3, "lines"),
+                 edge_width = 1.5, 
+                 arrow_directed = grid::arrow(length = grid::unit(0.75, "lines"), type = "closed")) +
+  geom_dag_point(aes(color = status), size = 30) +
+  geom_dag_text(color = "black", size = 7) +
+  scale_color_manual(values = c("darkorange", "#0074D9"),
+                     na.value = "#7FDBFF") +
+  guides(color = FALSE) +
+  theme_dag()
+```
+
+--
+
+.center[Wir können dies mit folgender Gleichung darstellen:]
+
+.center[
+$$\color{#0074D9}{\text{Einkommen}_i} = \beta_0 + \beta_1 \color{darkorange}{\text{Bildung}_i} + \varepsilon_i$$
+]
+
+--
+
+.center[.question[Repräsentiert in dieser Regression β<sub>1</sub> den _kausalen_ Effekt von Bildung auf Einkommen?]]
+
+--
+
+.center[.alert[Nein!]]
+
+.pull-left[
+- Ommitted variable Bias
+- Offene _Backdoors_
+]
+
+.pull-right[
+- **Endogenität**
+]
+
+---
+
+## Exogene und endogene Variablen
+
+.pull-left[
+**Exogene Variablen:**
+- Die erklärenden Variablen sind unabhängig von anderen Größen im Modell
+- In einem DAG wäre dies eine Variable in die keine Pfeile führen
+]
+
+.pull-right[
+```{r dag_exogen, echo=FALSE, fig.width=7, fig.height=3, out.width="100%"}
+edu_earn_coords <- list(x = c(B = 3, Eink = 4, Alter = 2, H = 1, 
+                              FamEink = 2, BE = 1, Pflicht = 2, Netzwerk = 3),
+                        y = c(B = 2, Eink = 2, Alter = 3, H = 1, 
+                              FamEink = 3, BE = 3, Pflicht = 2, Netzwerk = 1))
+dagify(
+  Eink ~ B,
+  exposure = "B",
+  outcome = "Eink",
+  coords = edu_earn_coords) %>% 
+  tidy_dagitty() %>% 
+  node_status() %>% 
+  ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
+  geom_dag_edges(start_cap = ggraph::circle(3, "lines"),
+                 end_cap = ggraph::circle(3, "lines"),
+                 edge_width = 1.5, 
+                 arrow_directed = grid::arrow(length = grid::unit(0.75, "lines"), type = "closed")) +
+  geom_dag_point(aes(color = status), size = 30) +
+  geom_dag_text(color = "black", size = 7) +
+  scale_color_manual(values = c("darkorange", "#0074D9"),
+                     na.value = "#7FDBFF") +
+  guides(color = FALSE) +
+  theme_dag()
+```
+
+.alert[Bildung ist hier _exogen_: Keine Pfeile führen _zur_ Bildung!]
+]
+
+---
+
+## Exogene und endogene Variablen
+
+.pull-left[
+**Endogene Variablen:**
+- Die erklärenden Variablen werden von anderen Größen im Modell (mit)bestimmt
+- In einem DAG wäre dies eine Variable in die Pfeile führen
+]
+
+.pull-right[
+```{r dag_endogen, echo=FALSE, fig.width=7, fig.height=3, out.width="100%"}
+dagify(
+  Eink ~ B + H,
+  B ~ H,
+  coords = list(x = c(B = 1, Eink = 3, H = 2),
+                y = c(B = 1, Eink = 1, H = 2)),
+  exposure = "B",
+  outcome = "Eink",
+  latent = "H",
+  labels = c("B" = "Bildung", "Eink" = "Einkommen",
+             "H" = "Fähigkeiten")
+) %>% 
+  tidy_dagitty() %>% 
+  node_status() %>% 
+  ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
+  geom_dag_edges(aes(edge_linetype = ifelse( x == x[2] & y == y[2], "dashed", "solid")), show.legend = FALSE) +
+  geom_dag_point(aes(color = status), size = 15) +
+  geom_dag_text(color = "white", size = 5) +
+  geom_dag_label_repel(aes(label = label), nudge_y = c(0.25, -0.25, 0.25)) +
+  scale_color_manual(values = c("darkorange", "grey", "#0074D9")) +
+  guides(color = FALSE) +
+  theme_dag()
+```
+
+.alert[Bildung ist hier _endogen_:<br>Die Fähigkeiten (H) → Bildung (B)!]
+]
+
+---
+
+## Exogenität
+
+Um den _kausalen_ Effekt von Bildung zu extrahieren müsste diese exogen sein. 
+
+Exogene Bildung bedeutet: Die Entscheidung für mehr Bildung sollte zufällig getroffen werden (oder zumindest nicht mit den ausgelassenen Variablen korreliert sein).
+
+--
+
+.pull-left[
+```{r dag_endogen2, echo=FALSE, fig.width=7, fig.height=3, out.width="100%"}
+dagify(
+  Eink ~ B + H,
+  B ~ H,
+  coords = list(x = c(B = 1, Eink = 3, H = 2),
+                y = c(B = 1, Eink = 1, H = 2)),
+  exposure = "B",
+  outcome = "Eink",
+  latent = "H",
+  labels = c("B" = "Bildung", "Eink" = "Einkommen",
+             "H" = "Fähigkeiten")
+) %>% 
+  tidy_dagitty() %>% 
+  node_status() %>% 
+  ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
+  geom_dag_edges(aes(edge_linetype = ifelse( x == x[2] & y == y[2], "dashed", "solid")), show.legend = FALSE) +
+  geom_dag_point(aes(color = status), size = 15) +
+  geom_dag_text(color = "white", size = 5) +
+  geom_dag_label_repel(aes(label = label), nudge_y = c(0.25, -0.25, 0.25)) +
+  scale_color_manual(values = c("darkorange", "grey", "#0074D9")) +
+  guides(color = FALSE) +
+  theme_dag()
+```
+]
+
+.pull-right[
+Im DAG ist die Bildung abhängig von der (unbeobachtbaren) Variable "Fähigkeiten":
+
+- Bildung ist _nicht_ exogen
+
+.question[Was tun?]
+]
+
+---
+
+## Exogenität
+
+Um den _kausalen_ Effekt von Bildung zu extrahieren müsste diese exogen sein. 
+
+Exogene Bildung bedeutet: Die Entscheidung für mehr Bildung sollte zufällig getroffen werden (oder zumindest nicht mit den ausgelassenen Variablen korreliert sein).
+
+.pull-left[
+```{r dag_endogen3, echo=FALSE, fig.width=7, fig.height=3, out.width="100%"}
+dagify(
+  Eink ~ B + H,
+  B ~ H,
+  coords = list(x = c(B = 1, Eink = 3, H = 2),
+                y = c(B = 1, Eink = 1, H = 2)),
+  exposure = "B",
+  outcome = "Eink",
+  latent = "H",
+  labels = c("B" = "Bildung", "Eink" = "Einkommen",
+             "H" = "Fähigkeiten")
+) %>% 
+  tidy_dagitty() %>% 
+  node_status() %>% 
+  ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
+  geom_dag_edges(aes(edge_linetype = ifelse( x == x[2] & y == y[2], "dashed", "solid")), show.legend = FALSE) +
+  geom_dag_point(aes(color = status), size = 15) +
+  geom_dag_text(color = "white", size = 5) +
+  geom_dag_label_repel(aes(label = label), nudge_y = c(0.25, -0.25, 0.25)) +
+  scale_color_manual(values = c("darkorange", "grey", "#0074D9")) +
+  guides(color = FALSE) +
+  theme_dag()
+```
+]
+
+.pull-right[
+Im DAG ist die Bildung abhängig von der (unbeobachtbaren) Variable "Fähigkeiten":
+
+- Bildung ist _nicht_ exogen
+
+.question[Was tun?]
+]
+
+In der Theorie: Für die _backdoor_ **Fähigkeiten kontrollieren**!
+
+$$Einkommen_i = \beta_0 + \beta_1 * Bildung_i + \beta_2 * Fähigkeiten_i + \varepsilon_i$$
+
+---
+
+## Exogenität
+
+.alert[Leider sind die Fähigkeiten für uns nicht beobachtbar, somit können wir die _backdoor_ nicht schließen!]
+
+.pull-left[
+```{r dag_endogen_iv, echo=FALSE, fig.width=7, fig.height=3, out.width="100%"}
+dagify(
+  Eink ~ B + H,
+  B ~ H,
+  coords = list(x = c(B = 1, Eink = 3, H = 2),
+                y = c(B = 1, Eink = 1, H = 2)),
+  exposure = "B",
+  outcome = "Eink",
+  latent = "H",
+  labels = c("B" = "Bildung", "Eink" = "Einkommen",
+             "H" = "Fähigkeiten")
+) %>% 
+  tidy_dagitty() %>% 
+  node_status() %>% 
+  ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
+  geom_dag_edges(aes(edge_linetype = ifelse( x == x[2] & y == y[2], "dashed", "solid")), show.legend = FALSE) +
+  geom_dag_point(aes(color = status), size = 15) +
+  geom_dag_text(color = "white", size = 5) +
+  geom_dag_label_repel(aes(label = label), nudge_y = c(0.25, -0.25, 0.25)) +
+  scale_color_manual(values = c("darkorange", "red", "#0074D9")) +
+  guides(color = FALSE) +
+  theme_dag()
+```
+]
+
+.pull-right[
+$$\color{#0074D9}{\text{Einkommen}_i} = \beta_0 + \beta_1 \color{darkorange}{\text{Bildung}_i} + \beta_2 \color{red}{\text{Fähigkeiten}_i} + \varepsilon_i$$
+]
+
+---
+
+## Exogenität
+
+.alert[Leider sind die Fähigkeiten für uns nicht beobachtbar, somit können wir die _backdoor_ nicht schließen!]
+
+.pull-left[
+```{r dag_endogen_iv2, echo=FALSE, fig.width=7, fig.height=3, out.width="100%"}
+dagify(
+  Eink ~ B + H,
+  B ~ H,
+  coords = list(x = c(B = 1, Eink = 3, H = 2),
+                y = c(B = 1, Eink = 1, H = 2)),
+  exposure = "B",
+  outcome = "Eink",
+  latent = "H",
+  labels = c("B" = "Bildung", "Eink" = "Einkommen",
+             "H" = "Fähigkeiten")
+) %>% 
+  tidy_dagitty() %>% 
+  node_status() %>% 
+  ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
+  geom_dag_edges(aes(edge_linetype = ifelse( x == x[2] & y == y[2], "dashed", "solid")), show.legend = FALSE) +
+  geom_dag_point(aes(color = status), size = 15) +
+  geom_dag_text(color = "white", size = 5) +
+  geom_dag_label_repel(aes(label = label), nudge_y = c(0.25, -0.25, 0.25)) +
+  scale_color_manual(values = c("darkorange", "red", "#0074D9")) +
+  guides(color = FALSE) +
+  theme_dag()
+```
+]
+
+.pull-right[
+$$\color{#0074D9}{\text{Einkommen}_i} = \beta_0 + \beta_1 \color{darkorange}{\text{Bildung}_i} + \beta_2 \color{red}{\text{Fähigkeiten}_i} + \varepsilon_i$$
+
+.instructions[Da die _backdoor_ nicht geschlossen ist wandert der Einfluss der **Fähigkeiten in den Fehlerterm**:]
+
+Der Fehlerterm besteht nun aus:
+
+$\color{red}{\eta_i} = \beta_2 \color{red}{\text{Fähigkeiten}_i} + \varepsilon_i$ 
+
+und damit ist die Bildung mit dem Fehlerterm $\color{red}{\eta_i}$ korreliert:
+
+$$\color{#0074D9}{\text{Einkommen}_i} = \beta_0 + \beta_1 \color{darkorange}{\text{Bildung}_i} + \color{red}{\eta_i}$$
+]
+
+--
+
+.center[.question[Wie können wir in diesem Fall den Einfluss der Bildung konsistent schätzen?]]
+
+---
+
+class: inverse, middle, center
+
+# Instrumentalvariablenschätzung
+
+---
+
+## Instrumentalvariablenschätzung
+
+.center[.question[Was ist ein Instrument?]]
+
+```{r dag_iv_basic, echo=FALSE, fig.width=7, fig.height=3, out.width="100%"}
+dagify(
+  Y ~ X + H,
+  X ~ H,
+  X ~ Z,
+  coords = list(x = c(X = 1, Y = 3, H = 2, Z = 0),
+                y = c(X = 1, Y = 1, H = 2, Z = 1)),
+  exposure = "X",
+  outcome = "Y",
+  latent = "H",
+  labels = c("X" = "Intervention", "Y" = "Ergebnis",
+             "H" = "(Unbeobachtbare) Confounder", "Z" = "Instrument")
+) %>% 
+  tidy_dagitty() %>% 
+  node_status() %>% 
+  ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
+  geom_dag_edges(aes(edge_linetype = ifelse( x == x[2] & y == y[2], "dashed", "solid")), show.legend = FALSE) +
+  geom_dag_point(aes(color = status), size = 15) +
+  geom_dag_text(color = "white", size = 5) +
+  geom_dag_label_repel(aes(label = label), nudge_y = c(-0.25, 0.25, 0.25, 0.25)) +
+  scale_color_manual(values = c("darkorange", "darkred", "#0074D9"), na.value = "black") +
+  guides(color = FALSE) +
+  theme_dag()
+```
+
+
+---
+
+## Prinzip der Instrumentalvariablenschätzung
+
+```{r dag_iv_explain, echo=FALSE, fig.width=7, fig.height=3, out.width="25%"}
+dagify(
+  Y ~ X + H,
+  X ~ H,
+  X ~ Z,
+  coords = list(x = c(X = 1, Y = 3, H = 2, Z = 0),
+                y = c(X = 1, Y = 1, H = 2, Z = 1)),
+  exposure = "X",
+  outcome = "Y",
+  latent = "H",
+  labels = c("X" = "Intervention", "Y" = "Ergebnis",
+             "H" = "(Unbeobachtbare) Confounder", "Z" = "Instrument")
+) %>% 
+  tidy_dagitty() %>% 
+  node_status() %>% 
+  ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
+  geom_dag_edges(aes(edge_linetype = ifelse( x == x[2] & y == y[2], "dashed", "solid")), show.legend = FALSE) +
+  geom_dag_point(aes(color = status), size = 15) +
+  geom_dag_text(color = "white", size = 5) +
+  geom_dag_label_repel(aes(label = label), nudge_y = c(-0.25, 0.25, 0.25, 0.25)) +
+  scale_color_manual(values = c("darkorange", "darkred", "#0074D9"), na.value = "black") +
+  guides(color = FALSE) +
+  theme_dag()
+```
+
+**Hintergrund:** `X` sollte exogen sein um _kausal_ interpretiert werden zu können
+
+**Ziel der Instrumentalvariablen:** Exogene Variation von `X` finden, welche dann _kausal_ interpretiert werden kann
+
+Sie können sich dies vorstellen als Gegenteil davon auf eine Variable zu kontrollieren:
+- Wir erklären `X` und `Y` mit der Variablen `Z`, aber anstatt uns auf den Teil zu konzentrieren, welcher nicht durch `Z` erklärt werden kann, nehmen wir **nur den Anteil der durch `Z` erklärt wird**!
+- Anstatt zu sagen "du bist auf einer _backdoor_, ich schließe dich" sagen wir "du hast keine _backdoor_! Ich will, dass mein `X` genau so sein soll wie du! Ich nehme nur den Part von `X`, welcher von dir erklärt wird!"
+- Dadurch nutzen wir nur noch die exogene Variation in `X`, welche durch `Z` erklärt wird
+
+---
+
+## Prinzip der Instrumentalvariablenschätzung
+
+**Folge:**
+- Wir nutzen nicht mehr die komplette Information unseres Datensatzes, sondern nur noch einen Teil, d.h. wir benötigen mehr Beobachtungen um Effekte messen zu können
+- Diese ungenauere Schätzung des Effekts drückt sich in der Regression als größerer Standardfehler des Schätzers aus
+
+**Schwierigkeiten:**
+- Es kann sehr schwer sein zu argumentieren, warum ein Instrument keine _backdoor_ hat
+- In wenigen Fällen haben wir tatsächlich randomisierte Instrumente
+- Manchmal müssen wir zusätzliche Kontrollvariablen aufnehmen um Instrumente zu rechtfertigen
+- Instrumentalvariablen müssen sauber ökonomisch begründet sein/werden
+- Instrumentalvariablen sind auf den ersten Blick oft seltsam und ergeben erst durch den Kontext Sinn
+
+---
+
+## Was macht ein Instrument aus?
+
+**Relevanz**:
+- Die Instrumentalvariable muss mit der/den endogenen Variable/n korreliert sein.
+
+**Ausschließlichkeit**:
+- Die Instrumentalvariable beeinflusst die exogene Variable nicht direkt, sondern **ausschließlich** über die endogene Variable
+
+**Exogenität**:
+- Die Instrumentalvariable ist nicht mit den ausgelassenen Variablen (omitted variables) korreliert
+
+---
+
+## Instrumentalvariablenschätzung (Beispiel)
+
+.center[.question[Was wäre ein mögliches Instrument für den Effekt der Bildung auf das Einkommen]]
+
+```{r dag_iv, echo=FALSE, fig.width=7, fig.height=3, out.width="100%"}
+dagify(
+  Eink ~ B + H,
+  B ~ H,
+  B ~ Z,
+  coords = list(x = c(B = 1, Eink = 3, H = 2, Z = 0),
+                y = c(B = 1, Eink = 1, H = 2, Z = 1)),
+  exposure = "B",
+  outcome = "Eink",
+  latent = "H",
+  labels = c("B" = "Bildung", "Eink" = "Einkommen",
+             "H" = "Fähigkeiten", "Z" = "Entfernung Hochschule")
+) %>% 
+  tidy_dagitty() %>% 
+  node_status() %>% 
+  ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
+  geom_dag_edges(aes(edge_linetype = ifelse( x == x[2] & y == y[2], "dashed", "solid")), show.legend = FALSE) +
+  geom_dag_point(aes(color = status), size = 15) +
+  geom_dag_text(color = "white", size = 5) +
+  geom_dag_label_repel(aes(label = label), nudge_y = c(0.25, -0.25, 0.25)) +
+  scale_color_manual(values = c("darkorange", "darkred", "#0074D9"), na.value = "black") +
+  guides(color = FALSE) +
+  theme_dag()
+```
+
+---
+
+## Was macht ein Instrument aus?
+
+```{r dag_iv2, echo=FALSE, fig.width=7, fig.height=3, out.width="25%"}
+dagify(
+  Eink ~ B + H,
+  B ~ H,
+  B ~ Z,
+  coords = list(x = c(B = 1, Eink = 3, H = 2, Z = 0),
+                y = c(B = 1, Eink = 1, H = 2, Z = 1)),
+  exposure = "B",
+  outcome = "Eink",
+  latent = "H",
+  labels = c("B" = "Bildung", "Eink" = "Einkommen",
+             "H" = "Fähigkeiten", "Z" = "Entfernung Hochschule")
+) %>% 
+  tidy_dagitty() %>% 
+  node_status() %>% 
+  ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
+  geom_dag_edges(aes(edge_linetype = ifelse( x == x[2] & y == y[2], "dashed", "solid")), show.legend = FALSE) +
+  geom_dag_point(aes(color = status), size = 15) +
+  geom_dag_text(color = "white", size = 5) +
+  geom_dag_label_repel(aes(label = label), nudge_y = c(0.25, -0.25, 0.25)) +
+  scale_color_manual(values = c("darkorange", "darkred", "#0074D9"), na.value = "black") +
+  guides(color = FALSE) +
+  theme_dag()
+```
+
+.pull-left[
+.instructions[Bedingungen für ein valides Instrument:]
+
+**Relevanz**:
+- Die Instrumentalvariable muss mit der/den endogenen Variable/n korreliert sein.
+- Z $\rightarrow$ B; Cor(Z, B) $\neq$ 0
+
+**Ausschließlichkeit**:
+- Die Instrumentalvariable beeinflusst die exogene Variable nicht direkt, sondern **ausschließlich** über die endogene Variable
+- Z $\rightarrow$ B $\rightarrow$ Eink; Z $\nrightarrow$ Eink; Cor(Z, Eink|B) = 0
+]
+
+--
+.pull-right[
+
+.question[Wie können wir die Bedingungen testen?]
+
+**Relevanz**:
+- Kann mittels F-Test getestet werden
+
+**Ausschließlichkeit**:
+- Bei einem Instrument: Nur argumentativ, kann nicht getestet werden!
+- Bei mehreren Instrumenten: Kann mittels Sargan-Hansen-Test getestet werden (allerdings ist dieser nicht besonders zuverlässig).
+]
+
+
+---
+
+## Was macht ein Instrument aus?
+
+```{r dag_iv3, echo=FALSE, fig.width=7, fig.height=3, out.width="25%"}
+dagify(
+  Eink ~ B + H,
+  B ~ H,
+  B ~ Z,
+  coords = list(x = c(B = 1, Eink = 3, H = 2, Z = 0),
+                y = c(B = 1, Eink = 1, H = 2, Z = 1)),
+  exposure = "B",
+  outcome = "Eink",
+  latent = "H",
+  labels = c("B" = "Bildung", "Eink" = "Einkommen",
+             "H" = "Fähigkeiten", "Z" = "Entfernung Hochschule")
+) %>% 
+  tidy_dagitty() %>% 
+  node_status() %>% 
+  ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
+  geom_dag_edges(aes(edge_linetype = ifelse( x == x[2] & y == y[2], "dashed", "solid")), show.legend = FALSE) +
+  geom_dag_point(aes(color = status), size = 15) +
+  geom_dag_text(color = "white", size = 5) +
+  geom_dag_label_repel(aes(label = label), nudge_y = c(0.25, -0.25, 0.25)) +
+  scale_color_manual(values = c("darkorange", "darkred", "#0074D9"), na.value = "black") +
+  guides(color = FALSE) +
+  theme_dag()
+```
+
+.pull-left[
+.instructions[Bedingungen für ein valides Instrument:]
+
+**Exogenität**:
+- Die Instrumentalvariable ist nicht mit den ausgelassenen Variablen (omitted variables) korreliert
+- Das bedeutet: Die Instrumentalvariable ist nicht mit dem Fehlerterm korreliert
+- H $\nrightarrow$ Z; Cor(Z, H) = 0
+]
+
+--
+
+.pull-right[
+
+.question[Wie können wir die Bedingungen testen?]
+
+**Exogenität**:
+- Kann nicht getestet werden. Argumentativ auf ökonomischer Basis.
+]
+
+---
+
+## Instrumentalvariablenschätzung
+
+```{r dag_iv_card, echo=FALSE, fig.width=7, fig.height=3, out.width="50%"}
+dagify(
+  Eink ~ B + H,
+  B ~ H,
+  B ~ Z,
+  coords = list(x = c(B = 1, Eink = 3, H = 2, Z = 0),
+                y = c(B = 1, Eink = 1, H = 2, Z = 1)),
+  exposure = "B",
+  outcome = "Eink",
+  latent = "H",
+  labels = c("B" = "Bildung", "Eink" = "Einkommen",
+             "H" = "Fähigkeiten", "Z" = "Entfernung Hochschule")
+) %>% 
+  tidy_dagitty() %>% 
+  node_status() %>% 
+  ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
+  geom_dag_edges(aes(edge_linetype = ifelse( x == x[2] & y == y[2], "dashed", "solid")), show.legend = FALSE) +
+  geom_dag_point(aes(color = status), size = 15) +
+  geom_dag_text(color = "white", size = 5) +
+  geom_dag_label_repel(aes(label = label), nudge_y = c(0.25, -0.25, 0.25)) +
+  scale_color_manual(values = c("darkorange", "darkred", "#0074D9"), na.value = "black") +
+  guides(color = FALSE) +
+  theme_dag()
+```
+
+--
+
+**Relevanz**: Durch die Nähe zur Universität kann Bildung zu niedrigeren Kosten erworben werden, d.h. es ist wahrscheinlicher, dass diese Personen mehr in Bildung investieren `r emo::ji("heavy_check_mark")`
+
+--
+
+**Ausschließlichkeit**: Die Nähe zur Universität hat keinen direkten Einfluss auf das Einkommen `r emo::ji("heavy_check_mark")`
+
+--
+
+**Exogenität**: Individuelle Fähigkeiten sind nicht abhängig von der Nähe zu einer Universität `r emo::ji("heavy_check_mark")`
+
+--
+
+.alert[Ausschließlichkeit und Exogenität sind sehr schwer zu zeigen/argumentieren!]
+
+.instructions[Am Besten sind hier tatsächlich randomisierte Zuteilungen als Instrument zu nehmen.]
+
+---
+
+## Instrumentalvariablenschätzung - empirische Analyse
+
+Im folgenden wollen wir die Nähe des Wohnorts zur einer Universität als Instrumentalvariable verwenden. Hierfür nutzen wir die Daten von Card (1995), welche im `wooldridge` Paket in R verfügbar sind:
+
+Card, David. 1995. “Aspects of Labour Economics: Essays in Honour of John Vanderkamp.” In. University of Toronto Press.
+
+[NBER Working Papier finden Sie hier](https://www.nber.org/papers/w4483)
+
+--
+
+Insbesondere nutzen wir folgende Variablen:
+
+Variablenname | Erklärung
+---|---
+lwage |	Jährliches Einkommen (logarithmiert)
+educ | Bildungsjahre
+nearc4 | Lebt nahe einer Universität (=1) oder weiter entfernt (=0)
+
+Die Daten stammen aus einer Umfrage in den USA im Jahr 1976 mit 3010 Männern.
+
+---
+
+## Testen der Relevanz
+
+.instructions[Zuerst sollten wir testen ob unser Instrument relevant ist.]
+
+Konkret: Hat das Instrument einen Einfluss auf die endogene Variable ( Z $\rightarrow$ B )
+
+--
+
+.tiny[
+```{r, echo = F}
+card <- wooldridge::card
+
+first_stage_basic <- lm(educ ~ nearc4, data = card)
+
+tidy(first_stage_basic)
+```
+]
+
+.alert[Wir sehen einen signifkanten Effekt von der Entfernung zur Hochschule ( _nearc4_ ) auf die Bildung ( _educ_ ) → **Relevant**]
+
+.instructions[Weiterhin sollten wir prüfen, ob das Instrument valide ist, dies prüfen wir mit der F-Statistik.]
+
+--
+
+.tiny[
+```{r}
+glance(first_stage_basic)
+```
+]
+
+Die F-Statistik ( `statistic` ) in unserem Modell liegt bei 63,9.
+
+.alert[Die F-Statistik in der _First-Stage_ sollten größer als 10 sein. Als Faustregel gilt: Bei Werten unter 10 haben wir es mit einem _schwachen_ Instrument zu tun.]
+
+---
+
+## Ausschließlichkeit und Exogenität
+
+Beeinflusst die Nähe zur Universität das Einkommen **ausschließlich** über die Bildung?
+
+Oder gibt es außerdem einen direkten Effekt der "Nähe zur Universität" auf das Einkommen?
+
+.question[Was wären die potentiellen Kanäle von Z -> Eink?]
+
+--
+
+- Wie steht es bspw. um die regionalen Gegebenheiten? 
+  - Eine dünn besiedelte Region hat weniger Universitäten, aber auch weniger potentielle Arbeitgeber und dadurch potentiell geringere Einkommen
+
+--
+
+Wir können die Exogenitätsannahme unserer Instrumentalvariable abschwächen, indem wir zusätzliche Kontrollvariablen in unser Modell aufnehmen
+- Dadurch ist unsere Exogenitätsannahme der Instrumentalvariable _bedingt_ auf die Kontrollvariablen
+
+---
+
+## Ausschließlichkeit und Exogenität
+
+Wir nehmen die folgenden Kontrollvariablen mit in unser Modell auf:
+
+Variablenname | Erklärung
+---|---
+smsa | Lebt in einer dicht besiedelten Region (=1) oder nicht (=0)
+exper | Erfahrung
+expersq | Erfahrung²
+south | Lebt im Süden der USA (=1), oder nicht (=0)
+
+$$Einkommen_i = \beta_0 + \beta_1 Bildung_i + \beta_2 X_{Kontrollvariablen_i} + \eta_i$$
+---
+
+## Ausschließlichkeit und Exogenität
+
+Relevanz der Instrumentalvariable _bedingt_ auf die Kontrollvariablen:
+
+.pull-left[
+```{r}
+first_stage_c <- lm(educ ~ nearc4 + smsa + exper + expersq + south, data = card)
+
+tidy(first_stage_c)
+```
+]
+
+.pull-right[
+```{r}
+glance(first_stage_c)
+```
+
+.alert[Hier erhalten wir eine F-Statistik von 496!]
+Diese F-Statistik ist jedoch nicht ganz korrekt. Hier empfiehlt es sich immer auf den "Weak instruments" Test zu achten (wir gehen etwas später darauf ein).
+]
+
+---
+
+## Two-stage least squares (2SLS) (händisch)
+
+**Ziel:** Den _exogenen Teil_ der Bildung finden mit Hilfe des Instruments und diesen _exogenen Teil_ für die Schätzung nutzen:
+
+.pull-left[
+.center[**First stage**]
+
+$\hat{Bildung_i} = \gamma_0 + \gamma_1 * Nähe.zur.Uni_i +$
+$\gamma_2 * X_{Kontrollvariablen_i} + \nu_i$
+
+$\hat{Bildung}$ ist der exogene Part der Bildung, unabhängig von den Fähigkeiten (und anderen Einflussgrößen)!
+]
+
+.pull-right[
+.center[**Second stage**]
+
+$Einkommen = \beta_0 + \beta_1 * \hat{Bildung_i} +$
+$\beta_2 * X_{Kontrollvariablen_i} + \varepsilon_i$
+]
+
+--
+
+Erinnern Sie sich noch an unsere Berechnung der **Relevanz** des Instruments ( `first_stage_c` )? 
+
+```{r, eval = F}
+first_stage_c <- lm(educ ~ nearc4 + smsa + exper + expersq + south, data = card)
+```
+
+Das ist die Regression, welche wir hier **First stage** nennen!
+
+.question[Wie berechnen wir die **Second stage**?]
+
+---
+
+## Two-stage least squares (2SLS) (händisch)
+
+.instructions[Wir nutzen die gefitteten Werte aus unserer **first stage** und fügen diese als **bildung_hat** unserem Datensatz `card` hinzu:]
+
+```{r}
+first_stage_c <- lm(educ ~ nearc4 + smsa + exper + expersq + south, data = card)
+
+card <- card %>% 
+  mutate(bildung_hat = first_stage_c$fitted.values)
+
+card %>%
+  select(educ, nearc4, smsa, exper, south, bildung_hat) %>%
+  head()
+```
+
+---
+
+## Two-stage least squares (2SLS) (händisch)
+
+Anschließend berechnen wir die **second stage** mit diesen gefitteten Werten für jede Person ( $\hat{Bildung_i}$ ):
+
+```{r}
+second_stage <- lm(lwage ~ bildung_hat + smsa + exper + expersq + south, data = card)
+tidy(second_stage)
+```
+
+---
+
+## Two-stage least squares (2SLS) (automatisch)
+
+In R gibt es im Paket `AER` die Möglichkeit eine solche 2SLS automatisch durchzuführen
+
+.pull-left[
+**Vorteil**:
+- Schneller als von Hand
+- Die Standardfehler werden direkt korrigiert!
+- Umfangreiche Diagnostik nach der Regression
+]
+
+.pull-right[
+**Syntax:**
+
+`ivreg(Y ~ 2nd stage | first stage, data)`
+
+```{r}
+iv_2sls <- ivreg(lwage ~ educ + smsa + exper + expersq + south | 
+                          nearc4 + smsa + exper + expersq + south ,
+                        data = card)
+tidy(iv_2sls)
+```
+]
+---
+
+## Two-stage least squares (2SLS) (händisch)
+
+.center[.question[Erhalten wir unterschiedliche Werte für die Regression mittels OLS vs. IV (händisch/automatisch)?]]
+
+--
+
+.pull-left[
+```{r, results = 'asis', echo = F}
+ols_baseline <- lm(lwage ~ educ + smsa + exper + expersq + south, data = card)
+modelsummary(list(ols_baseline, second_stage, iv_2sls),
+             type = "html", 
+          keep = c("educ", "bildung_hat"),
+          gof_omit = 'DF|Deviance|Log.Lik.|F|RMSE|AIC|BIC',
+          coef_rename = c("educ" = "Bildung", "bildung_hat" = "Bildung_Dach"),
+          column.labels = c("OLS", "2SLS händisch", "2SLS automatisch"),
+          add.lines = list(c("Kontrollvariablen", "Ja", "Ja", "Ja")),
+          title = "Log(Einkommen) auf Bildung regressiert") %>%
+  add_header_above(c(" " = 1,"OLS" = 1, "2SLS\nhändisch" = 1, "2SLS\nautomatisch" = 1))
+
+```
+]
+
+.pull-right[
+- Die Bildung hat einen deutlich stärkeren Einfluss auf das Einkommen mit der IV Regression
+    - In der OLS Regression steigt das Einkommen um 7,1% für jedes zusätzliche Jahr an Schulbildung
+    - In der 2SLS Regression hat die Bildung einen deutlich höheren Einfluss! (13,5%)
+- Dieses Ergebnis überrascht:
+    - Die Fähigkeiten einer Person sollten ihr Einkommen positiv beeinflussen
+    - Die Fähigkeiten einer Person sollten ihre Bildungsentscheidung positiv beeinflussen
+    - Problem der ausgelassenen Variablen (omitted variable bias), d.h. Endogenität!
+]
+
+---
+
+## OLS vs. IV
+
+.alert[Eigentlich würden wir erwarten, dass der Effekt der Bildung auf das Einkommen **kleiner** ist, wenn wir auf die Fähigkeiten kontrollieren.]
+
+.question[Warum erhalten wir größere anstatt kleinere Werte für die Bildung im IV?]
+
+--
+
+**Messfehler**:
+- Eventuell wird die Bildung nicht richtig erfasst (falsche Angaben der Personen)
+- Dadurch wird der Effekt der Bildung in der OLS Regression unterschätzt
+- Persönliche Einschätzung: Eher unwahrscheinlich
+
+---
+
+## OLS vs. IV
+
+.question[Für welche Personen ist es relevant das eine Universität nahe dem Wohnort liegt um in mehr Bildung zu investieren?]
+
+Manche Schüler werden immer zur Uni gehen, egal ob gerade eine in der Nähe ist, andere werden nie gehen, auch wenn eine Uni da wäre. 
+Jedoch könnte auch eine Gruppe von Schülern vorhanden sein, welche nur zur Uni gehen, wenn sie in der Nähe einer Uni wohnen. 
+
+.question[Welche Schüler sind dies?]
+
+--
+- Schüler die zuhause wohnen, dadurch pendeln können und keine Miete zahlen müssen!
+
+Es könnte gut sein, dass der Effekt von Bildung auf Einkommen für diese Personengruppe anders ist, als für die Gesamtpopulation. 
+
+Wenn dem so ist, dann messen wir nicht den allgemeinen Effekt der Bildung auf das Einkommen (den Average Treatment Effect (ATE)), sondern nur den Effekt der Bildung für diese Gruppe (den Local Average Treatment Effect (LATE)).
+
+---
+
+## Schwache Instrumente ( _weak instruments_ )
+
+.question[Was passiert, wenn ein Instrument nicht (oder nur marginal) relevant ist?]
+
+.pull-left[
+- **Relevanz** unserer Instrumente testen
+- Mittels `ivreg` direkt möglich. (diagnostics = TRUE)
+
+.instructions[Wir führen ein zweites Instrument `nearc2` ein (in der Nähe ist ein 2-Jahres College)]
+
+- F-Statistik (gemeinsame Signifikanz der Instrumente) in der _first-stage_ ist mit 8,8 unter 10
+- Besser das schwächste Instrument wieder zu entfernen
+]
+
+.pull-right[
+.tiny[
+```{r}
+weak_iv <- ivreg(lwage ~ educ + smsa + exper + expersq + south | 
+                          nearc4 + nearc2 + smsa + exper + expersq + south ,
+                        data = card)
+
+summary(weak_iv, diagnostics = T)
+```
+]
+]
+
+.alert[Durch schwache Instrumente geht die F-Statistik der _first stage_ gegen Null und der Bias von 2SLS wird größer (nähert sich dem OLS Bias an)!]
+
+**Lösung:** Suchen Sie sich andere Instrumente!
+
+---
+
+## Vorgehensweise bei der Instrumentalvariablenschätzung
+
+Sie sollten sich folgende Fragen stellen:
+
+- Ist das Instrument relevant?
+  - Instrument mit der Intervention korreliert; _first-stage_ F-Statistik (bzw. "weak instruments test") > 10
+- Erfüllt das Instrument das Ausschließlichkeitskriterium
+  - Das Instrument beeinflusst das Ergebnis **ausschließlich** durch die Intervention
+- Ist das Instrument exogen?
+  - Keine Pfeile zum Instrument im DAG
+- Anwenden von 2-stage least squares (2SLS)
+  - Nutzen des R-Pakets ivreg()

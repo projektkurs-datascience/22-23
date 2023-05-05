@@ -94,7 +94,8 @@ Daten aus der Case-Study, welche wir im vorherigen Semester eingelesen und deskr
 
 - Erster Schritt: Kurzer Recap mittels bivariater deskriptiver Statistik um den Zusammenhang verschiedener Variablen darzustellen
 - Zweiter Schritt: (Multiple) lineare Regression der Daten um herauszufinden, welche Faktoren die Arbeitslosenquote in den deutschen Landkreisen treibt 
-  - Darstellung mit dem Paket `stargazer`
+  - Darstellung mit dem Paket `modelsummary` + `kableExtra`
+  - [Sehr gute Vignette des Pakets `modelsummary`](https://vincentarelbundock.github.io/modelsummary/articles/modelsummary.html)
 
 --
 
@@ -117,7 +118,8 @@ Wir laden die aus Teil 1 der Case-Study erstellten Datensätze:
 .tiny[
 ```{r, message=FALSE}
 library(tidyverse)
-library(stargazer)
+library(modelsummary)
+library(kableExtra)
 library(corrr)
 ```
 
@@ -297,12 +299,18 @@ Wobei wir die Arbeitslosenquote ( $y_i$ ) auf das BIP Wachstum ( $x_i$ ) regress
 ```{r, echo=T, eval=F,message = FALSE, warnign = FALSE,results='asis'}
 bip <- lm(alo_quote ~ bip_wachstum, data = gesamtdaten)
 
-stargazer(bip, 
-          type = "html", header = FALSE, digits = 2,
+modelsummary(list(bip, bip, bip), 
+          type = "html",
+          statistic = NULL,
+          fmt = 2,
+          estimate  = c("estimate",
+                "{estimate}{stars}",
+                "{estimate} [{conf.low}, {conf.high}]"),
           title = "Arbeitslosigkeit auf BIP-Wachstum",
-          dep.var.labels=c("Alo-quote"),
-          covariate.labels="BIP-Wachstum"
-          )
+          gof_omit = 'DF|Deviance|Log.Lik.|F|RMSE|AIC|BIC',
+          coef_rename = c("bip_wachstum" = "BIP-Wachstum", "(Intercept)" = "Konstante")
+          ) %>%
+  add_header_above(c(" " = 1,"Alo-quote" = 3))
 ```
 
 ---
@@ -312,12 +320,53 @@ stargazer(bip,
 ```{r, echo = FALSE, message = FALSE, warnign = FALSE,results='asis'}
 bip <- lm(alo_quote ~ bip_wachstum, data = gesamtdaten)
 
-stargazer(bip, 
-          type = "html", header = FALSE, digits = 2,
+modelsummary(list(bip, bip, bip), 
+          type = "html",
+          fmt = 2,
+          estimate  = c("estimate",
+                "{estimate}{stars}",
+                "{estimate} [{conf.low}, {conf.high}]"),
           title = "Arbeitslosigkeit auf BIP-Wachstum",
-          dep.var.labels=c("Alo-quote"),
-          covariate.labels="BIP-Wachstum"
-          )
+          gof_omit = 'DF|Deviance|Log.Lik.|F|RMSE|AIC|BIC',
+          coef_rename = c("bip_wachstum" = "BIP-Wachstum", "(Intercept)" = "Konstante")
+          ) %>%
+  add_header_above(c(" " = 1,"Alo-quote" = 3))
+```
+
+---
+
+## Arbeitslosenquote auf das BIP Wachstum regressieren
+
+```{r, echo=T, eval=F,message = FALSE, warnign = FALSE,results='asis'}
+bip <- lm(alo_quote ~ bip_wachstum, data = gesamtdaten)
+
+modelsummary(bip, 
+          type = "html",
+          statistic = 'conf.int', 
+          conf_level = .99,
+          fmt = 2,
+          gof_omit = 'DF|Deviance|Log.Lik.|F|RMSE|AIC|BIC',
+          coef_rename = c("bip_wachstum" = "BIP-Wachstum", "(Intercept)" = "Konstante")
+          ) %>%
+  add_header_above(c(" " = 1,"Alo-quote" = 1))
+```
+
+---
+
+## Arbeitslosenquote auf das BIP Wachstum regressieren
+
+```{r, echo = FALSE, message = FALSE, warnign = FALSE,results='asis'}
+bip <- lm(alo_quote ~ bip_wachstum, data = gesamtdaten)
+
+modelsummary(bip, 
+          type = "html",
+          statistic = 'conf.int', 
+          conf_level = .99,
+          fmt = 2,
+          gof_omit = 'DF|Deviance|Log.Lik.|F|RMSE|AIC|BIC',
+          coef_rename = c("bip_wachstum" = "BIP-Wachstum", "(Intercept)" = "Konstante")
+          ) %>%
+  add_header_above(c(" " = 1,"Alo-quote" = 1))
 ```
 
 ---
@@ -380,12 +429,16 @@ Landkreise mit einem höheren BIP Wachstum könnten neue Unternehmen angesiedelt
 ```{r, eval =F, message=FALSE, warning=FALSE,results='asis'}
 schulden <- lm(alo_quote ~ anteil_schulden, data=gesamtdaten)
 
-stargazer(schulden, 
-          type = "html", header = FALSE, digits = 2,
+modelsummary(schulden, 
+          type = "html",
+          fmt = 2,
+          statistic = 'conf.int', 
+          conf_level = .99,
           title = "Arbeitslosigkeit auf Anteil der Schulden pro Landkreis",
-          dep.var.labels=c("Alo-quote"),
-          covariate.labels="Anteil der Schulden"
-          )
+          gof_omit = 'DF|Deviance|Log.Lik.|F|RMSE|AIC|BIC',
+          coef_rename = c("anteil_schulden" = "Anteil der Schulden", "(Intercept)" = "Konstante")
+          ) %>%
+  add_header_above(c(" " = 1,"Alo-quote" = 1))
 ```
 
 ---
@@ -395,12 +448,16 @@ stargazer(schulden,
 ```{r, echo=F, message=FALSE, warning=FALSE,results='asis'}
 schulden <- lm(alo_quote ~ anteil_schulden, data=gesamtdaten)
 
-stargazer(schulden, 
-          type = "html", header = FALSE, digits = 2,
+modelsummary(schulden, 
+          type = "html",
+          fmt = 2,
+          statistic = 'conf.int', 
+          conf_level = .99,
           title = "Arbeitslosigkeit auf Anteil der Schulden pro Landkreis",
-          dep.var.labels=c("Alo-quote"),
-          covariate.labels="Anteil der Schulden"
-          )
+          gof_omit = 'DF|Deviance|Log.Lik.|F|RMSE|AIC|BIC',
+          coef_rename = c("anteil_schulden" = "Anteil der Schulden", "(Intercept)" = "Konstante")
+          ) %>%
+  add_header_above(c(" " = 1,"Alo-quote" = 1))
 ```
 
 
@@ -453,12 +510,16 @@ y_i = \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + ... + \beta_K x_{iK} + \vareps
 ```{r, eval = F, message=FALSE, warning=FALSE,results='asis'}
 multi <- lm(alo_quote ~ anteil_schulden + bip_wachstum, data=gesamtdaten)
 
-stargazer(multi,
-          type = "html", header = FALSE, digits = 2,
+modelsummary(multi, 
+          type = "html", 
+          fmt = 2,
+          statistic = 'conf.int', 
+          conf_level = .99,
           title = "Arbeitslosigkeit auf Anteil Schulden und BIP-Wachstum",
-          dep.var.labels=c("Alo-quote"),
-          covariate.labels=c("Anteil der Schulden", "BIP-Wachstum")
-          )
+          gof_omit = 'DF|Deviance|Log.Lik.|F|RMSE|AIC|BIC',
+          coef_rename = c("anteil_schulden" = "Anteil der Schulden", "bip_wachstum" = "BIP-Wachstum", "(Intercept)" = "Konstante")
+          ) %>%
+  add_header_above(c(" " = 1,"Alo-quote" = 1))
 ```
 
 ---
@@ -469,12 +530,16 @@ stargazer(multi,
 ```{r, echo = F, message=FALSE, warning=FALSE,results='asis'}
 multi <- lm(alo_quote ~ anteil_schulden + bip_wachstum, data=gesamtdaten)
 
-stargazer(multi,
-          type = "html", header = FALSE, digits = 2,
+modelsummary(multi, 
+          type = "html", 
+          fmt = 2,
+          statistic = 'conf.int', 
+          conf_level = .99,
           title = "Arbeitslosigkeit auf Anteil Schulden und BIP-Wachstum",
-          dep.var.labels=c("Alo-quote"),
-          covariate.labels=c("Anteil der Schulden", "BIP-Wachstum")
-          )
+          gof_omit = 'DF|Deviance|Log.Lik.|F|RMSE|AIC|BIC',
+          coef_rename = c("anteil_schulden" = "Anteil der Schulden", "bip_wachstum" = "BIP-Wachstum", "(Intercept)" = "Konstante")
+          ) %>%
+  add_header_above(c(" " = 1,"Alo-quote" = 1))
 ```
 ]
 
@@ -508,12 +573,17 @@ Um dieser Frage auf den Grund zu gehen wollen wir im ersten Schritt die Variable
 
 schulden <- lm(alo_quote ~ anteil_schulden + ost, data=gesamtdaten)
 
-stargazer(schulden,  
-          type = "html", header = FALSE, digits = 2,
+modelsummary(schulden, 
+          type = "html", 
+          fmt = 2,
+          statistic = 'conf.int', 
+          conf_level = .99,
           title = "Arbeitslosigkeit mit Interaktionstermen",
-          dep.var.labels=c("Alo-quote"),
-          covariate.labels=c("Anteil Schulden", "Ostdeutschland")
-          )
+          gof_omit = 'DF|Deviance|Log.Lik.|F|RMSE|AIC|BIC',
+          coef_rename = c("anteil_schulden" = "Anteil der Schulden", "ost1" = "Ostdeutschland", "(Intercept)" = "Konstante")
+          ) %>%
+  add_header_above(c(" " = 1,"Alo-quote" = 1))
+
 ```
 
 ---
@@ -525,12 +595,16 @@ stargazer(schulden,
 
 schulden <- lm(alo_quote ~ anteil_schulden + ost, data=gesamtdaten)
 
-stargazer(schulden,  
-          type = "html", header = FALSE, digits = 2,
+modelsummary(schulden, 
+          type = "html", 
+          fmt = 2,
+          statistic = 'conf.int', 
+          conf_level = .99,
           title = "Arbeitslosigkeit mit Interaktionstermen",
-          dep.var.labels=c("Alo-quote"),
-          covariate.labels=c("Anteil Schulden", "Ostdeutschland")
-          )
+          gof_omit = 'DF|Deviance|Log.Lik.|F|RMSE|AIC|BIC',
+          coef_rename = c("anteil_schulden" = "Anteil der Schulden", "ost1" = "Ostdeutschland", "(Intercept)" = "Konstante")
+          ) %>%
+  add_header_above(c(" " = 1,"Alo-quote" = 1))
 ```
 ]
 
@@ -565,12 +639,16 @@ ost <- lm(alo_quote ~ anteil_schulden, data=filter(gesamtdaten, ost==1))
 west <- lm(alo_quote ~ anteil_schulden, data=filter(gesamtdaten, ost==0))
 interaktion <- lm(alo_quote ~ anteil_schulden*ost, data=gesamtdaten)
 
-stargazer(schulden, interaktion, west, ost, 
-          type = "html", header = FALSE, digits = 2,
+modelsummary(list(schulden, interaktion, west, ost), 
+          type = "html", 
+          fmt = 2,
+          statistic = 'conf.int', 
+          conf_level = .99,
           title = "Arbeitslosigkeit mit Interaktionstermen",
-          dep.var.labels=c("Alo-quote"),
-          covariate.labels=c("Anteil Schulden", "Ostdeutschland", "Anteil Schulden * Ostdeutschland")
-          )
+          gof_omit = 'DF|Deviance|Log.Lik.|F|RMSE|AIC|BIC',
+          coef_rename = c("anteil_schulden" = "Anteil der Schulden", "ost1" = "Ostdeutschland", "(Intercept)" = "Konstante")
+          ) %>%
+  add_header_above(c(" " = 1,"Alo-quote" = 4))
 ```
 
 
@@ -584,12 +662,72 @@ ost <- lm(alo_quote ~ anteil_schulden, data=filter(gesamtdaten, ost==1))
 west <- lm(alo_quote ~ anteil_schulden, data=filter(gesamtdaten, ost==0))
 interaktion <- lm(alo_quote ~ anteil_schulden*ost, data=gesamtdaten)
 
-stargazer(schulden, interaktion, west, ost, 
-          type = "html", header = FALSE, digits = 2,
+modelsummary(list(schulden, interaktion, west, ost), 
+          type = "html", 
+          fmt = 2,
+          statistic = 'conf.int', 
+          conf_level = .99,
           title = "Arbeitslosigkeit mit Interaktionstermen",
-          dep.var.labels=c("Alo-quote"),
-          covariate.labels=c("Anteil Schulden", "Ostdeutschland", "Anteil Schulden * Ostdeutschland")
-          )
+          gof_omit = 'DF|Deviance|Log.Lik.|F|RMSE|AIC|BIC',
+          coef_rename = c("anteil_schulden" = "Anteil der Schulden", "ost1" = "Ostdeutschland", "(Intercept)" = "Konstante")
+          ) %>%
+  add_header_above(c(" " = 1,"Alo-quote" = 4))
+```
+
+---
+
+## Darstellung der GOF
+
+```{r, eval =F, message=FALSE, warning=FALSE,results='asis'}
+schulden <- lm(alo_quote ~ anteil_schulden + ost, data=gesamtdaten)
+ost <- lm(alo_quote ~ anteil_schulden, data=filter(gesamtdaten, ost==1))
+west <- lm(alo_quote ~ anteil_schulden, data=filter(gesamtdaten, ost==0))
+interaktion <- lm(alo_quote ~ anteil_schulden*ost, data=gesamtdaten)
+
+gm <- tibble::tribble(
+  ~raw,        ~clean,          ~fmt,
+  "nobs",      "N",             0,
+  "adj.r.squared", "Adj. R<sup>2</sup>", 2)
+
+modelsummary(list(schulden, interaktion, west, ost), 
+          type = "html", 
+          fmt = 2,
+          statistic = 'conf.int', 
+          conf_level = .99,
+          title = "Arbeitslosigkeit mit Interaktionstermen",
+          gof_omit = 'DF|Deviance|Log.Lik.|F|RMSE|AIC|BIC',
+          coef_rename = c("anteil_schulden" = "Anteil der Schulden", "ost1" = "Ostdeutschland", "(Intercept)" = "Konstante"),
+          gof_map = gm
+          ) %>%
+  add_header_above(c(" " = 1,"Alo-quote" = 4))
+```
+
+---
+
+## Darstellung der GOF
+
+```{r, echo =F, message=FALSE, warning=FALSE,results='asis'}
+schulden <- lm(alo_quote ~ anteil_schulden + ost, data=gesamtdaten)
+ost <- lm(alo_quote ~ anteil_schulden, data=filter(gesamtdaten, ost==1))
+west <- lm(alo_quote ~ anteil_schulden, data=filter(gesamtdaten, ost==0))
+interaktion <- lm(alo_quote ~ anteil_schulden*ost, data=gesamtdaten)
+
+gm <- tibble::tribble(
+  ~raw,        ~clean,          ~fmt,
+  "nobs",      "N",             0,
+  "adj.r.squared", "Adj. R<sup>2</sup>", 2)
+
+modelsummary(list(schulden, interaktion, west, ost), 
+          type = "html", 
+          fmt = 2,
+          statistic = 'conf.int', 
+          conf_level = .99,
+          title = "Arbeitslosigkeit mit Interaktionstermen",
+          gof_omit = 'DF|Deviance|Log.Lik.|F|RMSE|AIC|BIC',
+          coef_rename = c("anteil_schulden" = "Anteil der Schulden", "ost1" = "Ostdeutschland", "(Intercept)" = "Konstante"),
+          gof_map = gm
+          ) %>%
+  add_header_above(c(" " = 1,"Alo-quote" = 4))
 ```
 
 ---
@@ -666,6 +804,6 @@ class: inverse, center, middle
 
 Im ersten Teil der Case Study hatten Sie sich noch die durchschnittlichen Einkommen auf Landkreisebene in R eingelesen und im zweiten Teil deskriptiv untersucht. Nun sollten Sie diese Tabelle mittels linearer Regression analysieren:
 
-- Erstellen Sie eine Regressionstabelle mittels `stargazer` in der Sie die Arbeitslosenquote auf die Einkommen für das Jahr 2017 regressieren.
+- Erstellen Sie eine Regressionstabelle mittels `modelsummary` in der Sie die Arbeitslosenquote auf die Einkommen für das Jahr 2017 regressieren.
   - Interpretieren Sie ihre Ergebnisse
-- Erstellen Sie ein Interaktionsmodell incl. Sample Split mittels `stargazer` und interpretieren Sie die Ergebnisse ihrer Regressionen.
+- Erstellen Sie ein Interaktionsmodell incl. Sample Split mittels `modelsummary` und interpretieren Sie die Ergebnisse ihrer Regressionen.

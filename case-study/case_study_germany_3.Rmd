@@ -89,12 +89,19 @@ Wir wollen nun die Arbeitslosenquote auf die Wachstumsrate des BIP regressieren:
 ```{r, message = FALSE, warnign = FALSE,results='asis'}
 bip <- lm(alo_quote ~ bip_wachstum, data = gesamtdaten)
 
+gm <- tibble::tribble(
+  ~raw,        ~clean,          ~fmt,
+  "nobs",      "N",             0,
+  "adj.r.squared", "Adj. R<sup>2</sup>", 2)
+
 modelsummary(bip, 
           type = "html",
-          fmt = fmt_decimal(digits = 2),
+          fmt = 2,
+          stars = c('*' = .1, '**' = .05, '***' = 0.01),
           title = "Arbeitslosigkeit auf BIP-Wachstum",
           gof_omit = 'DF|Deviance|Log.Lik.|F|RMSE|AIC|BIC',
-          coef_rename = c("bip_wachstum" = "BIP-Wachstum", "(Intercept)" = "Konstante")
+          coef_rename = c("bip_wachstum" = "BIP-Wachstum", "(Intercept)" = "Konstante"),
+          gof_map = gm
           ) %>%
   add_header_above(c(" " = 1,"Alo-quote" = 1))
 ```
@@ -113,7 +120,7 @@ Weiterhin erhalten wir einen Wert für die Konstante in unserem Modell. Die Kons
 
 > Die erwartete Arbeitslosenquote bei einem Wachstum von 0% liegt im Durchschnitt bei 5,68 Prozent.
 
-Allerdings müssen wir bei der Interpretation der Koeffizienten auch immer deren Signifikanz berücksichtigen. Der Koeffizient von `BIP-Wachstum` ist signifikant auf dem 10%-Niveau. Dies können wir sehr schnell an dem Stern hinter dem Koeffizienten sehen. Weiterhin können wir uns die t-Statistik berechnen und darüber die Signifikanz ablesen (Koeffizient / Standardfehler = (-0.09)/0.05 = -1.8). Damit können wir sagen, dass das BIP Wachstum ein (schwach) signifikanter Faktor zur Erklärung der Arbeitslosenquote in einem Landkreis ist. Vermutlich ist es allerdings nicht der einzige wichtge Faktor, wie wir an dem R² von 0.01 sehen. Landkreise in denen sich bspw. im Jahr 2016 neue Unternehmen ansiedeln werden im Jahr 2017 tendenziell ein Wachstum des BIP verzeichnen, allein durch die zusätzlich produzierten Güter und Dienstleistungen in diesem neuen Unternehmen. Jedoch braucht das Unternehmen auch Mitarbeiter, welche sie aus dem Landkreis (und auch anderswo her) rekrutieren kann. Daher würden wir tendenziell erwarten, dass ein höheres BIP Wachstum mit einer niedrigeren Arbeitslosenquote korrespondiert.
+Allerdings müssen wir bei der Interpretation der Koeffizienten auch immer deren Signifikanz berücksichtigen. Der Koeffizient von `BIP-Wachstum` ist signifikant auf dem 10%-Niveau. Dies können wir sehr schnell an dem Stern hinter dem Koeffizienten sehen. Weiterhin können wir uns die t-Statistik berechnen und darüber die Signifikanz ablesen (Koeffizient / Standardfehler = (-0.09)/0.05 = -1.8). Damit können wir sagen, dass das BIP Wachstum ein (schwach) signifikanter Faktor zur Erklärung der Arbeitslosenquote in einem Landkreis ist. Um einen Eindruck von der ökonomischen Signifikanz unserer Variablen zu bekommen wollen wir uns in den folgenden Regressionen immer die 99% Konfidenzintervalle für die jeweiligen Punktschätzer ausgeben lassen. Vermutlich ist das BIP-Wachstum nicht der einzige wichtge Faktor, wie wir an dem R² von 0.01 sehen und durch die Konfidenzintervalle können wir direkt die Bandbreite der möglichen Effekte abschätzen. Landkreise in denen sich bspw. im Jahr 2016 neue Unternehmen ansiedeln werden im Jahr 2017 tendenziell ein Wachstum des BIP verzeichnen, allein durch die zusätzlich produzierten Güter und Dienstleistungen in diesem neuen Unternehmen. Jedoch braucht das Unternehmen auch Mitarbeiter, welche sie aus dem Landkreis (und auch anderswo her) rekrutieren kann. Daher würden wir tendenziell erwarten, dass ein höheres BIP Wachstum mit einer niedrigeren Arbeitslosenquote korrespondiert.
 
 ## Arbeitslosigkeit auf öffentliche Verschuldung regressieren
 
@@ -122,12 +129,20 @@ Im nächsten Schritt wollen wir anschauen ob die öffentlichen Schulden ihren Te
 ```{r, message=FALSE, warning=FALSE,results='asis'}
 schulden <- lm(alo_quote ~ anteil_schulden, data=gesamtdaten)
 
+gm <- tibble::tribble(
+  ~raw,        ~clean,          ~fmt,
+  "nobs",      "N",             0,
+  "adj.r.squared", "Adj. R<sup>2</sup>", 2)
+
 modelsummary(schulden, 
           type = "html",
-          fmt = fmt_decimal(digits = 2),
+          fmt = 2,
+          statistic = 'conf.int', 
+          conf_level = .99,
           title = "Arbeitslosigkeit auf Anteil der Schulden pro Landkreis",
           gof_omit = 'DF|Deviance|Log.Lik.|F|RMSE|AIC|BIC',
-          coef_rename = c("anteil_schulden" = "Anteil der Schulden", "(Intercept)" = "Konstante")
+          coef_rename = c("anteil_schulden" = "Anteil der Schulden", "(Intercept)" = "Konstante"),
+          gof_map = gm
           ) %>%
   add_header_above(c(" " = 1,"Alo-quote" = 1))
 ```
@@ -160,12 +175,20 @@ Wir vermuten nach den univariaten Regressionen, dass die öffentliche Verschuldu
 ```{r, message=FALSE, warning=FALSE,results='asis'}
 multi <- lm(alo_quote ~ anteil_schulden + bip_wachstum, data=gesamtdaten)
 
+gm <- tibble::tribble(
+  ~raw,        ~clean,          ~fmt,
+  "nobs",      "N",             0,
+  "adj.r.squared", "Adj. R<sup>2</sup>", 2)
+
 modelsummary(multi, 
           type = "html", 
-          fmt = fmt_decimal(digits = 2),
+          fmt = 2,
+          statistic = 'conf.int', 
+          conf_level = .99,
           title = "Arbeitslosigkeit auf Anteil Schulden und BIP-Wachstum",
           gof_omit = 'DF|Deviance|Log.Lik.|F|RMSE|AIC|BIC',
-          coef_rename = c("anteil_schulden" = "Anteil der Schulden", "bip_wachstum" = "BIP-Wachstum", "(Intercept)" = "Konstante")
+          coef_rename = c("anteil_schulden" = "Anteil der Schulden", "bip_wachstum" = "BIP-Wachstum", "(Intercept)" = "Konstante"),
+          gof_map = gm
           ) %>%
   add_header_above(c(" " = 1,"Alo-quote" = 1))
 
@@ -191,12 +214,20 @@ ost <- lm(alo_quote ~ anteil_schulden, data=filter(gesamtdaten, ost==1))
 west <- lm(alo_quote ~ anteil_schulden, data=filter(gesamtdaten, ost==0))
 interaktion <- lm(alo_quote ~ anteil_schulden*ost, data=gesamtdaten)
 
+gm <- tibble::tribble(
+  ~raw,        ~clean,          ~fmt,
+  "nobs",      "N",             0,
+  "adj.r.squared", "Adj. R<sup>2</sup>", 2)
+
 modelsummary(list(schulden, interaktion, west, ost), 
           type = "html", 
-          fmt = fmt_decimal(digits = 2),
+          fmt = 2,
+          statistic = 'conf.int', 
+          conf_level = .99,
           title = "Arbeitslosigkeit mit Interaktionstermen",
           gof_omit = 'DF|Deviance|Log.Lik.|F|RMSE|AIC|BIC',
-          coef_rename = c("anteil_schulden" = "Anteil der Schulden", "ost1" = "Ostdeutschland", "(Intercept)" = "Konstante")
+          coef_rename = c("anteil_schulden" = "Anteil der Schulden", "ost1" = "Ostdeutschland", "(Intercept)" = "Konstante"),
+          gof_map = gm
           ) %>%
   add_header_above(c(" " = 1,"Alo-quote" = 4))
 

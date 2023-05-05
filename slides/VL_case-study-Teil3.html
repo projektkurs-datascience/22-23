@@ -3,7 +3,9 @@
   <head>
     <title>Case-Study zur Arbeitslosigkeit in Deutschland</title>
     <meta charset="utf-8" />
-    <script src="libs/header-attrs-2.20/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.21/header-attrs.js"></script>
+    <script src="libs/kePrint-0.0.1/kePrint.js"></script>
+    <link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
     <script src="https://use.fontawesome.com/5235085b15.js"></script>
     <link rel="stylesheet" href="style/css/uni-ulm.css" type="text/css" />
     <link rel="stylesheet" href="style/css/my-fonts.css" type="text/css" />
@@ -90,7 +92,8 @@ Daten aus der Case-Study, welche wir im vorherigen Semester eingelesen und deskr
 
 - Erster Schritt: Kurzer Recap mittels bivariater deskriptiver Statistik um den Zusammenhang verschiedener Variablen darzustellen
 - Zweiter Schritt: (Multiple) lineare Regression der Daten um herauszufinden, welche Faktoren die Arbeitslosenquote in den deutschen Landkreisen treibt 
-  - Darstellung mit dem Paket `stargazer`
+  - Darstellung mit dem Paket `modelsummary` + `kableExtra`
+  - [Sehr gute Vignette des Pakets `modelsummary`](https://vincentarelbundock.github.io/modelsummary/articles/modelsummary.html)
 
 --
 
@@ -114,7 +117,8 @@ Wir laden die aus Teil 1 der Case-Study erstellten Datensätze:
 
 ```r
 library(tidyverse)
-library(stargazer)
+library(modelsummary)
+library(kableExtra)
 library(corrr)
 ```
 
@@ -284,35 +288,148 @@ Wobei wir die Arbeitslosenquote ( `\(y_i\)` ) auf das BIP Wachstum ( `\(x_i\)` )
 ```r
 bip &lt;- lm(alo_quote ~ bip_wachstum, data = gesamtdaten)
 
-stargazer(bip, 
-          type = "html", header = FALSE, digits = 2,
+modelsummary(list(bip, bip, bip), 
+          type = "html",
+          statistic = NULL,
+          fmt = 2,
+          estimate  = c("estimate",
+                "{estimate}{stars}",
+                "{estimate} [{conf.low}, {conf.high}]"),
           title = "Arbeitslosigkeit auf BIP-Wachstum",
-          dep.var.labels=c("Alo-quote"),
-          covariate.labels="BIP-Wachstum"
-          )
+          gof_omit = 'DF|Deviance|Log.Lik.|F|RMSE|AIC|BIC',
+          coef_rename = c("bip_wachstum" = "BIP-Wachstum", "(Intercept)" = "Konstante")
+          ) %&gt;%
+  add_header_above(c(" " = 1,"Alo-quote" = 3))
 ```
 
 ---
 
 ## Arbeitslosenquote auf das BIP Wachstum regressieren
 
+&lt;table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;"&gt;
+&lt;caption&gt;Arbeitslosigkeit auf BIP-Wachstum&lt;/caption&gt;
+ &lt;thead&gt;
+&lt;tr&gt;
+&lt;th style="empty-cells: hide;border-bottom:hidden;" colspan="1"&gt;&lt;/th&gt;
+&lt;th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3"&gt;&lt;div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; "&gt;Alo-quote&lt;/div&gt;&lt;/th&gt;
+&lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt;  (1) &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt;   (2) &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt;   (3) &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Konstante &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 5.68 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 5.68*** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 5.68 [5.23, 6.14] &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.23) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.23) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.23) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; BIP-Wachstum &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.09 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.09+ &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.09 [−0.19, 0.01] &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; (0.05) &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; (0.05) &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; (0.05) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Num.Obs. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 399 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 399 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 399 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; R2 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.007 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.007 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.007 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; R2 Adj. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.005 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.005 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.005 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
 
-&lt;table style="text-align:center"&gt;&lt;caption&gt;&lt;strong&gt;Arbeitslosigkeit auf BIP-Wachstum&lt;/strong&gt;&lt;/caption&gt;
-&lt;tr&gt;&lt;td colspan="2" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;em&gt;Dependent variable:&lt;/em&gt;&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td colspan="1" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;Alo-quote&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td colspan="2" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;BIP-Wachstum&lt;/td&gt;&lt;td&gt;-0.09&lt;sup&gt;*&lt;/sup&gt;&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(0.05)&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;Constant&lt;/td&gt;&lt;td&gt;5.68&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(0.23)&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td colspan="2" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;Observations&lt;/td&gt;&lt;td&gt;399&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;R&lt;sup&gt;2&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;0.01&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;Adjusted R&lt;sup&gt;2&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;0.005&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;Residual Std. Error&lt;/td&gt;&lt;td&gt;2.38 (df = 397)&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;F Statistic&lt;/td&gt;&lt;td&gt;2.98&lt;sup&gt;*&lt;/sup&gt; (df = 1; 397)&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td colspan="2" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;em&gt;Note:&lt;/em&gt;&lt;/td&gt;&lt;td style="text-align:right"&gt;&lt;sup&gt;*&lt;/sup&gt;p&lt;0.1; &lt;sup&gt;**&lt;/sup&gt;p&lt;0.05; &lt;sup&gt;***&lt;/sup&gt;p&lt;0.01&lt;/td&gt;&lt;/tr&gt;
+---
+
+## Arbeitslosenquote auf das BIP Wachstum regressieren
+
+
+```r
+bip &lt;- lm(alo_quote ~ bip_wachstum, data = gesamtdaten)
+
+modelsummary(bip, 
+          type = "html",
+          statistic = 'conf.int', 
+          conf_level = .99,
+          fmt = 2,
+          gof_omit = 'DF|Deviance|Log.Lik.|F|RMSE|AIC|BIC',
+          coef_rename = c("bip_wachstum" = "BIP-Wachstum", "(Intercept)" = "Konstante")
+          ) %&gt;%
+  add_header_above(c(" " = 1,"Alo-quote" = 1))
+```
+
+---
+
+## Arbeitslosenquote auf das BIP Wachstum regressieren
+
+&lt;table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+&lt;tr&gt;
+&lt;th style="empty-cells: hide;border-bottom:hidden;" colspan="1"&gt;&lt;/th&gt;
+&lt;th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="1"&gt;&lt;div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; "&gt;Alo-quote&lt;/div&gt;&lt;/th&gt;
+&lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt;  (1) &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Konstante &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 5.68 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; [5.09, 6.28] &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; BIP-Wachstum &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.09 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; [−0.22, 0.04] &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Num.Obs. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 399 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; R2 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.007 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; R2 Adj. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.005 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
 &lt;/table&gt;
 
 ---
@@ -376,35 +493,64 @@ Landkreise mit einem höheren BIP Wachstum könnten neue Unternehmen angesiedelt
 ```r
 schulden &lt;- lm(alo_quote ~ anteil_schulden, data=gesamtdaten)
 
-stargazer(schulden, 
-          type = "html", header = FALSE, digits = 2,
+modelsummary(schulden, 
+          type = "html",
+          fmt = 2,
+          statistic = 'conf.int', 
+          conf_level = .99,
           title = "Arbeitslosigkeit auf Anteil der Schulden pro Landkreis",
-          dep.var.labels=c("Alo-quote"),
-          covariate.labels="Anteil der Schulden"
-          )
+          gof_omit = 'DF|Deviance|Log.Lik.|F|RMSE|AIC|BIC',
+          coef_rename = c("anteil_schulden" = "Anteil der Schulden", "(Intercept)" = "Konstante")
+          ) %&gt;%
+  add_header_above(c(" " = 1,"Alo-quote" = 1))
 ```
 
 ---
 
 ## Arbeitslosenquote auf öffentliche Schulden regressieren
 
-
-&lt;table style="text-align:center"&gt;&lt;caption&gt;&lt;strong&gt;Arbeitslosigkeit auf Anteil der Schulden pro Landkreis&lt;/strong&gt;&lt;/caption&gt;
-&lt;tr&gt;&lt;td colspan="2" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;em&gt;Dependent variable:&lt;/em&gt;&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td colspan="1" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;Alo-quote&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td colspan="2" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;Anteil der Schulden&lt;/td&gt;&lt;td&gt;0.25&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(0.02)&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;Constant&lt;/td&gt;&lt;td&gt;3.37&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(0.16)&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td colspan="2" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;Observations&lt;/td&gt;&lt;td&gt;397&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;R&lt;sup&gt;2&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;0.35&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;Adjusted R&lt;sup&gt;2&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;0.35&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;Residual Std. Error&lt;/td&gt;&lt;td&gt;1.91 (df = 395)&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;F Statistic&lt;/td&gt;&lt;td&gt;216.36&lt;sup&gt;***&lt;/sup&gt; (df = 1; 395)&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td colspan="2" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;em&gt;Note:&lt;/em&gt;&lt;/td&gt;&lt;td style="text-align:right"&gt;&lt;sup&gt;*&lt;/sup&gt;p&lt;0.1; &lt;sup&gt;**&lt;/sup&gt;p&lt;0.05; &lt;sup&gt;***&lt;/sup&gt;p&lt;0.01&lt;/td&gt;&lt;/tr&gt;
+&lt;table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;"&gt;
+&lt;caption&gt;Arbeitslosigkeit auf Anteil der Schulden pro Landkreis&lt;/caption&gt;
+ &lt;thead&gt;
+&lt;tr&gt;
+&lt;th style="empty-cells: hide;border-bottom:hidden;" colspan="1"&gt;&lt;/th&gt;
+&lt;th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="1"&gt;&lt;div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; "&gt;Alo-quote&lt;/div&gt;&lt;/th&gt;
+&lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt;  (1) &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Konstante &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3.37 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; [2.95, 3.80] &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Anteil der Schulden &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.25 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; [0.21, 0.30] &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Num.Obs. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 397 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; R2 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.354 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; R2 Adj. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.352 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
 &lt;/table&gt;
 
 
@@ -458,12 +604,16 @@ y_i = \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + ... + \beta_K x_{iK} + \vareps
 ```r
 multi &lt;- lm(alo_quote ~ anteil_schulden + bip_wachstum, data=gesamtdaten)
 
-stargazer(multi,
-          type = "html", header = FALSE, digits = 2,
+modelsummary(multi, 
+          type = "html", 
+          fmt = 2,
+          statistic = 'conf.int', 
+          conf_level = .99,
           title = "Arbeitslosigkeit auf Anteil Schulden und BIP-Wachstum",
-          dep.var.labels=c("Alo-quote"),
-          covariate.labels=c("Anteil der Schulden", "BIP-Wachstum")
-          )
+          gof_omit = 'DF|Deviance|Log.Lik.|F|RMSE|AIC|BIC',
+          coef_rename = c("anteil_schulden" = "Anteil der Schulden", "bip_wachstum" = "BIP-Wachstum", "(Intercept)" = "Konstante")
+          ) %&gt;%
+  add_header_above(c(" " = 1,"Alo-quote" = 1))
 ```
 
 ---
@@ -471,26 +621,56 @@ stargazer(multi,
 ## Multiple lineare Regression
 
 .pull-left[
-
-&lt;table style="text-align:center"&gt;&lt;caption&gt;&lt;strong&gt;Arbeitslosigkeit auf Anteil Schulden und BIP-Wachstum&lt;/strong&gt;&lt;/caption&gt;
-&lt;tr&gt;&lt;td colspan="2" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;em&gt;Dependent variable:&lt;/em&gt;&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td colspan="1" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;Alo-quote&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td colspan="2" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;Anteil der Schulden&lt;/td&gt;&lt;td&gt;0.25&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(0.02)&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;BIP-Wachstum&lt;/td&gt;&lt;td&gt;0.001&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(0.04)&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;Constant&lt;/td&gt;&lt;td&gt;3.37&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(0.24)&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td colspan="2" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;Observations&lt;/td&gt;&lt;td&gt;397&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;R&lt;sup&gt;2&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;0.35&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;Adjusted R&lt;sup&gt;2&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;0.35&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;Residual Std. Error&lt;/td&gt;&lt;td&gt;1.91 (df = 394)&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;F Statistic&lt;/td&gt;&lt;td&gt;107.90&lt;sup&gt;***&lt;/sup&gt; (df = 2; 394)&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td colspan="2" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;em&gt;Note:&lt;/em&gt;&lt;/td&gt;&lt;td style="text-align:right"&gt;&lt;sup&gt;*&lt;/sup&gt;p&lt;0.1; &lt;sup&gt;**&lt;/sup&gt;p&lt;0.05; &lt;sup&gt;***&lt;/sup&gt;p&lt;0.01&lt;/td&gt;&lt;/tr&gt;
+&lt;table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;"&gt;
+&lt;caption&gt;Arbeitslosigkeit auf Anteil Schulden und BIP-Wachstum&lt;/caption&gt;
+ &lt;thead&gt;
+&lt;tr&gt;
+&lt;th style="empty-cells: hide;border-bottom:hidden;" colspan="1"&gt;&lt;/th&gt;
+&lt;th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="1"&gt;&lt;div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; "&gt;Alo-quote&lt;/div&gt;&lt;/th&gt;
+&lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt;  (1) &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Konstante &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3.37 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; [2.74, 4.00] &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Anteil der Schulden &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.25 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; [0.21, 0.30] &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; BIP-Wachstum &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.00 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; [−0.11, 0.11] &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Num.Obs. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 397 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; R2 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.354 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; R2 Adj. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.351 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
 &lt;/table&gt;
 ]
 
@@ -524,12 +704,16 @@ Um dieser Frage auf den Grund zu gehen wollen wir im ersten Schritt die Variable
 ```r
 schulden &lt;- lm(alo_quote ~ anteil_schulden + ost, data=gesamtdaten)
 
-stargazer(schulden,  
-          type = "html", header = FALSE, digits = 2,
+modelsummary(schulden, 
+          type = "html", 
+          fmt = 2,
+          statistic = 'conf.int', 
+          conf_level = .99,
           title = "Arbeitslosigkeit mit Interaktionstermen",
-          dep.var.labels=c("Alo-quote"),
-          covariate.labels=c("Anteil Schulden", "Ostdeutschland")
-          )
+          gof_omit = 'DF|Deviance|Log.Lik.|F|RMSE|AIC|BIC',
+          coef_rename = c("anteil_schulden" = "Anteil der Schulden", "ost1" = "Ostdeutschland", "(Intercept)" = "Konstante")
+          ) %&gt;%
+  add_header_above(c(" " = 1,"Alo-quote" = 1))
 ```
 
 ---
@@ -537,26 +721,56 @@ stargazer(schulden,
 ## Sample Splits und Interaktionsmodell
 
 .pull-left[
-
-&lt;table style="text-align:center"&gt;&lt;caption&gt;&lt;strong&gt;Arbeitslosigkeit mit Interaktionstermen&lt;/strong&gt;&lt;/caption&gt;
-&lt;tr&gt;&lt;td colspan="2" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;em&gt;Dependent variable:&lt;/em&gt;&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td colspan="1" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;Alo-quote&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td colspan="2" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;Anteil Schulden&lt;/td&gt;&lt;td&gt;0.22&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(0.02)&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;Ostdeutschland&lt;/td&gt;&lt;td&gt;2.04&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(0.23)&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;Constant&lt;/td&gt;&lt;td&gt;3.20&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(0.15)&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td colspan="2" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;Observations&lt;/td&gt;&lt;td&gt;397&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;R&lt;sup&gt;2&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;0.46&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;Adjusted R&lt;sup&gt;2&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;0.46&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;Residual Std. Error&lt;/td&gt;&lt;td&gt;1.74 (df = 394)&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;F Statistic&lt;/td&gt;&lt;td&gt;170.86&lt;sup&gt;***&lt;/sup&gt; (df = 2; 394)&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td colspan="2" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;em&gt;Note:&lt;/em&gt;&lt;/td&gt;&lt;td style="text-align:right"&gt;&lt;sup&gt;*&lt;/sup&gt;p&lt;0.1; &lt;sup&gt;**&lt;/sup&gt;p&lt;0.05; &lt;sup&gt;***&lt;/sup&gt;p&lt;0.01&lt;/td&gt;&lt;/tr&gt;
+&lt;table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;"&gt;
+&lt;caption&gt;Arbeitslosigkeit mit Interaktionstermen&lt;/caption&gt;
+ &lt;thead&gt;
+&lt;tr&gt;
+&lt;th style="empty-cells: hide;border-bottom:hidden;" colspan="1"&gt;&lt;/th&gt;
+&lt;th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="1"&gt;&lt;div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; "&gt;Alo-quote&lt;/div&gt;&lt;/th&gt;
+&lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt;  (1) &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Konstante &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3.20 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; [2.81, 3.59] &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Anteil der Schulden &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.22 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; [0.18, 0.26] &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Ostdeutschland &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 2.04 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; [1.46, 2.63] &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Num.Obs. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 397 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; R2 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.464 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; R2 Adj. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.462 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
 &lt;/table&gt;
 ]
 
@@ -591,12 +805,16 @@ ost &lt;- lm(alo_quote ~ anteil_schulden, data=filter(gesamtdaten, ost==1))
 west &lt;- lm(alo_quote ~ anteil_schulden, data=filter(gesamtdaten, ost==0))
 interaktion &lt;- lm(alo_quote ~ anteil_schulden*ost, data=gesamtdaten)
 
-stargazer(schulden, interaktion, west, ost, 
-          type = "html", header = FALSE, digits = 2,
+modelsummary(list(schulden, interaktion, west, ost), 
+          type = "html", 
+          fmt = 2,
+          statistic = 'conf.int', 
+          conf_level = .99,
           title = "Arbeitslosigkeit mit Interaktionstermen",
-          dep.var.labels=c("Alo-quote"),
-          covariate.labels=c("Anteil Schulden", "Ostdeutschland", "Anteil Schulden * Ostdeutschland")
-          )
+          gof_omit = 'DF|Deviance|Log.Lik.|F|RMSE|AIC|BIC',
+          coef_rename = c("anteil_schulden" = "Anteil der Schulden", "ost1" = "Ostdeutschland", "(Intercept)" = "Konstante")
+          ) %&gt;%
+  add_header_above(c(" " = 1,"Alo-quote" = 4))
 ```
 
 
@@ -604,30 +822,222 @@ stargazer(schulden, interaktion, west, ost,
 
 ## Sample Splits und Interaktionsmodell
 
+&lt;table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;"&gt;
+&lt;caption&gt;Arbeitslosigkeit mit Interaktionstermen&lt;/caption&gt;
+ &lt;thead&gt;
+&lt;tr&gt;
+&lt;th style="empty-cells: hide;border-bottom:hidden;" colspan="1"&gt;&lt;/th&gt;
+&lt;th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="4"&gt;&lt;div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; "&gt;Alo-quote&lt;/div&gt;&lt;/th&gt;
+&lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt;  (1) &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt;   (2) &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt;   (3) &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt;   (4) &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Konstante &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3.20 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3.12 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3.12 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 6.95 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; [2.81, 3.59] &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; [2.73, 3.52] &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; [2.74, 3.50] &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; [4.95, 8.94] &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Anteil der Schulden &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.22 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.23 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.23 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.05 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; [0.18, 0.26] &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; [0.19, 0.28] &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; [0.19, 0.28] &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; [−0.14, 0.24] &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Ostdeutschland &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 2.04 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3.82 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; [1.46, 2.63] &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; [2.06, 5.59] &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Anteil der Schulden:Ostdeutschland &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.18 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; [−0.35, −0.01] &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Num.Obs. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 397 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 397 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 321 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 76 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; R2 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.464 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.475 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.410 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.008 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; R2 Adj. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.462 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.471 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.408 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.006 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
 
-&lt;table style="text-align:center"&gt;&lt;caption&gt;&lt;strong&gt;Arbeitslosigkeit mit Interaktionstermen&lt;/strong&gt;&lt;/caption&gt;
-&lt;tr&gt;&lt;td colspan="5" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td colspan="4"&gt;&lt;em&gt;Dependent variable:&lt;/em&gt;&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td colspan="4" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td colspan="4"&gt;Alo-quote&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(1)&lt;/td&gt;&lt;td&gt;(2)&lt;/td&gt;&lt;td&gt;(3)&lt;/td&gt;&lt;td&gt;(4)&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td colspan="5" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;Anteil Schulden&lt;/td&gt;&lt;td&gt;0.22&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;0.23&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;0.23&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;0.05&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(0.02)&lt;/td&gt;&lt;td&gt;(0.02)&lt;/td&gt;&lt;td&gt;(0.02)&lt;/td&gt;&lt;td&gt;(0.07)&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;Ostdeutschland&lt;/td&gt;&lt;td&gt;2.04&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;3.82&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(0.23)&lt;/td&gt;&lt;td&gt;(0.68)&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;Anteil Schulden * Ostdeutschland&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;-0.18&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;(0.07)&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;Constant&lt;/td&gt;&lt;td&gt;3.20&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;3.12&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;3.12&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;6.95&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(0.15)&lt;/td&gt;&lt;td&gt;(0.15)&lt;/td&gt;&lt;td&gt;(0.15)&lt;/td&gt;&lt;td&gt;(0.76)&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td colspan="5" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;Observations&lt;/td&gt;&lt;td&gt;397&lt;/td&gt;&lt;td&gt;397&lt;/td&gt;&lt;td&gt;321&lt;/td&gt;&lt;td&gt;76&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;R&lt;sup&gt;2&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;0.46&lt;/td&gt;&lt;td&gt;0.47&lt;/td&gt;&lt;td&gt;0.41&lt;/td&gt;&lt;td&gt;0.01&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;Adjusted R&lt;sup&gt;2&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;0.46&lt;/td&gt;&lt;td&gt;0.47&lt;/td&gt;&lt;td&gt;0.41&lt;/td&gt;&lt;td&gt;-0.01&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;Residual Std. Error&lt;/td&gt;&lt;td&gt;1.74 (df = 394)&lt;/td&gt;&lt;td&gt;1.72 (df = 393)&lt;/td&gt;&lt;td&gt;1.66 (df = 319)&lt;/td&gt;&lt;td&gt;1.96 (df = 74)&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style="text-align:left"&gt;F Statistic&lt;/td&gt;&lt;td&gt;170.86&lt;sup&gt;***&lt;/sup&gt; (df = 2; 394)&lt;/td&gt;&lt;td&gt;118.41&lt;sup&gt;***&lt;/sup&gt; (df = 3; 393)&lt;/td&gt;&lt;td&gt;221.84&lt;sup&gt;***&lt;/sup&gt; (df = 1; 319)&lt;/td&gt;&lt;td&gt;0.57 (df = 1; 74)&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td colspan="5" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;em&gt;Note:&lt;/em&gt;&lt;/td&gt;&lt;td colspan="4" style="text-align:right"&gt;&lt;sup&gt;*&lt;/sup&gt;p&lt;0.1; &lt;sup&gt;**&lt;/sup&gt;p&lt;0.05; &lt;sup&gt;***&lt;/sup&gt;p&lt;0.01&lt;/td&gt;&lt;/tr&gt;
+---
+
+## Darstellung der GOF
+
+
+```r
+schulden &lt;- lm(alo_quote ~ anteil_schulden + ost, data=gesamtdaten)
+ost &lt;- lm(alo_quote ~ anteil_schulden, data=filter(gesamtdaten, ost==1))
+west &lt;- lm(alo_quote ~ anteil_schulden, data=filter(gesamtdaten, ost==0))
+interaktion &lt;- lm(alo_quote ~ anteil_schulden*ost, data=gesamtdaten)
+
+gm &lt;- tibble::tribble(
+  ~raw,        ~clean,          ~fmt,
+  "nobs",      "N",             0,
+  "adj.r.squared", "Adj. R&lt;sup&gt;2&lt;/sup&gt;", 2)
+
+modelsummary(list(schulden, interaktion, west, ost), 
+          type = "html", 
+          fmt = 2,
+          statistic = 'conf.int', 
+          conf_level = .99,
+          title = "Arbeitslosigkeit mit Interaktionstermen",
+          gof_omit = 'DF|Deviance|Log.Lik.|F|RMSE|AIC|BIC',
+          coef_rename = c("anteil_schulden" = "Anteil der Schulden", "ost1" = "Ostdeutschland", "(Intercept)" = "Konstante"),
+          gof_map = gm
+          ) %&gt;%
+  add_header_above(c(" " = 1,"Alo-quote" = 4))
+```
+
+---
+
+## Darstellung der GOF
+
+&lt;table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;"&gt;
+&lt;caption&gt;Arbeitslosigkeit mit Interaktionstermen&lt;/caption&gt;
+ &lt;thead&gt;
+&lt;tr&gt;
+&lt;th style="empty-cells: hide;border-bottom:hidden;" colspan="1"&gt;&lt;/th&gt;
+&lt;th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="4"&gt;&lt;div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; "&gt;Alo-quote&lt;/div&gt;&lt;/th&gt;
+&lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt;  (1) &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt;   (2) &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt;   (3) &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt;   (4) &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Konstante &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3.20 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3.12 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3.12 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 6.95 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; [2.81, 3.59] &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; [2.73, 3.52] &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; [2.74, 3.50] &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; [4.95, 8.94] &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Anteil der Schulden &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.22 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.23 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.23 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.05 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; [0.18, 0.26] &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; [0.19, 0.28] &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; [0.19, 0.28] &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; [−0.14, 0.24] &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Ostdeutschland &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 2.04 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3.82 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; [1.46, 2.63] &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; [2.06, 5.59] &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Anteil der Schulden:Ostdeutschland &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.18 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; [−0.35, −0.01] &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; N &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 397 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 397 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 321 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 76 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Adj. R&lt;sup&gt;2&lt;/sup&gt; &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.46 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.47 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.41 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.01 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
 &lt;/table&gt;
 
 ---
@@ -704,9 +1114,9 @@ class: inverse, center, middle
 
 Im ersten Teil der Case Study hatten Sie sich noch die durchschnittlichen Einkommen auf Landkreisebene in R eingelesen und im zweiten Teil deskriptiv untersucht. Nun sollten Sie diese Tabelle mittels linearer Regression analysieren:
 
-- Erstellen Sie eine Regressionstabelle mittels `stargazer` in der Sie die Arbeitslosenquote auf die Einkommen für das Jahr 2017 regressieren.
+- Erstellen Sie eine Regressionstabelle mittels `modelsummary` in der Sie die Arbeitslosenquote auf die Einkommen für das Jahr 2017 regressieren.
   - Interpretieren Sie ihre Ergebnisse
-- Erstellen Sie ein Interaktionsmodell incl. Sample Split mittels `stargazer` und interpretieren Sie die Ergebnisse ihrer Regressionen.
+- Erstellen Sie ein Interaktionsmodell incl. Sample Split mittels `modelsummary` und interpretieren Sie die Ergebnisse ihrer Regressionen.
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

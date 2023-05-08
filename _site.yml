@@ -16,6 +16,10 @@ navbar:
         href: ./case-study/case_study_germany_2.html
       - text: "Dritter Teil der Case-Study"
         href: ./case-study/case_study_germany_3.html
+      - text: "Randomisiertes Experiment"
+        href: ./case-study/Experiment_Full.html
+      - text: "Simulationsstudie zu Instrumentalvariablen"
+        href: ./case-study/IV_simulation.html
   - text: RTutor-Problem-Sets
     menu:
       - text: "Problem Set 1"
@@ -28,6 +32,8 @@ navbar:
         href: https://github.com/projektkurs-datascience/22-23/tree/main/problem-sets/ps4
       - text: "Problem Set 5"
         href: https://github.com/projektkurs-datascience/22-23/tree/main/problem-sets/ps5
+      - text: "Problem Set 6"
+        href: https://github.com/projektkurs-datascience/22-23/tree/main/problem-sets/ps6  
   - text: Tutorials
     icon: fa-users
     menu:

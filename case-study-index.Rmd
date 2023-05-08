@@ -51,3 +51,20 @@ Im dritten Teil der Case Study untersuchen Sie mögliche Gründe für die region
 - Interpretation von Regressionskoeffizienten
 
 Sie lernen, wie Sie eine lineare Regression dazu Nutzen können um mögliche Zusammenhängen zwischen der Arbeitslosigkeit und anderen Faktoren näher zu beleuchten. Jedoch lernen Sie auch die Grenzen der lineraren Regression kennen, insbesondere im Hinblick auf die Interpetation der Koeffizienten in einer linearen Regression. Ergänzend hierzu erhalten Sie im 4. RTutor Problem Set Einblicke in die Zusammenhänge verschiedener gesamtwirtschaftlicher Faktoren und der Arbeitslosigkeit in den einzelnen Ländern der europäischen Union. Im 5. und 6. RTutor Problem Set werden Sie zusätzlich erfahren, welche Möglichkeiten wir in den Wirtschaftswissenschaften haben, um kausale Schlüsse ziehen zu können.
+
+---
+
+## Randomisiertes Experiment
+
+In diesem Teil der Veranstaltung schauen wir uns ein Feldexperiment an und lernen, wann Schätzer kausal zu interpretieren sind. Konkret replizieren wir teile der Arbeit des folgenden Artikels:
+
+Quelle: Baranov, Victoria, Sonia Bhalotra, Pietro Biroli, and Joanna Maselko. 2020. "Maternal Depression, Women's Empowerment, and Parental Investment: Evidence from a Randomized Controlled Trial." American Economic Review, 110 (3): 824-59.
+
+Die Inhalte der Übung umfassen die Erstellung einer geeigneten Balancing Tabelle mit einer kurzen Diskussion, wann eine solche Balancing Tabelle sinnvoll ist. Wir sehen hier schnell, dass Attrition ein Problem unserer Studie sein könnte, insbesondere da die Studie 7 Jahre dauert. 
+Weiterhin konzentrieren wir uns auf die Hauptergebnisse der Studie und zeigen diese mittels Grafiken (einfacher Vergleich der Mittelwerte) und erläutern, wie wir die gewonnen Ergebnisse auch mittels Regressionsanalyse replizieren können.
+
+---
+
+## Instrumentalvariablen - Eine Simulationsstudie
+
+Hier untersuchen wir die Wirkungsweise der Instrumentalvariablenregression anhand eines simulierten Datensatzes. Dabei gehen wir näher auf die Wirkungsweise und den Hintergrund einer Instrumentalvariablenregression ein und zeigen, warum diese kausale Effekte messen kann. Insbesondere zeigen wir auch, wann Instrumentalvariablenschätzungen problematisch sind und was es mit den "schwachen Instrumenten" auf sich hat.

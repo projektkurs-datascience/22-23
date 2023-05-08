@@ -40,10 +40,10 @@ ggplot2::theme_set(theme_minimal())
 
 - Dienstag den 16.05.2023 wird das 4. Projekt (des Gesamtkurses) für jede Gruppe auf Github hochgeladen
 - Mittwoch den 17.05.2023 wird das 4. Projekt besprochen (Vorstellung und Interpretationen)
-- Freitag den 19.05.2023 gibt es die Probeklausur im Hörsaal H14 ab 10:15 Uhr. Teil der Vorleistung, mind. 30% der Punkte müssen bestanden werden! 
+- Freitag den 24.05.2023 gibt es die Probeklausur im Hörsaal H14 ab 8:30 Uhr. Teil der Vorleistung, mind. 30% der Punkte müssen bestanden werden! 
 - Bearbeitungszeit des 4. Projekts: Bis 23.05.2023
 - Ab KW 21 finden die Tutorien statt
-- Mittwoch 24.05.2023 wird das 5. Projekt vorgestellt
+- Mittwoch 24.05.2023 wird das 5. Projekt vorgestellt (nach der Probeklausur)
 - Bearbeitungszeit für das 5. Projekt: Bis 13.06.2023
 
 ---
@@ -888,6 +888,9 @@ ols_baseline <- lm(lwage ~ educ + smsa + exper + expersq + south, data = card)
 modelsummary(list(ols_baseline, second_stage, iv_2sls),
              type = "html", 
           keep = c("educ", "bildung_hat"),
+          fmt = 3,
+          statistic = 'conf.int', 
+          conf_level = .99,
           gof_omit = 'DF|Deviance|Log.Lik.|F|RMSE|AIC|BIC',
           coef_rename = c("educ" = "Bildung", "bildung_hat" = "Bildung_Dach"),
           column.labels = c("OLS", "2SLS händisch", "2SLS automatisch"),

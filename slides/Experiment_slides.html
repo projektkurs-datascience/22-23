@@ -2927,7 +2927,9 @@ modelsummary(list(reg_dep6m, reg_dep6m_long, reg_dep1y, reg_dep1y_long, reg_dep7
           covariate.labels = c("Treatment"),
           keep = "treat",
           add_rows = rows,
-          stars = c('*' = .1, '**' = 0.05, '***' = .01),
+          fmt = 2,
+          statistic = 'conf.int', 
+          conf_level = .99,
           gof_omit = 'DF|Deviance|RMSE|AIC|BIC|Log.Lik',
           add.lines = list(c("Kontrollvariablen", "Nein", "Ja", "Nein", "Ja", "Nein", "Ja")),
           title = "Depression bei Müttern, mit und ohne Kontrollvariablen") %&gt;%
@@ -2939,7 +2941,7 @@ modelsummary(list(reg_dep6m, reg_dep6m_long, reg_dep1y, reg_dep1y_long, reg_dep7
 
 ## Schritt 2: Durchschnittliche Differenzen
 
-&lt;table style="NAborder-bottom: 0; width: auto !important; margin-left: auto; margin-right: auto;" class="table"&gt;
+&lt;table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;"&gt;
 &lt;caption&gt;Depression bei Müttern, mit und ohne Kontrollvariablen&lt;/caption&gt;
  &lt;thead&gt;
 &lt;tr&gt;
@@ -2961,21 +2963,21 @@ modelsummary(list(reg_dep6m, reg_dep6m_long, reg_dep1y, reg_dep1y_long, reg_dep7
 &lt;tbody&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; Treatment &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; −0.321*** &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; −0.321*** &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; −0.334*** &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; −0.308*** &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; −0.065* &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; −0.049 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.32 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.32 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.33 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.31 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.07 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.05 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
-   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; (0.038) &lt;/td&gt;
-   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; (0.039) &lt;/td&gt;
-   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; (0.038) &lt;/td&gt;
-   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; (0.039) &lt;/td&gt;
-   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; (0.037) &lt;/td&gt;
-   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; (0.037) &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; [−0.42, −0.22] &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; [−0.42, −0.22] &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; [−0.43, −0.23] &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; [−0.41, −0.21] &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; [−0.16, 0.03] &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; [−0.14, 0.05] &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; Kontrollvariablen &lt;/td&gt;
@@ -3014,8 +3016,6 @@ modelsummary(list(reg_dep6m, reg_dep6m_long, reg_dep1y, reg_dep1y_long, reg_dep7
    &lt;td style="text-align:center;"&gt; 0.123 &lt;/td&gt;
   &lt;/tr&gt;
 &lt;/tbody&gt;
-&lt;tfoot&gt;&lt;tr&gt;&lt;td style="padding: 0; " colspan="100%"&gt;
-&lt;sup&gt;&lt;/sup&gt; * p &amp;lt; 0.1, ** p &amp;lt; 0.05, *** p &amp;lt; 0.01&lt;/td&gt;&lt;/tr&gt;&lt;/tfoot&gt;
 &lt;/table&gt;
 
 ---
@@ -3053,7 +3053,7 @@ modelsummary(list(reg_dep6m, reg_dep6m_long, reg_dep1y, reg_dep1y_long, reg_dep7
 
 --- 
 
-&lt;table style="NAborder-bottom: 0; width: auto !important; margin-left: auto; margin-right: auto;" class="table"&gt;
+&lt;table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;"&gt;
 &lt;caption&gt;Depression bei Müttern, mit und ohne Kontrollvariablen&lt;/caption&gt;
  &lt;thead&gt;
 &lt;tr&gt;
@@ -3075,21 +3075,21 @@ modelsummary(list(reg_dep6m, reg_dep6m_long, reg_dep1y, reg_dep1y_long, reg_dep7
 &lt;tbody&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; Treatment &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; −0.321*** &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; −0.321*** &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; −0.334*** &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; −0.308*** &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; −0.065* &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; −0.049 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.32 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.32 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.33 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.31 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.07 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.05 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
-   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; (0.038) &lt;/td&gt;
-   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; (0.039) &lt;/td&gt;
-   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; (0.038) &lt;/td&gt;
-   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; (0.039) &lt;/td&gt;
-   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; (0.037) &lt;/td&gt;
-   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; (0.037) &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; [−0.42, −0.22] &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; [−0.42, −0.22] &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; [−0.43, −0.23] &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; [−0.41, −0.21] &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; [−0.16, 0.03] &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; [−0.14, 0.05] &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; Kontrollvariablen &lt;/td&gt;
@@ -3128,8 +3128,6 @@ modelsummary(list(reg_dep6m, reg_dep6m_long, reg_dep1y, reg_dep1y_long, reg_dep7
    &lt;td style="text-align:center;"&gt; 0.123 &lt;/td&gt;
   &lt;/tr&gt;
 &lt;/tbody&gt;
-&lt;tfoot&gt;&lt;tr&gt;&lt;td style="padding: 0; " colspan="100%"&gt;
-&lt;sup&gt;&lt;/sup&gt; * p &amp;lt; 0.1, ** p &amp;lt; 0.05, *** p &amp;lt; 0.01&lt;/td&gt;&lt;/tr&gt;&lt;/tfoot&gt;
 &lt;/table&gt;
 
 ---

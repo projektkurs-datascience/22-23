@@ -241,7 +241,9 @@ modelsummary(list(reg_dep6m, reg_dep6m_long, reg_dep1y, reg_dep1y_long, reg_dep7
           keep = "treat",
           coef_rename = c("treat" = "Treatment"),
           add_rows = rows,
-          stars = c('*' = .1, '**' = 0.05, '***' = .01),
+          fmt = 2,
+          statistic = 'conf.int', 
+          conf_level = .99,
           gof_omit = 'DF|Deviance|RMSE|AIC|BIC|Log.Lik|F',
           title = "Depression bei Müttern, mit und ohne Kontrollvariablen") %>%
           add_header_above(c(" " = 1,"Nach 6 Monaten" = 2, "Nach 1 Jahr" = 2, "Nach 7 Jahren" = 2))

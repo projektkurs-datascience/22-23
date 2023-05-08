@@ -1,0 +1,468 @@
+
+```{r 'check_ps', include=FALSE}
+
+user.name = 'ENTER A USER NAME HERE'
+```
+
+# RTutor Uebungsblatt 6 - Projektkurs
+
+Um Code ausfuehren, markieren Sie diesen und druecken Sie dann auf "Strg + Enter" oder auf "Run" oben rechts. Alternativ können Sie auch auf den grünen Play Button in jedem Chunk drücken. Fuehren Sie immer den Code einer Teilaufgabe aus bevor Sie fortfahren.
+
+Um die Anworten zu überprüfen speichern Sie diese Datei (Strg + s) und führen Sie das Addin 'Check Problemset' aus. Sie finden die Addins in der Kopfzeile von RStudio oder unter Tools/Addins.
+
+Sollten Ihnen Umlaute nicht richtig angezeigt werden speichern Sie diese Datei mit "Save with Encoding" und waehlen Sie dann "UTF-8".
+
+Sie können jederzeit das Übungsblatt abspeichern und zu einem späteren Zeitpunkt fortfahren. Wenn Sie wissen möchten wie weit Sie fortgeschritten sind können sie in die Konsole `stats()` eingeben.
+
+Wenn Sie mit dem Uebungsblatt fertig Sind geben Sie in die Konsole den Befehl 'make.submission()' ein und führen Sie diesen aus. Dieser Befehl erstellt in Ihrem Arbeitsordner eine Abgabe Datei mit der Endung '.sub'. Laden Sie diese Datei vor dem Abgabedatum auf der Kursseite in Moodle hoch.
+
+Wenn Sie bei einer Aufgabe nicht weiter wissen, so können Sie jederzeit in die Konsole `hint()` eingeben um einen Hinweis zu dieser Aufgabe zu erhalten. Beginnen Sie, indem Sie in folgendem R-Chunk, wo nach Ihrem "Username" gefragt wird, Ihren Namen eintragen.
+
+Aufgaben, welche einen Lückentext enthalten, wie bspw:
+
+`#___#g4 <- eu_analyse %>%
+ ggplot() + 
+ geom_line(aes(x = year, y = debt_share_country, group = ___, colour = ___))
+
+`#___#g4
+
+
+Sollten Sie so beantworten, dass Sie die `___` Abschnitte befüllen und das `#___#` vor den Variablennamen löschen
+
+
+In diesem Problem Set betrachten wir zwei veschiedene Datensaetze um den Unterschied zwischen Zusammenhang und kausalem Effekt zu beleuchten.
+
+Bitte installieren Sie die Pakete `AER`, `stargazer`, `DiagrammeR`, `broom` und `skimr`, falls Sie das bis jetzt noch nicht getan haben. Bitte installieren Sie die Pakete direkt über die Konsole und nicht in einem der Chunks des RTutor Problem Sets.
+
+## Exercise 1 -- Experiment
+
+Für unser Experiment wollen wir folgenden sehr aktuellen Artikel näher anschauen, welcher sich mit Depressionen bei Müttern beschäftigt. Insbesondere welche ökonomischen Auswirkungen es hat, wenn Wochenbettdepressionen nach der Geburt direkt behandelt werden:
+
+Baranov, Victoria, Sonia Bhalotra, Pietro Biroli, and Joanna Maselko. 2020. "Maternal Depression, Women's Empowerment, and Parental Investment: Evidence from a Randomized Controlled Trial." American Economic Review, 110 (3): 824-59. 
+
+Wochenbettdepressionen können bei Müttern während der Schwangerschaft und einige Zeit nach der Geburt auftreten. Schätzungsweise 10% - 20% der Mütter leiden weltweit an Wochenbettdepressionen, wobei die Dunkelziffer, insbesondere in den ärmeren Regionen der Welt, hoch sein dürfte. Die Folgen einer Wochendepression können langfristige Effekte auf die ganze Familie haben. Neben den negativen Folgen für die Gesundheit der Frau und des Kindes, verursachen Depressionen auch hohe wirtschaftliche Kosten: Beispielsweise können dadurch Frauen nicht mehr arbeiten, oder die Kinder werden vernachlässigt und haben so schlechtere Chancen auf Bildung. In diesem R-Tutor Problem Set werden wir untersuchen, ob eine psychologische Betreuung von Müttern die Folgen einer Wochenbettdepression abmindern kann.
+
+Zuerst wollen wir uns überlegen, welche Probleme bei einer solchen Studie bestehen könnten und uns klar werden, wie das optimale Experiment aussehen sollte um den Effekt von der psychologischen Betreuung bestimmen zu können.
+
+a) Wie sollte ein Experiment ausgestaltet sein, um valide Aussagen über den Effekt der psychologischen Betreuung bei Wochenbettdespressionen tätigen zu können?
+
+> Experiment 1: Sie erhalten eine Stichprobe mit 5000 werdenden Müttern und der Information ob eine Mutter 1 Jahr nach der Geburt depressive Phasen als mögliche Folge einer Wochenbettdepression hatte und ob Sie psychologische Betreuung erhalten hat.
+
+> Experiment 2: Sie erhalten eine Stichprobe mit 5000 werdenen Müttern. In dieser Stichprobe wurde zufällig festgelegt ob die Mütter eines Landkreises mit Wochenbettdepression psychologische Betreuung erhalten oder nicht.
+
+
+Schreiben Sie die Nummer des Experiments:
+```{r "1_a"}
+
+# enter your code here ...
+
+```
+
+Richtig. Beim ersten Experiment wird es wahrscheinlich zu einem Selektionseffekt kommen. Warum? Denken Sie daran, dass sich Mütter mit Wochenbettdepressionen häufiger in psychologische Betreuung begeben werden, als Mütter ohne, oder nur mit leichten Depressionen. Das führt dazu, dass wir bei einer solcher Analyse höchstwahrscheinlich einen negativen Zusammenhang zwischen psychologischer Betreuung und Depressionen schätzen werden, da selbst mit psychologischer Betreuung Depressionen nicht sofort verschwinden. Der Selektionseffekt führt hier zu Endogenität der erklärenden Variablen. Endogenität der erklärenden Variablen bedeutet, dass wir eine starke Korrelation von Fehlerterm der Regression mit abhängiger UND erklärender Variable vermuten. Leider lässt sich das schlecht testen und wir müssen überlegen ob sich im Fehlerterm noch wichtige Variablen verbergen, die sowohl mit erklärender als auch abhängiger Variablen stark korreliert sind. 
+
+b) Daher machen wir weitere zwei Vorschläge für eine Experiment. Sind diese Experimente hilfreich um die Fragestellung zu beantworten?
+
+> Experiment 3: Sie erhalten eine Stichprobe mit 5000 werdenden Müttern, die gesetzlich krankenversichert sind. Diesen wird eine psychologische Betreuung angeboten, wenn Sie Anzeichen einer Wochenbettdepression aufzeigen. Sie erheben, ob eine Mutter gesetzlich krankenversichert ist, ob Sie depressive Phasen 12 Monate nach der Geburt hat und ob Sie vor oder nach der Geburt an einer Wochenbettdepression gelitten hat.
+
+> Experiment 4: Sie erhalten eine Stichprobe mit 5000 werdenden Müttern und von welcher Hebamme diese betreut werden. Ob die Hebammen psychologische Betreuung anbieten, das wird per Zufall bestimmt. Sie erheben welche Hebamme eine Mutter betreut, ob die Mütter dieser Hebamme getreated wurden, ob die Mutter depressive Phasen 12 Monate nach der Geburt hat und ob eine Mutter an Wochenbettdepressionen gelitten hat. 
+
+Schreiben Sie die Nummer des Experiments oder "nein":
+```{r "1_b"}
+
+# enter your code here ...
+
+```
+
+Vermutlich sind in den gesetzlichen Krankenversicherungen systematisch andere Menschen Mitglied als in den privaten Krankenkassen (v.A. Selbstständige und Besserverdiener ohne Vorerkrankungen). Sie wollen aber nicht untersuchen ob privat versicherte Mütter anfälliger sind, als gesetzlich versicherte. Daher ist Experiment drei ungeeignet für die Fragestellung. Sie sehen: Es ist für jedes Experiment wichtig das Treatment bzw. die Behandlung (bei uns das psychologische Betreuungsangebot) zufällig zu verteilen und so sicherzustellen dass sich Treatment und Kontrollgruppe (all diejenigen die kein Treatment bekommen) in für die Fragestellung zentralen Punkten nicht unterscheiden. Bei Experiment vier ist die Treatmentverteilung zufällig, könnte aber trotzdem ungeeignet sein. Das ist der Fall wenn die Mütter sehen, dass einige Hebammen eine zusätzliche psychologische Beratung anbieten und dann eben diese Hebammen bevorzugen. Auch kann es dazu kommen, dass sich Mütter treffen und Tipps, die sie in der psychologischen Betreuung erhalten haben an die Müttern weitergeben die keine psychologische Betreuung bekommen. Es gilt immer, dass die Tatsache ob eine Beobachtung das Treatment erhalten hat nicht alle anderen Beobachtungen beeinflussen sollte.
+
+Eine Möglichkeit dem Endogenitätsproblem zu begegnen besteht darin ein Experiment durchzuführen. Mit einem sorgsam entworfenen Experiment können Sie das Endogenitätsproblem umgehen und ihre Schätzer kausal interpretieren. Sollten Sie die Möglichkeit haben ein Experiment durchzuführen, dann sollten Sie dieses durchführen um das Endogenitätsproblem zu umgehen. 
+
+c) Sie erhalten nun die Daten eines Experiments wie in Experiment 2 beschrieben. Mit drei Unterschieden:
+
+> Das Experiment findet in Paktistan statt. Landkreise heißen dort Union Councils (uc) und haben im Schnitt 32 000 Einwohner.
+
+> 20 Union Councils erhalten zufällig das Treatment und 20 nicht. Das führt dazu, dass 613 Frauen mit Wochenbettdepression psychologische Betreuung bekommen und 590 nicht.
+
+> In Pakistan ist die Quote der Frauen die an Wochenbettdepression erkranken ca. doppelt so hoch wie in Deutschland.
+
+Laden Sie nun mit folgendem Code den Datensatz und schauen sich diesen mit skimr an:
+
+```{r "1_c"}
+thp <- read_csv("./data/THP_clean.csv") %>%
+  select(newid, uc, depressed_1y, treat, age_baseline, age_baseline_sq, kids_no, famstruct_baseline, grandmother_baseline, edu_mo, edu_fa, employed_mo_baseline, incomeindex, depindex_0, mspss_tot)
+
+# enter your code here ...
+
+```
+
+Hier eine Erklärung der wichtigsten Variablen:
+
+depressed_1y: Dummy ob eine Frau 1 Jahr nach Entbindung Depressionen hatte.
+treat: Dummy ob eine Frau in einer Region mit Treatment lebt.
+age_baseline: Alter bei Eintritt in das Experiment in den letzten drei Monaten der Schwangerschaft.
+age_baseline_sq: age_baseline zum Quadrat.
+kids_no: Anzahl der Kinder insgesamt.
+famstruct_baseline: Dummy ob die Familie aus Mutter und Vater besteht.
+grandmother_baseline: Dummy ob mind. eine Großmutter mit im Haushalt wohnt.
+edu_mo/edu_fa: Ausbildungsjahre der Mutter/des Vaters.
+employed_mo_baseline: Dummy ob die Mutter beim Eintritt in das Experiment gearbeitet hat.
+incomeindex: Wohlstandsindex des Haushalts bei Eintritt in das Experiment.
+depindex_0: Schwere der Wochenbettdepression.
+mspss_tot: Erhaltene Unterstützung vom sozialen Umfeld. (Skala von 0 bis 60)
+
+Der Datensatz enthält zahlreiche Informationen zur Mutter und deren Familie. Das ist schön, da wir so zusätzlich für Familiencharakteristiken kontrollieren können. Beachten Sie, dass Sie in perfekt randomisierten Experimenten mit großer Teilnehmerzahl keine Kontrollvariablen in ihrer Analyse benötigen da Sie durch die Randomisierung keine _Confounder_ haben. Ist aber entweder die Randomisierung, d.h. bei uns die zufällige Verteilung von Behandlung und Nicht-Behandlung, nicht gut, oder die Anzahl der Beobachtungen zu klein, dann ist es wichtig, dass wir für wichtige Einflussfaktoren in der Analyse kontrollieren. Weiterhin können wir anhand der zusätzlichen Informationen abschätzen, wie erfolgreich die Randomisierung war.
+
+d) Bilden wir uns einen ersten Eindruck zur Intervention indem wir uns die Verteilung zu den Depressionen nach einem Jahr für Treatment und Kontrollgruppe näher anschauen:
+
+```{r "1_d"}
+thp_plots <- thp %>%
+  mutate(treat_factor = as.factor(ifelse(treat == 1 , "Treatment", "Kontrolle")),
+         depressed = as.factor(ifelse(depressed_1y == 0, "keine Depressionen", "Depressionen"))) %>%
+  filter( !is.na(depressed)) 
+#plot_prop_depression <- ggplot(___, aes(x = ___, fill = ___)) +
+#  geom_bar(position = "fill") +
+#  labs(x = NULL, y = "Anteil an Depressionen", fill = NULL) +
+#  scale_fill_manual(values = c("darkblue", "darkred"))
+
+#plot_prop_depression
+
+# enter your code here ...
+
+```
+
+Hier wäre ein guter Zeitpunkt das Addin 'Check Problemset' auszuführen!
+
+Die hier dargestellte Verteilung sieht so aus, als ob die psychologische Betreuung Müttern hilft über die Wochenbettdepression hinwegzukommen. 
+
+e) Was wäre nun, wenn die Mütter auch in der Kontrollgruppe über einen anderen Kanal, z.B. auf Grund von Eigeninitiative, zu einem Arzt gegangen wären und auch eine psychologische Betreuung erhalten würden. Könnte das zu Problemen in unserer Analyse führen?
+
+Schreiben sie "ja" oder "nein"
+```{r "1_e",optional=TRUE}
+
+# enter your code here ...
+
+```
+
+
+f) Wenn wir eine Regression durchführen, bei der das in e) beschriebene Problem auftritt, Würden wir den Koeffizienten für das Treatment eher unterschätzen oder überschätzen?
+
+Schreiben sie "überschätzen" oder "unterschätzen"
+```{r "1_f",optional=TRUE}
+
+# enter your code here ...
+
+```
+
+Genau! Dies wäre für unser Experiment tatsächlich _eines_ der größten Probleme. Doch unser Experiment wurde in Pakistan durchgeführt. Dort ist die medizinische Versorgung, insbesondere für psychische Erkrankungen, sehr schlecht. D.h. Frauen die durch das Experiment keine psychologische Betreuung bekommen, erhalten höchst wahrscheinlich keine auf anderem Weg. 
+
+Im ersten Schritt möchten wir uns anschauen, wie gut die Randomisierung im Experiment geklappt hat. Dafür bedienen wir uns der zahlreich erfassten Pre-Treatment Variablen und untersuchen, in wie weit die Familiencharakteristika zwischen Treatment und Kontrollgruppe ausgeglichen sind. Falls die Unterschiede zwischen Treatment und Kontrollgruppe bei den erhobenen Variablen nicht signifikant sind, so ist dies ein gutes Zeichen dafür, dass die Randomisierung erfolgreich war.
+
+```{r "1_f_2"}
+thp %>% 
+  pivot_longer(cols = -treat, names_to = "variable", values_to = "value") %>%
+  group_nest(variable) %>%
+  mutate(t.test = map(data, ~tidy(t.test(value ~ treat, data = .x)))) %>%
+  unnest(t.test) %>%
+  mutate( Mean_Treatment = round(estimate2, 2),
+          Mean_Kontrolle = round(estimate1, 2),
+    Differenz = round(estimate, 4),
+          Signifikanz = round(p.value,4)) %>%
+  select(variable, Mean_Treatment, Mean_Kontrolle, Differenz, Signifikanz)
+```
+
+g) Wenn Sie sich nun die Balancing Tabelle anschauen, wo finden Sie signifikante Unterschiede zwischen der Treatment und Kontrollgruppe?
+
+> Variablen 1: depressed_1y, famstruct_baseline, age_baseline, kids_no, mspss_tot
+> Variablen 2: depressed_1y, edu_fa, edu_mo, incomeindex, grandmother_baseline
+> Variablen 3: depressed_1y, edu_mo, grandmother_baseline, incomeindex, mspss_tot
+> Variablen 4: depressed_1y, edu_fa, employed_mo_baseline, kids_no, uc
+
+Schreiben Sie die Nummer der Variablen:
+```{r "1_g"}
+
+# enter your code here ...
+
+```
+
+Wenn Treatment und Kontrollgruppe auf Basis der Grundcharakteristika sehr unterschiedlich voneinander sind, dann könnte dies darauf hindeuten, dass die Randomisierung nicht gut durchgeführt wurde. Insgesamt sind die Differenzen zwischen der Treatment und Kontrollgruppe nicht besonders groß und die p-Werte des t-Test, welcher uns zeigt ob die Differenzen der zwei Gruppen signifikant voneinander unterschiedlich sind, sind meist nicht statistisch signifikant (d.h. in den meisten Fällen größer als 0,05).
+
+Bei einigen Variablen haben wir jedoch signifikante Unterschiede zwischen der Treatment und Kontrollgruppe. Dies ist insbesondere bei unserer abhängigen Variablen *depressed_1y* der Fall (was wir erwarten würden), aber auch bei solchen Variablen wie *edu_mo*. Hier ist die Frage, ob die Bildung der Mutter einen Einfluss darauf haben könnte, ob sie an Wochenbettdepressionen leidet und ob dies gleichzeitig beeinflusst ob sich diese Mutter dann psychologische Hilfe suchen wird. Dies könnte theoretisch möglich sein, aber da es in Pakistan wenig Möglichkeiten gibt eine psychologische Beratung in Anspruch zu nehmen erscheint dies praktisch eher unwahrscheinlich. Die Variable *mspss_tot*, welche angibt, ob eine Mutter Hilfe vom sozialen Umfeld erhalten hat ist hier in der Treatmentgruppe auch signifikant größer als in der Kontrollgruppe. Dies könnte Auswirkungen darauf haben, ob eine Mutter sich psychologische Unterstützung holt und auch ob diese Mutter nach einem Jahr noch an Depressionen leidet.
+
+Wir wollen uns im folgenden unsere ersten deskriptiven Ergebnisse in einer Regressionsanalyse genauer anschauen.
+
+h) Führen Sie folgenden Code aus. Fügen Sie zu dem Code noch eine dritte Regression hinzu, in der Sie zusätzlich sowohl (in dieser Reihenfolge) für age_baseline, age_baseline_sq, kids_no, famstruct_baseline, grandmother_baseline, edu_mo , edu_fa, employed_mo_baseline, mo_emp, incomeindex und mspss_tot kontrollieren und speichern Sie diese in `reg3`.
+
+```{r "1_h"}
+reg1 <- lm(depressed_1y ~ treat, data=thp)
+reg2 <- lm(depressed_1y ~ treat + depindex_0, data=thp)
+
+# enter your code here ...
+
+```
+Hier wäre ein guter Zeitpunkt das Addin 'Check Problemset' auszuführen!
+
+i) Der folgende Code nutzt `stargazer` um die 3 Regressionen im typischen Tabellenformat nebeneinander darzustellen:
+```{r "1_i"}
+stargazer( reg1, reg2, reg3 ,type = "text",  digits=2, omit.stat = c("f","ser"))
+```
+
+Betrachten Sie die Regressionstabelle. Welche dieser Aussagen sind alle korrekt?
+
+> Aussage 1: Mütter mit Wochenbettdepression, die psychologische Betreuung bekommen, haben eine 29 Prozentpunkte geringere Chance ein Jahr später noch an Depressionen zu leiden als solche ohne psychologische Betreuung.
+
+> Aussage 2: Mütter mit Wochenbettdepression, die psychologische Betreuung bekommen, haben eine 29 % geringere Chance ein Jahr später noch an Depressionen zu leiden als solche ohne psychologische Betreuung.
+
+> Aussage 3: Mütter, die psychologische Betreuung bekommen, haben eine 29 % geringere Chance ein Jahr später noch an Depressionen zu leiden als solche ohne psychologische Betreuung.
+
+> Aussage 4: Mütter mit Wochenbettdepression haben ca. eine 60 %-ige Wahrscheinlichkeit ein Jahr nach Geburt noch an Depressionen zu leiden, wennn Sie keine psychologische Betreuung erhalten haben.
+
+Schreiben Sie einen Vektor mit den Nummern der richtigen Interpretation(en):
+```{r "1_i_2"}
+
+# enter your code here ...
+
+```
+Hier wäre ein guter Zeitpunkt das Addin 'Check Problemset' auszuführen!
+
+In dieser Regression sehen wir gut, dass die Randomisierung in unserem Experiment wohl gut geklappt hat. In einem randomisieren Experiment müssen wir auf keine zusätzlichen Variablen kontrollieren, was hier der Fall ist. Selbst wenn wir davon ausgehen würden, dass einige Variablen _Confounder_ sind und wir auf alle diese Variablen kontrollieren, so erhalten wir immer noch einen Schätzer von 0.32.
+
+Zum Abschluss wollen wir uns die Regressionstabelle von einer technischen Seite anschauen:
+
+j) Betrachten Sie die Regressionstabelle. Welche Aussage ist korrekt?
+
+> Aussage 1: Das R² in der dritten Regression ist deutlich größer als bei den anderen Regressionen. Wir sollten diese Spezifikation der Regression verwenden.
+
+> Aussage 2: Die Koeffizienten für treat liegen alle innerhalb des 95% Konfidenzintervalls um 0.3
+
+> Aussage 3: Der Koeffizient von treat ist in keiner der Regressionen signifikant auf dem 99% Signifikanzniveau.
+
+Schreiben Sie die Nummer der richtigen Antwort:
+```{r "1_j"}
+
+# enter your code here ...
+
+```
+
+Wir sehen, dass eine Intervention bei Wochenbettdepressionen eine deutliche Reduktion der Langzeitfolgen hat. Wir können die Koeffizienten, welche wir hier in unserer linearen Regression erhalten haben, direkt kausal interpretieren, was uns die Interpretation deutlich erleichtert. Dafür hatten sich die Autoren jedoch viele Gedanken bzgl. dem Desgin des Experiments gemacht und konnten in Pakistan auch eine große Gruppe an (werdenden) Müttern beobachten (und hatten die entsprechenden Mittel das Experiment auch durchzuführen).
+
+Doch was ist, wenn wir diese finanziellen Mittel nicht haben, bzw. uns "nur" Beobachtungsdaten zur Verfügung stehen? Eine solche Situation ist in der ökonomischen Forschung deutlich wahrscheinlicher, da Experimente sehr teuer sind, bzw. in manchen Situation auch nicht durchführbar. Aber manchmal (oft leider nicht) gibt es auch bei Daten, die nicht aus einem randomisierten Experiment stammen, die  Möglichkeit  kausale Effekte zu schätzen. Allerdings geht dies nur, wenn wichtige Annahmen erfüllt sind. Eine Möglichkeit kausale Effekte schätzen bildet z. B. die Methode der Instrumentalvariablenschätzung. Mehr dazu im nächsten Kapitel:
+
+## Exercise 2 -- Instrumentalvariablen
+
+Im Folgenden betrachten wir eine weitere Möglichkeit das Endogenitätsproblem zu umgehen. Hier betrachten wir einen anderen Datensatz. Im Bereich der Arbeitsmarktökonomik ist es wichtig zu verstehen, welche Faktoren die Bereitschaft von Frauen beeinflusst, arbeiten zu gehen. In der vorherigen Aufgabe haben wir uns angeschaut wie psychische Erkrankungen bei Mütter reduziert werden können um diesen so ggf. die Rückkehr in den Arbeitsmarkt zu erleichtern. In dieser Aufgabe möchten wir herausfinden ob die Anzahl der Kinder, die eine Frau hat, einen Einfluss darauf haben kann, ob die Frau wieder ins Arbeitsleben eintritt, oder nicht.
+
+a) Der Datensatz `Fertility` aus dem Paket `AER` enthält die Daten aus einer Befragung von 250 000 Frauen im Alter von 21 bis 35 Jahren mit mind. 2 Kindern aus dem Jahr 1980. Lassen Sie folgenden Code laufen um die Daten in einer Variablen zu speichern und einen Überblick zu erhalten:
+```{r "2_a"}
+library(AER)
+data(Fertility)
+head(Fertility)
+skim(Fertility)
+```
+
+Für eine Erklärung der Variablen geben Sie einfach `help(Fertility)` in der R Konsole ein.
+
+Welche Bedeutung hat die Variable `work`
+
+> Aussage 1: Anzahl an Arbeitsstunden der Mutter in 1979
+
+> Aussage 2: Anzahl der gearbeiteten Wochen der Mutter in 1979
+
+> Aussage 3: Dummy Variable ob die Mutter gearbeitet hat in 1979
+
+```{r "2_a_2",optional=TRUE}
+
+# enter your code here ...
+
+```
+
+b) Führen Sie nun eine einfache lineare Regression durch in der Sie den Zusammenhang untersuchen ob eine Frau mit mehr als zwei Kindern mit einer geringeren Wahrscheinlichkeit im vergangenen Jahr gearbeitet hat als eine mit zwei Kinder. Speichern Sie das Ergebnis als `reg1` und zeigen Sie ein `summary` von `reg1`.
+
+```{r "2_b"}
+Fertility <- Fertility %>%
+  mutate(work01 = case_when(work > 0 ~ 1,
+                            work == 0 ~ 0))
+
+# enter your code here ...
+
+
+# enter your code here ...
+
+```
+Hier wäre ein guter Zeitpunkt das Addin 'Check Problemset' auszuführen!
+
+c) Nun ein kleines Quiz. Welche Aussage ist korrekt?
+
+> Aussage 1: Frauen mit mehr als zwei Kindern arbeiten im Vergleich zu Frauen mit zwei Kindern im Durchschnitt 0.12 Wochen weniger im Jahr.
+
+> Aussage 2: Mehr als zwei Kinder senken im Vergleich zu zwei Kindern im Durchschnitt die Wahrscheinlichkeit, dass die Mutter arbeitet.
+
+> Aussage 3: Frauen mit mehr als zwei Kindern haben im Vergleich zu Frauen mit zwei Kindern im Durchschnitt eine 0.12 Prozent geringere Wahrscheinlichkeit zu arbeiten.
+
+Schreiben Sie hier die Nummer der Aussage:
+```{r "2_c",optional=TRUE}
+
+# enter your code here ...
+
+```
+Hier wäre ein guter Zeitpunkt das Addin 'Check Problemset' auszuführen!
+
+An dieser Regression gibt es einige Fallstricke, weshalb wir die Ergebnisse daraus nicht kausal interpretieren können: Wir betrachten z.B. in der obigen Regression nicht, welche Bildung, oder welches Alter die Frau hat, oder wie die familiären Verhältnisse sind. D.h. hier würden wir Endogenität der erklärenden Variablen vermuten, da wir eine starke Korrelation von Fehlerterm der Regression mit abhängiger UND erklärender Variable hätten und auf zusätzliche Variablen kontrollieren müssten. Das ist immer dann der Fall, wenn eine wichtige Einflussgröße der Regression außen vorgelassen wird und sich deshalb im Fehlerterm wiederfindet. 
+
+d) In diesem Fall können wir leider kein Experiment durchführen (ethische und moralische Gründe die hier entgegen stehen) und somit können wir den Effekt nicht experimentell bestimmen. So ist es oft in der ökonomische Forschung; leider gibt es häufig keine Möglichkeit ein Experiment durchzuführen um Ihre Fragestellung zu beantworten. Eine beliebte Möglichkeit das Endogenitätsproblem zu umgehen ist die Methode der Instrumentalvariablen Schätzung. Hierbei wird in einer ersten Schätzung der Einfluss einer oder mehrerer Instrumentalvariablen auf die erklärende Variable (x) geschätzt und dann in einer zweiten Ebene der Einfluss auf die abhängige Variable (y). Instrumentalvariablen müssen zwei wichtige Eigenschaften erfüllen:
+
+> Relevanz: Relevanz bedeutet, dass eine starke Korrelation zwischen Instrumentalvariablen und erklärender Variablen vorhanden sein muss. Die Relevanz können wir mit einigen Analysen an unserer Stichprobe untersuchen.
+
+> Exogenität: Exogenität bedeutet, dass das Instrument, die abhängige Variable nicht direkt beeinflussen darf. Das lässt sich nicht untersuchen. Hier müssen wir überlegen, ob es eine plausible Erklärung dafür geben kann, dass die Instrumentalvariable direkt Einfluss auf die abhängige Variable ausübt.
+
+Welches der folgenden Pfeildiagramme zeigt eine geeignete Instrumentalvariable?
+
+> Diagramm 1:
+
+```{r "2_d"}
+grViz('digraph G {
+
+x [label="erklärende Variable x"]
+y [label="abhängige Variable y"]
+z [label="Instrument z"]
+
+x -> y [label="+"];
+z -> x [label="+"];
+z -> y [label="+"];
+}')
+```
+
+> Diagramm 2:
+
+```{r "2_d_2"}
+grViz('digraph G {
+
+x [label="erklärende Variable x"]
+y [label="abhängige Variable y"]
+z [label="Instrument z"]
+
+x -> y [label="-"];
+z -> y [label="+"];
+}')
+```
+
+> Diagramm 3:
+
+```{r "2_d_3"}
+grViz('digraph G {
+
+x [label="erklärende Variable x"]
+y [label="abhängige Variable y"]
+z [label="Instrument z"]
+
+x -> y [label="-"];
+z -> x [label="+"];
+}')
+```
+
+Schreiben Sie hier die Nummer der Variablen:
+```{r "2_d_4"}
+
+# enter your code here ...
+
+```
+
+e) Im folgenden sind drei potentielle Instrumentalvariablen mit drei Regressionen gegeben. Für welche der drei würden Sie sich entscheiden?
+
+> Instrumentalvariable 1: Geschlecht des zweiten Kindes
+
+> Instrumentalvariable 2: Mutter ist afroamerikanischer Herkunft.
+
+> Instrumentalvariable 3: Dummy ob die ersten beiden Kinder das gleiche Geschlecht hatten.
+
+```{r "2_e"}
+Fertility <- Fertility %>%
+  mutate(morekids = ifelse(morekids== "yes", 1, 0)) %>%
+  mutate(afam = ifelse(afam== "yes", 1, 0)) %>%
+  mutate(same_sex = ifelse(gender1== gender2, 1, 0))
+  
+reg1 <-  Fertility %>%
+  lm(morekids ~ gender2, data=.)
+
+reg2 <- Fertility %>%
+  lm(morekids ~ afam, data=.)
+
+ reg3 <- Fertility %>%
+  lm(morekids ~ same_sex, data=.)
+
+ stargazer(reg1, reg2, reg3, type = "text", digits=3)
+```
+
+Schreiben Sie hier die Nummer der Variablen:
+```{r "2_e_2"}
+
+# enter your code here ...
+
+```
+
+Genau! Die beiden anderen Instrumentalvariablen wären nicht so gut oder gar nicht geeignet. Die erste Instrumentalvariable erfüllt vermutlich nicht die Exogenitätsbedingung, da das Geschlecht des zweiten Kindes vermutlich einen Einfluss auf die Berufstätigkeit der Mutter hat. Falls das zweite Kind ein Junge ist und das erste Kind ein Mädchen war (oder anders herum), dann wird die Frau vermutlich eher wieder arbeiten gehen, wie wenn beide Kinder das gleiche Geschlecht haben. Die zweite Instrumentalvariable hat vermutlich nur eine geringe Korrelation mit der Anzahl an Kindern, insbesondere in den USA, wo die Studie durchgeführt wurde. D.h. bei der zweiten Instrumentalvariable wäre die Relevanz der Variablen vermutlich nicht gegeben. 
+
+Beachten Sie: Wenn Sie eine Instrumentalvariable wählen sollten Sie immer testen, ob es sich um ein schwaches Instrument handelt. Nur so gehen Sie sicher, dass die von Ihnen gewählte Instrumentalvariable auch wirklich relevant ist. Ob es sich um ein schwaches Instrument handelt oder nicht lässt sich mit dem Wert des F-Testes einer Regression der Instrumentalvariablen auf die erkärende Variable gut abschätzen. Die Daumenregel besagt, dass eine F-Statistik größer als 10 einen signifikanten Zusammenhang zwischen erklärenden und abhängigen Variablen anzeigt. In unserem Beispiel ist die F-Statistik mit 1237,219 deutlich über 10. Um nun ausschließen zu können, dass es sich nicht um ein schwaches Instrument handelt, sollten Sie zusätzlich einen sogenannten Wald-Test durchführen. Den Wald Test können Sie direkt in R nach ihrer Instrumentalvariablenschätzung in der summary mit _diagnostics=TRUE_ durchgeführen, dieser wird dann als "Weak instruments" Test ausgegeben.
+
+```{r "2_e_3"}
+
+ivreg(work01 ~ morekids | same_sex, data = Fertility) %>% 
+  summary(diagnostics=TRUE)
+
+```
+
+Sie sehen hier, dass die Tests-Statistik des Weak Instruments Tests 1237 beträgt und auf dem 1%-Niveau signifikant ist (und der F-Statistik aus der First-Stage entspricht, was aber nicht immer der Fall sein muss). Sie können daher die Nullhypothese, dass wir eine schwache Instrumentalvariable verwendet haben, verwerfen.
+
+Aber warum ist eine Dummyvariable die anzeigt, ob die beiden ersten Kinder das selbe Geschlecht haben eine gute Instrumentalvariable um den Einfluss von mehr Kindern auf die Berufstätigkeit zu schätzen? Ein Großteil von Paaren mit Kinderwunsch wünschen sich Kinder beiden Geschlechts. Eltern, bei denen die beiden ersten Kinder das selbe Geschlecht haben, haben somit eine höhere Wahrscheinlichkeit ein drittes Kind zu bekommen (Relevanz). Gleichzeitig wird die Berufstätigkeit der Mütter nicht direkt dadurch beeinflusst, dass die beiden ersten Kinder das selbe Geschlecht haben, sondern nur indirekt darüber, dass diese Mütter wahrscheinlicher noch ein drittes Kind bekommen werden und deshalb nicht wieder anfangen zu arbeiten (Exogenität). Wenn Sie eine Instrumentalvariablenschätzung durchführen ist es wichtig die dahinterliegende Geschichte auf Plausibilität zu prüfen und für Leser oder Zuhörer verständlich zu erklären.
+
+f) Betrachten Sie nochmal die Ergebnisse der Instrumentalvariablen Regression:
+
+```{r "2_f"}
+
+ivreg(work01 ~ morekids | same_sex, data = Fertility) %>% 
+  summary()
+
+```
+Hier wäre ein guter Zeitpunkt das Addin 'Check Problemset' auszuführen!
+
+Welcher Interpretation würden Sie zustimmen:
+
+> Interpretation 1: Mehr als zwei Kinder, senken im Vergleich zu zwei Kindern die Wahrscheinlichkeit der Mutter zu arbeiten im Durchschnitt um 13.76 Prozentpunkte.
+
+> Interpretation 2: Mehr als zwei Kinder, senken im Vergleich zu zwei Kindern die Wahrscheinlichkeit der Mutter zu arbeiten im Durchschnitt um 0.1376 Prozentpunkte.
+
+> Interpretation 3: Jedes weitere Kind, senkt die Wahrscheinlichkeit der Mutter zu arbeiten im Durchschnitt um 0.1376 %.
+
+> Interpretation 4: Mütter deren Kinder dasselbe Geschlecht haben, haben im Durchschnitt eine 0.1376 % geringere Wahrscheinlicheit zu arbeiten.
+
+> Interpretation 5: Mütter deren Kinder dasselbe Geschlecht haben, haben im Durchschnitt eine 13.76 % geringere Wahrscheinlicheit zu arbeiten.
+
+Schreiben Sie hier die Nummer der Interpretation:
+```{r "2_f_2"}
+
+# enter your code here ...
+
+```
+
+g) Welche der Interpretationen der vorherigen Aufgabe sind kausale Formulierungen?
+
+Schreiben Sie einen Vektor mit den Nummern der richtigen Interpretationen:
+```{r "2_g",optional=TRUE}
+
+# enter your code here ...
+
+```
+Hier wäre ein guter Zeitpunkt das Addin 'Check Problemset' auszuführen!
+
+
+
+
+## Loesung einreichen
+
+Um Ihre Lösung zu diesem Übungsblatt abzugeben klicken Sie auf "Check Problemset". Hierzu können Sie zu `Tools -> Addins -> Browse Addins ... -> Check Problemset` gehen. Danach geben Sie dann in die Konsole (Fenster unten) Folgendes ein: 
+
+    make.submission()
+
+Der Befehl kontrolliert ihr Übungsblatt und erstellt eine Datei mit dem Namen  `problemsetname__username.sub` in Ihrem Arbeitsverzeichnis, die Ihre Lösung und die Log Dateien enthaelt.
+Laden Sie diese Datei (mit der Endung .sub) dann auf Moodle hoch. 
+ändern Sie nicht den Namen der Datei!
+

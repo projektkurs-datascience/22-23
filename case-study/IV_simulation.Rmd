@@ -1,0 +1,353 @@
+---
+title: "Simulationsstudie zur Instrumentalvariablenschätzung"
+output: 
+  html_document:
+    theme: cosmo
+    code_download: true
+    code_folding: hide
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(broom)
+library(ggdag)
+library(kableExtra)
+library(scales)
+library(modelsummary)
+library(stargazer)
+library(AER)
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning = FALSE)
+```
+
+# Motivation
+
+In diesem Beispiel möchten wir uns die Funktionsweise von Instrumentalvariablen genauer anschauen. Zu Beginn werden wir noch einmal kurz Instrumentalvariablen in der Theorie beleuchten und diese mit einem DAG darstellen. Anschließend möchten wir uns einen Datensatz simulieren, bei dem wir der Frage nachgehen, ob Bildung das Einkommen _kausal_ beeinflusst. Dabei simulieren wir die Bildung so, dass diese von der Nähe zur nächsten Universität, als auch den eigenen Fähigkeiten abhängt. 
+
+# Theorie
+
+Folgende Fragestellung, welche wir in diesem Semester bereits mehrfach beleuchtet haben, wollen wir hier noch einmal aufgreifen: 
+
+Gibt es einen _kausalen_ Zusammenhang zwischen Bildung und (späterem) Einkommen? 
+
+Bei dieser Frage stehen wir vor einem Problem, da die Bildung von mehreren Faktoren abhängt, die auch das Einkommen beeinflussen. Einige dieser Faktoren hatten Sie bereits in der Veranstaltung kennen gelernt (und auch selbst genannt): Familieneinkommen, Bildung der Eltern, eigene Fähigkeiten, Netzwerk ...
+
+Um uns die Wirkungsweise der Instrumentalvariablenregression näher anzuschauen wollen wir eine vereinfachte Simulationsstudie durchführen. In dieser Simulation konzentrieren wir uns auf den Zusammenhang zwischen der Bildung und dem Einkommen, sowie einer (unbeobachtbaren) Hintergrundvariablen, nennen wir sie "Fähigkeiten", welche wir in unserem simulierten Datensatz beobachten können. Durch unsere Simulation können wir ergründen ob wir den (simulierten) kausalen Effekt der Bildung auf das Einkommen mit unterschiedlichen Regressionsspezifikationen erhalten können.
+
+Wir sehen den Zusammenhang zwischen der Bildung und den (unbeobachtbaren) Fähigkeiten, sowie zwischen Einkommen und (unbeobachtbaren) Fähigkeiten in folgendem DAG:
+
+$$\color{#0074D9}{\text{Einkommen}_i} = \beta_0 + \beta_1 \color{darkorange}{\text{Bildung}_i} + \beta_2 \color{red}{\text{Fähigkeiten}_i} + \varepsilon_i$$
+
+```{r dag_endogen_iv2, echo=FALSE, fig.width=7, fig.height=3, out.width="100%"}
+dagify(
+  Eink ~ B + H,
+  B ~ H,
+  coords = list(x = c(B = 1, Eink = 3, H = 2),
+                y = c(B = 1, Eink = 1, H = 2)),
+  exposure = "B",
+  outcome = "Eink",
+  latent = "H",
+  labels = c("B" = "Bildung", "Eink" = "Einkommen",
+             "H" = "Fähigkeiten")
+) %>% 
+  tidy_dagitty() %>% 
+  node_status() %>% 
+  ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
+  geom_dag_edges(aes(edge_linetype = ifelse( x == x[2] & y == y[2], "dashed", "solid")), show.legend = FALSE) +
+  geom_dag_point(aes(color = status), size = 15) +
+  geom_dag_text(color = "white", size = 5) +
+  geom_dag_label_repel(aes(label = label), nudge_y = c(0.25, -0.25, 0.25)) +
+  scale_color_manual(values = c("darkorange", "red", "#0074D9")) +
+  guides(color = FALSE) +
+  theme_dag()
+```
+
+Die (unbeobachtbaren) Fähigkeiten sind eine _Confounder_, auf welchen wir kontrollieren müssten. Kontrollieren wir nicht auf die (unbeobachtbaren) Fähigkeiten, so würden wir die _backdoor_ im DAG nicht schließen und der Einfluss der **Fähigkeiten wandert in den Fehlerterm**:
+
+Der Fehlerterm besteht dann aus:
+
+$\color{red}{\eta_i} = \beta_2 \color{red}{\text{Fähigkeiten}_i} + \varepsilon_i$ 
+
+und damit ist die Bildung mit dem Fehlerterm $\color{red}{\eta_i}$ korreliert:
+
+$$\color{#0074D9}{\text{Einkommen}_i} = \beta_0 + \beta_1 \color{darkorange}{\text{Bildung}_i} + \color{red}{\eta_i}$$
+Folglich wäre die Bildungsentscheidung in unserer Schätzung endogen und wir würden durch eine "naive" Schätzung des Einkommens auf die Bildung (ohne auf die Fähigkeiten zu kontrollieren) einen verzerrten Effekt der Bildung auf das Einkommen erhalten. Da die Fähigkeiten einer Person sowohl seine Bildungsentscheidung als auch sein späteres Einkommen positiv beeinflussen, wäre der Koeffizient $\beta_1$ in der naiven Schätzung systematisch nach oben verzerrt. D.h. der Koeffizient $\beta_1$, welchen wir in der naiven Schätzung heraus bekommen würden, wäre größer als der wahre Wert.
+
+# Daten simulieren
+
+Um das Prinzip der Instrumentalvariablenschätzung zu veranschaulichen wollen wir eine kleine Simulationsstudie betrachten, bei der wir den "wahren" Wert der Variable kennen und wissen, ob ein Schätzer in der Regression verzerrt ist, oder den korrekten Wert wiedergibt.
+
+Durch Simulationsstudien können wir Probleme oder Unklarheiten untersuchen und bekommen dadurch eine Intuition vom Datengenerierungsprozess ich echten empirischen Datensätzen.
+
+```{r}
+set.seed(2021)
+nrows <- 50000
+distance <- tibble(
+  faehigkeiten = rnorm(nrows, 0, 1),  # Fähigkeit
+  naehe = runif(nrows, 0, 1),  # Entfernung zur Uni (Instrumentalvariable)
+  error_eink = rnorm(nrows, 0, 100)  # Fehlerterm
+) %>% 
+  mutate(bildung = 13 + 0.4*naehe + 2*faehigkeiten,  # Bildung (Erklärende Variable)
+         eink = 100 + 40*bildung + 70*faehigkeiten - error_eink) # Einkommen (Ergebnisvariable)
+```
+
+Wir simulieren uns einen Datensatz aus 50000 Personen, die wir untersuchen möchten (dies definieren wir in der zweiten Zeile).
+Danach generieren wir uns einen Datensatz der folgende Variablen enthält:
+
+- `faehigkeiten` = Fähigkeiten. 
+    - Diese Variable ist standardnormalverteilt zwischen 0 und 1. 
+    - Annahme: Die Fähigkeiten sind in der Bevölkerung normalverteilt
+- `naehe` = Entfernung zur Uni. 
+    - Diese Variable ist gleichverteilt. 
+    - Kann als "Dummy-Variable" interpretiert werden und ist 1 für Personen, welche Nahe an einer Uni wohnen und 0 für diejenigen die weiter weg wohnen
+- `error_eink` = Fehlerterm der Ergebnisvariablen
+    - Schließlich ist unsere Schätzung immer etwas ungenau im realen Leben
+- `bildung` = Bildung. 
+    - Im Durchschnitt haben alle Personen bei uns eine Bildung von 13 Jahren
+    - Weiterhin ist die Bildung abhängig von der Distanz zur Uni und den eigenen Fähigkeiten
+- `eink` = wöchentliches Einkommen
+    - Das Basiseinkommen ist 100€ und es gibt eine Komponente für die Bildung und die Fähigkeiten (+ den oben angesprochenen Fehlerterm)
+    - Je mehr Bildung eine Person hat, desto mehr Einkommen hat Sie ( für jedes Jahr mehr Bildung gibt es 40€ mehr Wocheneinkommen )
+    - Je größer die Fähigkeiten einer Person sind, desto mehr Einkommen bekommt diese ( für jede Einheit an Fähigkeiten mehr gibt es 70€ mehr Wocheneinkommen )
+
+Der Vorteil dieser Simultionsstudie gegenüber empirischen Datensätzen: Wir kennen den Effekt der Bildung auf das Einkommen! In unserer Simulationsstudie liegt er bei 40€!
+
+Diese Kenntnis können wir nutzen um die Verzerrung des Koeffizienten $\beta_1$ näher zu betrachten. Wie verändert sich der Koeffizient $\beta_1$ ohne und mit der Kontrolle auf die Hintergrundvariable "Fähigkeiten":
+
+```{r, results = 'asis'}
+ols_bias <- lm(eink ~ bildung, data = distance)
+ols_correct <- lm(eink ~ bildung + faehigkeiten, data = distance)
+
+cm <- c("bildung" = "Bildung",
+        "faehigkeiten" = "Fähigkeiten",
+        "(Intercept)" = "Konstante")
+
+modelsummary(list(ols_bias, ols_correct), 
+          type = "html",
+          fmt = 3,
+          statistic = 'conf.int', 
+          conf_level = .99,
+          coef_map = cm,
+          gof_omit = 'DF|Deviance|RMSE|AIC|BIC|Log.Lik|F',
+          title = "Wocheneinkommen") %>%
+          add_header_above(c(" " = 1,"OLS Bias" = 1, "OLS Kontrolle" = 1))
+
+```
+
+
+Wie von uns erwartet überschätzen wir den Effekt der Bildung auf das Einkommen massiv, wenn wir nicht auf die Fähigkeiten kontrollieren. In der naiven Schätzung in der ersten Spalte würden wir davon ausgehen, dass ein Jahr mehr Bildung mit 74.72€ mehr Einkommen pro Woche assoziiert ist. Wobei der wahre Effekt bei 40€ pro Woche liegt. Die korrekte Effektgröße erhalten wir in unserer zweiten Schätzung, wenn wir auf die Fähigkeiten kontrollieren!
+Hierbei liegt der wahre Wert (wie wir diesen simuliert haben) im 95% Konfidenzintervall des Schätzers von `bildung` (Konfidenzintervall [32.04, 47.25]). 
+Man beachte das sowohl der Koeffizient $\beta_1$ von `bildung` der naiven Schätzung aus der ersten Spalte, wie auch der zweiten Spalte hoch signifikant sind. Insbesondere der Standardfehler in der ersten Regression ist deutlich kleiner als in der zweiten Regression (0.222 vs. 3.881), obwohl nur die zweite Regression ein korrektes Ergebnis liefert. Der Koeffizient der ersten Schätzung ist stark nach oben verzerrt, d.h. auch wenn ein Koeffizient statistisch signifikant ist, so heißt dies nicht automatisch, dass dieser auch korrekt ist. Dafür muss erst das Modell richtig spezifiziert sein!
+
+# Instrumentalvariablen
+
+Da wir in einem realen Datensatz die Fähigkeiten nicht beobachten können bleibt uns dieser direkte Weg mit der Kontrolle auf die Fähigkeiten leider verschlossen. Allerdings sollten wir nicht verzagen. Hier hilft uns die so genannte Instrumentalvariablenschätzung weiter. Bei der Instrumentalvariablenschätzung nutzen wir die Variation einer exogenen Variablen, welche unsere endogene Variable beeinflusst. Konkret nutzen wir in unserem Fall den Teil der _Bildung_, welcher durch die exogene Variable _Nähe_ erklärt werden kann, um mittels dieses exogenen Teils der Bildung dessen _kausalen_ Effekt auf das Einkommen zu bestimmen. Doch was genau bedeutet dies? 
+
+Wir wollen uns das Prinzip der Instrumentalvariablenschätzung anhand eines DAG anschauen:
+
+```{r dag_iv_explain, echo=FALSE, fig.width=7, fig.height=3, out.width="100%"}
+dagify(
+  Y ~ X + H,
+  X ~ H,
+  X ~ Z,
+  coords = list(x = c(X = 1, Y = 3, H = 2, Z = 0),
+                y = c(X = 1, Y = 1, H = 2, Z = 1)),
+  exposure = "X",
+  outcome = "Y",
+  latent = "H",
+  labels = c("X" = "Intervention", "Y" = "Ergebnis",
+             "H" = "(Unbeobachtbare) Confounder", "Z" = "Instrument")
+) %>% 
+  tidy_dagitty() %>% 
+  node_status() %>% 
+  ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
+  geom_dag_edges(aes(edge_linetype = ifelse( x == x[2] & y == y[2], "dashed", "solid")), show.legend = FALSE) +
+  geom_dag_point(aes(color = status), size = 15) +
+  geom_dag_text(color = "white", size = 5) +
+  geom_dag_label_repel(aes(label = label), nudge_y = c(-0.25, 0.25, 0.25, 0.25)) +
+  scale_color_manual(values = c("darkorange", "darkred", "#0074D9"), na.value = "black") +
+  guides(color = FALSE) +
+  theme_dag()
+```
+
+**Hintergrund:** `X` sollte exogen sein um _kausal_ interpretiert werden zu können
+
+**Ziel der Instrumentalvariable:** Exogene Variation von `X` finden, welche dann _kausal_ interpretiert werden kann
+
+Wir können uns dies vorstellen als Gegenteil davon auf eine Variable zu kontrollieren:
+
+- Wir erklären `X` und `Y` mit der Variablen `Z`, aber anstatt uns auf den Teil zu konzentrieren, welcher nicht durch `Z` erklärt werden kann, nehmen wir **nur den Anteil der durch `Z` erklärt wird**!
+- Anstatt zu sagen "du bist auf einer _backdoor_, ich schließe dich" sagen wir "du hast keine _backdoor_! Ich will, dass mein `X` genau so sein soll wie du! Ich nehme nur den Part von `X`, welcher von dir erklärt wird!"
+- Dadurch nutzen wir nur noch die exogene Variation in `X`, welche durch `Z` erklärt wird
+
+**Folge:**
+Wir nutzen nicht mehr die komplette Information unseres Datensatzes, sondern nur noch einen Teil, d.h. wir benötigen mehr Beobachtungen um Effekte messen zu können. Diese ungenauere Schätzung des Effekts drückt sich in der Regression als größerer Standardfehler des Schätzers aus!
+
+## Was sind gute Instrumentalvariablen?
+
+Um abschätzen zu können, ob wir eine Variable als Instrumentalvariable nutzen können müssen wir drei Eigenschaften prüfen:
+
+**Relevanz**:
+
+- Die Instrumentalvariable muss mit der/den endogenen Variable/n korreliert sein.
+
+**Ausschließlichkeit**:
+
+- Die Instrumentalvariable beeinflusst die exogene Variable nicht direkt, sondern **ausschließlich** über die endogene Variable
+
+**Exogenität**:
+
+- Die Instrumentalvariable ist nicht mit den ausgelassenen Variablen (omitted variables) korreliert
+
+
+## Relevanz
+
+Wir können die Relevanz unserer Instrumentalvariablen testen. Dies machen wir für unseren simulierten Datensatz, indem wir die Variable Bildung ( `bildung` ) auf die Instrumentalvariable ( `naehe` ) regressieren. Die Instrumentalvariable sollte einen Einfluss auf die Bildung haben und Personen die näher an der Universität wohnen sollten mehr Bildung in Anspruch nehmen. Sollte dies nicht der Fall sein, so wäre unsere Instrumentalvariable nicht relevant und wir sollten uns eine andere Instrumentalvariable suchen.
+
+```{r}
+first_stage_basic <- lm(bildung ~ naehe, data = distance)
+
+summary(first_stage_basic)
+```
+
+In unserem Fall ist die Instrumentalvariable `naehe` hoch signifikant. Die F-Statistik, welche angibt ob die getesteten Variablen zusammen einen Effekt auf die _Bildung_ haben liegt bei 153.8. Als Faustregel können wir uns hier merken, dass diese F-Statistik größer als 10 sein sollte (allerdings ist dies nur eine Faustregel und sollte nicht das Maß aller Dinge sein). Falls die F-Statistik kleiner ist als 10, so wird in der Literatur oft von einem _schwachen Instrument_ gesprochen. Solche _schwachen Instrumentalvariablen_ führen zu einer Verzerrung unseres Schätzers in der Instrumentalvariablenregression. Durch die Verwendung von _schwachen Instrumenten_ erhalten wir wieder einen Bias in unserer Regression, welcher in Richtung des OLS Bias geht. Je stärker unser Instrument ist, desto weniger groß ist der Bias in der Instrumentalvariablenregression. Weiterhin sind Instrumentalvariablenregressionen weniger effizient als OLS Regressionen, da wir einen kleineren Teil der Variation in den Daten für unsere Schätzung nutzen (nur den Part, welcher durch das Instrument erklärt werden kann), dies resultiert in einem größeren Standardfehler des Schätzers, verglichen mit der OLS Regression. D.h. durch schwache Instrumentalvariablen erhalten wir einen Bias in unserer Regression, welcher in Richtung OLS-Bias geht + erhalten größere Konfidenzintervalle durch die Instrumentalvariablenschätzung ... wenn wir so wollen nehmen wir die negativen Aspekte beider Welten durch schwache Instrumente mit, weshalb wir diese nach Möglichkeit vermeiden sollten.
+
+In der späteren Analyse der Instrumentalvariablenregression haben wir zusätzlich die Verwendung eines schwachen Instruments simuliert um die gerade beschriebenen Effekte zu zeigen.
+
+## Ausschließlichkeit
+
+Leider könne wir die Ausschließlichkeit von `naehe` nicht prüfen, sondern müssen diese ökonomisch begründen. Wir sollten erläutern, _warum_ die Entfernung zur Universität das Einkommen _ausschließlich_ über die Bildung und nicht über einen anderen Weg beeinflussen kann. Sobald wir einen Zusammenhang zwischen der Nähe zur Universität und dem Einkommen hätten, wäre unser Instrument auch endogen und wir könnten es nicht verwenden (bzw. nur bedingt). In unserer Simulationsstudie ist dies kein Problem da wir die Variable `naehe` so simuliert haben, dass diese das Einkommen _ausschließlich_ über die Bildung beeinflusst.
+
+## Exogenität
+
+Exogenität bedeutet, dass die Instrumentalvariable nicht mit der (unbeobachtbaren) ausgelassenen Variable korreliert ist. Es gibt auch für die Exogenität keinen statistischen Test der uns sagt, ob unsere Instrumentalvariable(n) exogen sind, da wir keine Möglichkeit haben für andere ausgelassenen Variablen zu kontrollieren (dies war ja gerade der Grund, warum wir die Instrumentalvariable verwenden!). Wenn wir Informationen zu den ausgelassenen Variablen hätten, dann könnten wir auf diese kontrollieren und bräuchten die Instrumentalvariable gar nicht (siehe DAG oben). 
+
+Der Vorteil in unserer Simulationsstudie: Wir haben die (eigentlich unbeobachtbare) Variable "Fähigkeiten" und können nun tatsächlich schauen, wie hoch die Korrelation zwischen der Instrumentalvariable `naehe` und der `faehigkeiten` ist. Eine Möglichkeit die uns in der Realität leider verwehrt bleibt:
+
+```{r}
+round(cor(distance$naehe, distance$faehigkeiten),2)
+```
+
+In unserer Simulation ist die Exogenitätsannahme erfüllt (schließlich haben wir die Variablen entsprechend simuliert). In der Realität könnte es Verbindungen zwischen der Nähe des Wohnorts zu einer Uni und den Fähigkeiten einer Person geben. Fallen ihnen hierzu Beispiele ein?
+
+# Two-stage least squares
+
+## Two-stage least squares (2SLS) per Hand
+
+Ok, wir wollen also mittels der Instrumentalvariablen `naehe` unsere eigentliche Variable `bildung` beschreiben und dadurch den exogenen Teil von `bildung` herausfinden. Mit diesem exogenen Teil von `bildung`, welcher nun nicht mehr von `faehigkeiten` abhängt, können wir dann den _kausalen_ Effekt der Bildung auf das Einkommen bestimmen. D.h. die Bildung, die nicht durch die Fähigkeiten bestimmt wird.
+Hört sich nach einem einfachen Prozess mit mehreren Schritten an, den wir hier durchführen können!
+
+Genau das wollen wir nun tun:
+
+1. Wir regressieren die Bildung ( `bildung` ) auf die Instrumentalvariable ( `naehe` ). Dies nennen wir *first_stage* und sollte uns bekannt vorkommen, schließlich haben wir das bereits gemacht um die Relevanz des Instruments zu bestimmen:
+
+```{r}
+first_stage <- lm(bildung ~ naehe, data = distance)
+```
+
+2. Als nächstes extrahieren wir die Variation von `bildung`, welche von `naehe` erklärt werden kann. Dafür nutzen wir die Ergebnisse aus unserer *first_stage* Regression und schauen uns an, welche Werte wir für `bildung` vorhergesagt hätten, gegeben der jeweiligen `naehe` zur Uni. Konkret nutzen wir die gefitteten Werte unserer *first_stage* Regression ( `.fitted` ) und fügen diese unserem Datensatz hinzu (eine einfache Methode bietet die Funktion `augment_columns()` aus dem Paket `broom`).
+
+```{r}
+distance <- augment_columns(first_stage, distance) %>%
+  select(eink, bildung, faehigkeiten, naehe, error_eink, `.fitted`)
+
+head(distance)
+```
+
+Uns interessieren insbesondere die gefitteten Werte ( `.fitted` ), da dies die Variation in `bildung` widerspiegelt, die exogen ist und damit ohne den Einfluss der Fähigkeiten.
+
+3. Nun können wir die Spalte `.fitted` nutzen um den _kausalen_ Effekt der Bildung auf das Einkommen zu schätzen (in einer zweiten Regression):
+
+```{r}
+second_stage <- lm(eink ~ `.fitted`, data = distance)
+
+summary(second_stage)
+```
+
+Die Ergebnisse dieser Regression sollten nun den tatsächlichen Effekt der Bildung auf das Einkommen widerspiegeln, da wir durch unsere Instrumentalvariable den endogenen Part der Bildung (beeinflusst von den Fähigkeiten) entfernt haben. Und tatsächlich der Effekt der Bildung auf das Einkommen entspricht 38,77€ für ein Jahr mehr Bildung (simuliert hatten wir 40€)!
+
+## Two-stage least squares (2SLS) in R
+
+Die händische Berechnung der einzelnen Regressionen ist hilfreich um sich klar zu werden, was genau die so genannte "Two-stage least squares" macht um eine Instrumentalvariablenregression durchzuführen:
+
+Es gibt zwei "stages", d.h. zwei Regressionen, die nacheinander durchgeführt werden. 
+
+In der ersten "stage" erklären wir unsere endogene Variable durch das Instrument und in der zweiten "stage" nutzen wir die gefitteten/vorhergesagten Werte der ersten Regression um unsere eigentliche Fragestellung zu beantworten. Jedoch gibt es einige Nachteile, wenn wir eine solche 2SLS per Hand durchführen:
+
+- Die Standardfehler sind nicht korrekt
+- Das R² (und weitere Diagnostiken) der zweiten "stage" werden nicht korrekt geschätzt.
+
+Dies liegt daran das wir nicht die _gemessene_ `bildung` in der zweiten "stage" verwenden, sondern die geschätzen Werte `.fitted` aus der ersten "stage". Daher müssen wir die Ergebnisse aus der zweiten "stage" anpassen. Dies wollen wir jedoch nicht auch von Hand machen, sondern nutzen hierzu das Paket `AER` mit der Funktion `ivreg()`, welche diese Anpassungen für uns vornimmt.
+
+Dies wollen wir nun tun und die Ergebnisse unserer unterschiedlicher Regressionen gegenüberstellen.
+
+```{r, results = 'asis'}
+ols_iv <- ivreg(eink ~ bildung | naehe , data = distance)
+
+cm <- c("bildung" = "Bildung",
+        ".fitted" = "Bildung_Dach",
+        "faehigkeiten" = "Fähigkeiten",
+        "(Intercept)" = "Konstante")
+
+modelsummary(list(ols_bias, ols_correct, second_stage, ols_iv),
+             type = "html", 
+          #keep = c("educ", "bildung_hat"),
+          fmt = 3,
+          statistic = 'conf.int', 
+          conf_level = .99,
+          gof_omit = 'DF|Deviance|Log.Lik.|F|RMSE|AIC|BIC',
+          coef_map = cm,
+          #column.labels = c("OLS Bias", "OLS Kontrolle", "2SLS per Hand", "2SLS starkes Instrument"),
+          title = "Log(Einkommen) auf Bildung regressiert") %>%
+  add_header_above(c(" " = 1,"OLS Bias" = 1, "OLS Kontrolle" = 1, "2SLS\nhändisch" = 1, "2SLS\n starkes Instrument" = 1)) %>%
+  add_header_above(c(" " = 1,"OLS" = 3, "Instrumentalvariable" = 1))
+```
+
+In der ersten Spalte haben wir das naive Modell, welches den Effekt der Bildung auf das Einkommen überschätzt. In der zweiten Spalte sehen wir das Modell, wie wir es gerne schätzen möchten, mit der (in realen Datensätzen unbeobachtbaren) Variablen Fähigkeiten ( `faehigkeiten` ). In dieser zweiten Spalte erhalten wir den korrekten Koeffizienten für `bildung`!
+In der dritten Spalte berechnen wir die 2SLS von Hand. Hier erhalten wir auch den korrekten Koeffizienten für `bildung` (in diesem Modell `.fitted` genannt), wie auch in der automatisch von R berechneten 2SLS in der 4. Spalte. Wir konnten mit der Instrumentalvariable die exogene Variation von `bildung` erfolgreich extrahieren und erhalten den _kausalen_ Effekt von einem Jahr mehr Bildung auf das Wocheneinkommen, welcher in unserer Regression bei 38,477€ liegt. Ziemlich gut geschätzt würde ich sagen, schließlich haben wir den wahren Effekt auf 40€ simuliert!
+
+Im Vergleich der 3. und 4. Spalte sehen wir den vorhin erwähnten Unterschied in den Standardfehlern und dem R², welche durch das `AER` Paket mit der Funktion `ivreg()` automatisch korrigiert wird.
+
+# Schwache Instrumente
+
+Nun erhalten wir mit unserem Instrument den _kausalen_ Effekt der Bildung auf das Einkommen. Das ist toll!
+Doch unser Instrument war mit einer F-Statistik von 153.8 in der _first-stage_ sehr relevant für die exogene Variation in `bildung`. Angenommen wir haben nur ein schwaches Instrument zur Verfügung, können wir dennoch valide Ergebnisse schätzen, oder erhalten wir durch den Bias in der Instrumentalvariablenregression stark verzerrte Ergebnisse?
+
+```{r, results = 'asis'}
+#Zuerst generieren wir uns ein schwaches Instrumnte (0.001 * distance)
+distance <- distance %>%
+  mutate(bildung_weak = 13 + 0.001*naehe + 2*faehigkeiten,  # Distance als schwaches Instrument für Bildung
+         eink_weak = 100 + 40*bildung_weak + 70*faehigkeiten - error_eink)
+
+#Um anschließend die IV Regression mit diesem Instrument durchlaufen zu lassen
+ols_iv_weak <- ivreg(eink_weak ~ bildung_weak | naehe , data = distance)
+
+#Wir speichern den Weak-Instruments Test aus der first-stage ab und fügen diese Spalte unserer Regression in stargazer hinzu (für starkes und schwaches Instrument)
+ols_iv_test <- summary(ols_iv, diagnostics = T)$diagnostics[1,3] #starkes Instrument
+ols_iv_weak_test <- summary(ols_iv_weak, diagnostics = T)$diagnostics[1,3] #schwaches Instrument
+
+cm <- c("bildung" = "Bildung",
+        ".fitted" = "Bildung_Dach",
+        "bildung_weak" = "Bildung",
+        "faehigkeiten" = "Fähigkeiten",
+        "(Intercept)" = "Konstante")
+
+modelsummary(list(ols_bias, ols_correct, second_stage, ols_iv, ols_iv_weak),
+             type = "html", 
+          #keep = c("educ", "bildung_hat"),
+          fmt = 3,
+          statistic = 'conf.int', 
+          conf_level = .99,
+          gof_omit = 'DF|Deviance|Log.Lik.|F|RMSE|AIC|BIC',
+          coef_map = cm,
+          title = "Log(Einkommen) auf Bildung regressiert") %>%
+  add_header_above(c(" " = 1,"OLS Bias" = 1, "OLS Kontrolle" = 1, "2SLS\nhändisch" = 1, "2SLS\n starkes Instrument" = 1, "2SLS\n schwaches Instrument" = 1)) %>%
+  add_header_above(c(" " = 1,"OLS" = 3, "Instrumentalvariable" = 2))
+
+```
+
+Wir sehen was wir bereits weiter oben im Text erwähnt hatten:
+
+1. Der Bias des IV Schätzers ist deutlich sichtbar und sehr groß. D.h. durch ein schwaches Instrument driften wir sehr weit weg vom eigentlichen kausalen Effekt
+2. Die Standardfehler in der IV Regression mit einem schwachen Instrument sind sehr groß

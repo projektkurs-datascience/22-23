@@ -903,7 +903,7 @@ modelsummary(list(ols_baseline, second_stage, iv_2sls),
 
 .pull-right[
 - Die Bildung hat einen deutlich stärkeren Einfluss auf das Einkommen mit der IV Regression
-    - In der OLS Regression steigt das Einkommen um 7,1% für jedes zusätzliche Jahr an Schulbildung
+    - In der OLS Regression steigt das Einkommen um 8,2% für jedes zusätzliche Jahr an Schulbildung
     - In der 2SLS Regression hat die Bildung einen deutlich höheren Einfluss! (13,5%)
 - Dieses Ergebnis überrascht:
     - Die Fähigkeiten einer Person sollten ihr Einkommen positiv beeinflussen

@@ -78,7 +78,7 @@ Folglich wäre die Bildungsentscheidung in unserer Schätzung endogen und wir w�
 
 Um das Prinzip der Instrumentalvariablenschätzung zu veranschaulichen wollen wir eine kleine Simulationsstudie betrachten, bei der wir den "wahren" Wert der Variable kennen und wissen, ob ein Schätzer in der Regression verzerrt ist, oder den korrekten Wert wiedergibt.
 
-Durch Simulationsstudien können wir Probleme oder Unklarheiten untersuchen und bekommen dadurch eine Intuition vom Datengenerierungsprozess ich echten empirischen Datensätzen.
+Durch Simulationsstudien können wir Probleme oder Unklarheiten untersuchen und bekommen dadurch eine Intuition vom Datengenerierungsprozess in echten empirischen Datensätzen.
 
 ```{r}
 set.seed(2021)
@@ -137,8 +137,8 @@ modelsummary(list(ols_bias, ols_correct),
 
 
 Wie von uns erwartet überschätzen wir den Effekt der Bildung auf das Einkommen massiv, wenn wir nicht auf die Fähigkeiten kontrollieren. In der naiven Schätzung in der ersten Spalte würden wir davon ausgehen, dass ein Jahr mehr Bildung mit 74.72€ mehr Einkommen pro Woche assoziiert ist. Wobei der wahre Effekt bei 40€ pro Woche liegt. Die korrekte Effektgröße erhalten wir in unserer zweiten Schätzung, wenn wir auf die Fähigkeiten kontrollieren!
-Hierbei liegt der wahre Wert (wie wir diesen simuliert haben) im 95% Konfidenzintervall des Schätzers von `bildung` (Konfidenzintervall [32.04, 47.25]). 
-Man beachte das sowohl der Koeffizient $\beta_1$ von `bildung` der naiven Schätzung aus der ersten Spalte, wie auch der zweiten Spalte hoch signifikant sind. Insbesondere der Standardfehler in der ersten Regression ist deutlich kleiner als in der zweiten Regression (0.222 vs. 3.881), obwohl nur die zweite Regression ein korrektes Ergebnis liefert. Der Koeffizient der ersten Schätzung ist stark nach oben verzerrt, d.h. auch wenn ein Koeffizient statistisch signifikant ist, so heißt dies nicht automatisch, dass dieser auch korrekt ist. Dafür muss erst das Modell richtig spezifiziert sein!
+Hierbei liegt der wahre Wert (wie wir diesen simuliert haben) im 99% Konfidenzintervall des Schätzers von `bildung` (Konfidenzintervall [29.649, 49.643]). 
+Man beachte das sowohl der Koeffizient $\beta_1$ von `bildung` der naiven Schätzung aus der ersten Spalte, wie auch der zweiten Spalte hoch signifikant sind. Das 99% Konfidenzintervall in der ersten Regression ist deutlich kleiner als in der zweiten Regression ([74.147,75.292] vs. [29.649,49.643]), obwohl nur die zweite Regression ein korrektes Ergebnis liefert. Der Koeffizient der ersten Schätzung ist stark nach oben verzerrt, d.h. auch wenn ein Koeffizient statistisch signifikant ist, so heißt dies nicht automatisch, dass dieser auch korrekt ist. Dafür muss erst das Modell richtig spezifiziert sein!
 
 # Instrumentalvariablen
 
@@ -305,7 +305,7 @@ modelsummary(list(ols_bias, ols_correct, second_stage, ols_iv),
 ```
 
 In der ersten Spalte haben wir das naive Modell, welches den Effekt der Bildung auf das Einkommen überschätzt. In der zweiten Spalte sehen wir das Modell, wie wir es gerne schätzen möchten, mit der (in realen Datensätzen unbeobachtbaren) Variablen Fähigkeiten ( `faehigkeiten` ). In dieser zweiten Spalte erhalten wir den korrekten Koeffizienten für `bildung`!
-In der dritten Spalte berechnen wir die 2SLS von Hand. Hier erhalten wir auch den korrekten Koeffizienten für `bildung` (in diesem Modell `.fitted` genannt), wie auch in der automatisch von R berechneten 2SLS in der 4. Spalte. Wir konnten mit der Instrumentalvariable die exogene Variation von `bildung` erfolgreich extrahieren und erhalten den _kausalen_ Effekt von einem Jahr mehr Bildung auf das Wocheneinkommen, welcher in unserer Regression bei 38,477€ liegt. Ziemlich gut geschätzt würde ich sagen, schließlich haben wir den wahren Effekt auf 40€ simuliert!
+In der dritten Spalte berechnen wir die 2SLS von Hand. Hier erhalten wir auch den korrekten Koeffizienten für `bildung` (in diesem Modell `Bildung_Dach` genannt), wie auch in der automatisch von R berechneten 2SLS in der 4. Spalte. Wir konnten mit der Instrumentalvariable die exogene Variation von `bildung` erfolgreich extrahieren und erhalten den _kausalen_ Effekt von einem Jahr mehr Bildung auf das Wocheneinkommen, welcher in unserer Regression bei 38,477€ liegt. Ziemlich gut geschätzt würde ich sagen, schließlich haben wir den wahren Effekt auf 40€ simuliert!
 
 Im Vergleich der 3. und 4. Spalte sehen wir den vorhin erwähnten Unterschied in den Standardfehlern und dem R², welche durch das `AER` Paket mit der Funktion `ivreg()` automatisch korrigiert wird.
 
